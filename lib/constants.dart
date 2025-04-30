@@ -38,6 +38,9 @@ var kDarkTheme = ThemeData(
 const kPrimaryHeaderColorDark = Color(0XFFE0E0E0);
 const kPrimaryHeaderColorLight = Colors.black54;
 
+const kTaskTileColorDark = Color(0xFF2A2A2A);
+const kTaskTileColorLight = Color(0xFF2A2A2A);
+
 const kArrowColorLight = Color(0xFF393939);
 const kArrowColorDark = Color(0xFF393939);
 
@@ -116,4 +119,12 @@ const kConfirmButtonTextStyle = TextStyle(
   fontSize: 24,
   fontWeight: FontWeight.w500,
   letterSpacing: 1,
+);
+
+const kGoalTitleTextStyle = TextStyle(
+  inherit: false,
+  fontWeight: FontWeight.w400,
+  letterSpacing: 1,
+  fontSize: 20,
+  color: kPrimaryHeaderColorLight,
 );

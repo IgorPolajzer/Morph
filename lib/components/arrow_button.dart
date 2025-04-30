@@ -16,6 +16,7 @@ class ArrowButton extends StatelessWidget {
           onPressed: onPressed,
           child: Row(
             mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               Icon(
                 Icons.arrow_forward_ios,
@@ -32,13 +33,10 @@ class ArrowButton extends StatelessWidget {
                 color: Theme.of(context).textTheme.displaySmall?.color,
                 size: 33,
               ),
-              Padding(
-                padding: const EdgeInsets.only(left: 8.0, right: 8.0),
-                child: Text(
-                  title,
-                  style: kConfirmButtonTextStyle.copyWith(
-                    color: Theme.of(context).textTheme.displayMedium?.color,
-                  ),
+              Text(
+                title,
+                style: kConfirmButtonTextStyle.copyWith(
+                  color: Theme.of(context).textTheme.displayMedium?.color,
                 ),
               ),
               Icon(

@@ -9,9 +9,9 @@ class ScreenTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(top: 63, bottom: 40, left: 73, right: 73),
+      padding: EdgeInsets.only(top: 63, left: 73, right: 73),
       child: Text(
-        "CHOOSE YOUR GOALS",
+        title,
         style: kTitleTextStyle.copyWith(
           color: Theme.of(context).textTheme.displayLarge?.color,
         ),

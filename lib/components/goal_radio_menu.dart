@@ -36,11 +36,7 @@ class GoalRadioMenu extends StatelessWidget {
                   padding: const EdgeInsets.only(left: 21),
                   child: Text(
                     title,
-                    style: TextStyle(
-                      inherit: false,
-                      fontWeight: FontWeight.w400,
-                      letterSpacing: 1,
-                      fontSize: 20,
+                    style: kGoalTitleTextStyle.copyWith(
                       color: Theme.of(context).textTheme.displayLarge?.color,
                     ),
                     textAlign: TextAlign.center,

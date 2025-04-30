@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:morphe/components/arrow_button.dart';
 import 'package:morphe/components/goal_radio_menu.dart';
-import 'package:morphe/components/rounded_button.dart';
 
 import '../components/screen_title.dart';
 import '../constants.dart';
+import 'describe_your_goals.dart';
 
 class ChooseGoalsScreen extends StatelessWidget {
   static String id = '/choose_goals_screen';
@@ -18,6 +18,7 @@ class ChooseGoalsScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           ScreenTitle(title: "CHOOSE YOUR GOALS"),
+          SizedBox(height: 10),
           GoalRadioMenu(
             isChecked: false,
             checkboxCallback: (checkboxState) {},
@@ -43,7 +44,12 @@ class ChooseGoalsScreen extends StatelessWidget {
                 "Improve your mental health and clarity by getting a plan tailored to you unique circumstances and goals.",
           ),
           Spacer(),
-          ArrowButton(title: "CONFIRM", onPressed: () {}),
+          ArrowButton(
+            title: "CONFIRM",
+            onPressed: () {
+              Navigator.pushNamed(context, DescribeYourGoals.id);
+            },
+          ),
         ],
       ),
     );

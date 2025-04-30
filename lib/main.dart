@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:morphe/constants.dart';
 import 'package:morphe/screens/choose_goals_screen.dart';
+import 'package:morphe/screens/describe_your_goals.dart';
 import 'package:morphe/screens/login_screen.dart';
+import 'package:morphe/screens/physical_plan_overview_screen.dart';
 import 'package:morphe/screens/registration_screen.dart';
 import 'package:morphe/screens/welcome_screen.dart';
 
@@ -26,6 +28,9 @@ class MyApp extends StatelessWidget {
         RegistrationScreen.id: (context) => RegistrationScreen(),
         LoginScreen.id: (context) => LoginScreen(),
         ChooseGoalsScreen.id: (context) => ChooseGoalsScreen(),
+        DescribeYourGoals.id: (context) => DescribeYourGoals(),
+        PhysicalPlanOverViewScreen.id:
+            (context) => PhysicalPlanOverViewScreen(),
       },
     );
   }
