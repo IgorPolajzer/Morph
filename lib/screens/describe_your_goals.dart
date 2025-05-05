@@ -5,7 +5,8 @@ import 'package:morphe/screens/physical_plan_overview_screen.dart';
 
 import '../components/describe_goal_input_box.dart';
 import '../components/screen_title.dart';
-import '../constants.dart';
+import '../utils/constants.dart';
+import '../utils/enums.dart';
 
 class DescribeYourGoals extends StatelessWidget {
   static String id = '/describe_your_goals_screen';
@@ -27,21 +28,21 @@ class DescribeYourGoals extends StatelessWidget {
                 children: [
                   SizedBox(height: 10),
                   DescribeGoalInputBox(
-                    borderColor: kPhysicalColor,
+                    type: TaskType.PHYSICAL,
                     title: "PHYSICAL",
                     hint: "",
                     description:
                         "Describe your physical goals.\nExample: I want to reach a healthy bodyfat range, improve my general strength and health. I would like to achieve those goals through weight training and swimming.",
                   ),
                   DescribeGoalInputBox(
-                    borderColor: kGeneralColor,
+                    type: TaskType.GENERAL,
                     title: "GENERAL",
                     hint: "",
                     description:
                         "Describe your general goals.\nExample: I want to improve adhere better to doing my chores more specifically: cleaning my room, reading at least 1 book a month, revising after my classes and working on my personal project “Morphe” at least 5 hours a week.",
                   ),
                   DescribeGoalInputBox(
-                    borderColor: kMentalColor,
+                    type: TaskType.MENTAL,
                     title: "MENTAL",
                     hint: "",
                     description:
@@ -54,7 +55,7 @@ class DescribeYourGoals extends StatelessWidget {
           ArrowButton(
             title: "GENERATE",
             onPressed: () {
-              Navigator.pushNamed(context, PhysicalPlanOverViewScreen.id);
+              Navigator.pushNamed(context, PhysicalPlanOverviewScreen.id);
             },
           ),
         ],

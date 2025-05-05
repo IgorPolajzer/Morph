@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:morphe/constants.dart';
+import 'package:morphe/utils/constants.dart';
+
+import '../utils/enums.dart';
 
 class DescribeGoalInputBox extends StatelessWidget {
-  final Color borderColor;
+  final TaskType type;
   final String title;
   final String description;
   final String hint;
   final bool enabled;
 
   const DescribeGoalInputBox({
-    required this.borderColor,
+    required this.type,
     required this.title,
     required this.description,
     required this.hint,
@@ -20,7 +22,7 @@ class DescribeGoalInputBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var disabledColor =
-        Theme.of(context).textTheme.displayMedium!.color ?? Colors.black54;
+        Theme.of(context).extension<CustomColors>()!.placeholderTextColor;
 
     return Center(
       child: Padding(
@@ -34,7 +36,12 @@ class DescribeGoalInputBox extends StatelessWidget {
                   topLeft: Radius.circular(15),
                   topRight: Radius.circular(15),
                 ),
-                color: enabled ? borderColor : disabledColor,
+                color:
+                    enabled
+                        ? type.getColor()
+                        : Theme.of(
+                          context,
+                        ).extension<CustomColors>()!.placeholderTextColor,
               ),
               child: Padding(
                 padding: const EdgeInsets.only(
@@ -49,13 +56,19 @@ class DescribeGoalInputBox extends StatelessWidget {
                     Text(
                       title,
                       style: kGoalTitleTextStyle.copyWith(
-                        color: Theme.of(context).textTheme.displayLarge?.color,
+                        color:
+                            Theme.of(
+                              context,
+                            ).extension<CustomColors>()!.headerColor,
                       ),
                     ),
                     SizedBox(width: 8),
                     Icon(
                       Icons.question_mark_sharp,
-                      color: Theme.of(context).textTheme.displayLarge?.color,
+                      color:
+                          Theme.of(
+                            context,
+                          ).extension<CustomColors>()!.headerColor,
                       size: 18,
                     ),
                   ],
@@ -71,7 +84,7 @@ class DescribeGoalInputBox extends StatelessWidget {
                     bottomLeft: Radius.circular(17),
                     bottomRight: Radius.circular(17),
                   ),
-                  color: enabled ? borderColor : disabledColor,
+                  color: enabled ? type.getColor() : disabledColor,
                 ),
                 child: TextField(
                   enabled: enabled,
@@ -87,15 +100,25 @@ class DescribeGoalInputBox extends StatelessWidget {
                     ), // Top padding to push text down a bit
                     hintText: description,
                     hintStyle: kPlaceHolderTextStyle.copyWith(
-                      color: Theme.of(context).textTheme.displayMedium?.color,
+                      color:
+                          Theme.of(
+                            context,
+                          ).extension<CustomColors>()!.placeholderTextColor,
                       fontSize: 12,
+                      fontWeight: FontWeight.bold,
                     ),
                     border: OutlineInputBorder(
-                      borderSide: BorderSide(color: borderColor, width: 4.0),
+                      borderSide: BorderSide(
+                        color: type.getColor(),
+                        width: 4.0,
+                      ),
                       borderRadius: BorderRadius.all(Radius.circular(17)),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: borderColor, width: 4.0),
+                      borderSide: BorderSide(
+                        color: type.getColor(),
+                        width: 4.0,
+                      ),
                       borderRadius: BorderRadius.all(Radius.circular(17)),
                     ),
                     disabledBorder: OutlineInputBorder(
@@ -103,7 +126,10 @@ class DescribeGoalInputBox extends StatelessWidget {
                       borderRadius: BorderRadius.all(Radius.circular(17)),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: borderColor, width: 6.0),
+                      borderSide: BorderSide(
+                        color: type.getColor(),
+                        width: 6.0,
+                      ),
                       borderRadius: BorderRadius.all(Radius.circular(17)),
                     ),
                   ),

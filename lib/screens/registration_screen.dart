@@ -5,7 +5,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:toastification/toastification.dart';
 
-import '../constants.dart';
+import '../utils/constants.dart';
 import 'choose_goals_screen.dart';
 
 class RegistrationScreen extends StatefulWidget {
@@ -40,17 +40,20 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
     late OutlineInputBorder enabledOutlineInputBorder;
     late OutlineInputBorder focusedOutlineInputBorder;
 
-    var enabledColor =
-        Theme.of(context).textTheme.displayMedium!.color ?? Colors.black12;
-    var focusedColor =
-        Theme.of(context).textTheme.labelLarge!.color ?? Colors.black54;
-
     enabledOutlineInputBorder = OutlineInputBorder(
-      borderSide: BorderSide(color: enabledColor, width: 3.0),
+      borderSide: BorderSide(
+        color:
+            Theme.of(context).extension<CustomColors>()!.placeholderTextColor,
+        width: 3.0,
+      ),
       borderRadius: BorderRadius.all(Radius.circular(32.0)),
     );
+
     focusedOutlineInputBorder = OutlineInputBorder(
-      borderSide: BorderSide(color: focusedColor, width: 2.0),
+      borderSide: BorderSide(
+        color: Theme.of(context).extension<CustomColors>()!.headerColor,
+        width: 2.0,
+      ),
       borderRadius: BorderRadius.all(Radius.circular(32.0)),
     );
 
@@ -84,7 +87,9 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           "Morph",
                           style: kMorphTitleStyle.copyWith(
                             color:
-                                Theme.of(context).textTheme.displayLarge?.color,
+                                Theme.of(
+                                  context,
+                                ).extension<CustomColors>()!.headerColor,
                           ),
                         ),
                       ),
@@ -110,14 +115,20 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   TextField(
                     keyboardType: TextInputType.emailAddress,
                     style: kInputPlaceHolderText.copyWith(
-                      color: Theme.of(context).textTheme.displayLarge?.color,
+                      color:
+                          Theme.of(
+                            context,
+                          ).extension<CustomColors>()!.headerColor,
                     ),
                     textAlign: TextAlign.center,
                     onChanged: (value) {},
                     decoration: kTextFieldDecoration.copyWith(
                       hintText: 'Create your username',
                       hintStyle: kInputPlaceHolderText.copyWith(
-                        color: Theme.of(context).textTheme.displayMedium?.color,
+                        color:
+                            Theme.of(
+                              context,
+                            ).extension<CustomColors>()!.placeholderTextColor,
                       ),
                       enabledBorder: enabledOutlineInputBorder,
                       focusedBorder: focusedOutlineInputBorder,
@@ -127,7 +138,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   TextField(
                     keyboardType: TextInputType.emailAddress,
                     style: kInputPlaceHolderText.copyWith(
-                      color: Theme.of(context).textTheme.displayLarge?.color,
+                      color:
+                          Theme.of(
+                            context,
+                          ).extension<CustomColors>()!.headerColor,
                     ),
                     textAlign: TextAlign.center,
                     onChanged: (value) {
@@ -136,7 +150,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     decoration: kTextFieldDecoration.copyWith(
                       hintText: 'Create your email',
                       hintStyle: kInputPlaceHolderText.copyWith(
-                        color: Theme.of(context).textTheme.displayMedium?.color,
+                        color:
+                            Theme.of(
+                              context,
+                            ).extension<CustomColors>()!.placeholderTextColor,
                       ),
                       enabledBorder: enabledOutlineInputBorder,
                       focusedBorder: focusedOutlineInputBorder,
@@ -145,7 +162,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   SizedBox(height: 24),
                   TextField(
                     style: kInputPlaceHolderText.copyWith(
-                      color: Theme.of(context).textTheme.displayLarge?.color,
+                      color:
+                          Theme.of(
+                            context,
+                          ).extension<CustomColors>()!.headerColor,
                     ),
                     obscureText: true,
                     textAlign: TextAlign.center,
@@ -155,7 +175,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     decoration: kTextFieldDecoration.copyWith(
                       hintText: 'Create your password',
                       hintStyle: kInputPlaceHolderText.copyWith(
-                        color: Theme.of(context).textTheme.displayMedium?.color,
+                        color:
+                            Theme.of(
+                              context,
+                            ).extension<CustomColors>()!.placeholderTextColor,
                       ),
                       enabledBorder: enabledOutlineInputBorder,
                       focusedBorder: focusedOutlineInputBorder,

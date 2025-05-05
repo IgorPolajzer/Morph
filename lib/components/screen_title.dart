@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:morphe/constants.dart';
+import 'package:morphe/utils/constants.dart';
 
 class ScreenTitle extends StatelessWidget {
   final String title;
@@ -13,7 +13,7 @@ class ScreenTitle extends StatelessWidget {
       child: Text(
         title,
         style: kTitleTextStyle.copyWith(
-          color: Theme.of(context).textTheme.displayLarge?.color,
+          color: Theme.of(context).extension<CustomColors>()!.headerColor,
         ),
         textAlign: TextAlign.center,
       ),

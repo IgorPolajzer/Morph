@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:morphe/constants.dart';
+import 'package:morphe/utils/constants.dart';
 import 'package:morphe/screens/login_screen.dart';
 import 'package:morphe/screens/registration_screen.dart';
 
@@ -52,13 +52,19 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                   child: Text(
                     "Morph",
                     style: kMorphTitleStyle.copyWith(
-                      color: Theme.of(context).textTheme.displayLarge?.color,
+                      color:
+                          Theme.of(
+                            context,
+                          ).extension<CustomColors>()!.headerColor,
                     ),
                   ),
                 ),
                 Divider(
                   thickness: 2.5,
-                  color: Theme.of(context).textTheme.displayMedium?.color,
+                  color:
+                      Theme.of(
+                        context,
+                      ).extension<CustomColors>()!.placeholderTextColor,
                   indent: 60,
                   endIndent: 60,
                 ),
@@ -67,7 +73,10 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                   child: Text(
                     "Small Habits. Big Change.",
                     style: kMorphPhraseStyle.copyWith(
-                      color: Theme.of(context).textTheme.displayMedium?.color,
+                      color:
+                          Theme.of(
+                            context,
+                          ).extension<CustomColors>()!.placeholderTextColor,
                     ),
                   ),
                 ),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:morphe/constants.dart';
+import 'package:morphe/utils/constants.dart';
 import 'package:morphe/screens/choose_goals_screen.dart';
 import 'package:morphe/screens/describe_your_goals.dart';
 import 'package:morphe/screens/login_screen.dart';
@@ -22,15 +22,15 @@ class MyApp extends StatelessWidget {
       theme: kLightTheme,
       darkTheme: kDarkTheme,
       //initialRoute: WelcomeScreen.id,
-      initialRoute: ChooseGoalsScreen.id, //Development purposes
+      initialRoute: WelcomeScreen.id, //Development purposes
       routes: {
         WelcomeScreen.id: (context) => WelcomeScreen(),
         RegistrationScreen.id: (context) => RegistrationScreen(),
         LoginScreen.id: (context) => LoginScreen(),
         ChooseGoalsScreen.id: (context) => ChooseGoalsScreen(),
         DescribeYourGoals.id: (context) => DescribeYourGoals(),
-        PhysicalPlanOverViewScreen.id:
-            (context) => PhysicalPlanOverViewScreen(),
+        PhysicalPlanOverviewScreen.id:
+            (context) => PhysicalPlanOverviewScreen(),
       },
     );
   }

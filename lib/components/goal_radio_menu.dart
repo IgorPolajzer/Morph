@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:morphe/constants.dart';
+import 'package:morphe/utils/constants.dart';
 
 class GoalRadioMenu extends StatelessWidget {
   final Color backgroundColor;
@@ -37,7 +37,10 @@ class GoalRadioMenu extends StatelessWidget {
                   child: Text(
                     title,
                     style: kGoalTitleTextStyle.copyWith(
-                      color: Theme.of(context).textTheme.displayLarge?.color,
+                      color:
+                          Theme.of(
+                            context,
+                          ).extension<CustomColors>()!.headerColor,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -56,7 +59,10 @@ class GoalRadioMenu extends StatelessWidget {
             child: Text(
               description,
               style: kPlaceHolderTextStyle.copyWith(
-                color: Theme.of(context).textTheme.displayMedium?.color,
+                color:
+                    Theme.of(
+                      context,
+                    ).extension<CustomColors>()!.placeholderTextColor,
               ),
             ),
           ),

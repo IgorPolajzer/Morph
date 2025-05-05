@@ -1,16 +1,61 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+@immutable
+class CustomColors extends ThemeExtension<CustomColors> {
+  final Color headerColor;
+  final Color taskTileColor;
+  final Color placeholderTextColor;
+
+  const CustomColors({
+    required this.headerColor,
+    required this.taskTileColor,
+    required this.placeholderTextColor,
+  });
+
+  @override
+  CustomColors copyWith({
+    Color? headerColor,
+    Color? taskTileColor,
+    Color? placeholderTextColor,
+  }) {
+    return CustomColors(
+      headerColor: headerColor ?? this.headerColor,
+      taskTileColor: taskTileColor ?? this.taskTileColor,
+      placeholderTextColor: placeholderTextColor ?? this.placeholderTextColor,
+    );
+  }
+
+  @override
+  CustomColors lerp(ThemeExtension<CustomColors>? other, double t) {
+    if (other is! CustomColors) return this;
+    return CustomColors(
+      headerColor: Color.lerp(headerColor, other.headerColor, t)!,
+      taskTileColor: Color.lerp(taskTileColor, other.taskTileColor, t)!,
+      placeholderTextColor:
+          Color.lerp(placeholderTextColor, other.placeholderTextColor, t)!,
+    );
+  }
+}
+
+const lightCustomColors = CustomColors(
+  headerColor: kPrimaryHeaderColorLight,
+  taskTileColor: kTaskTileColorLight,
+  placeholderTextColor: kPlaceholderTextColorLight,
+);
+
+const darkCustomColors = CustomColors(
+  headerColor: kPrimaryHeaderColorDark,
+  taskTileColor: kTaskTileColorDark,
+  placeholderTextColor: kPlaceholderTextColorDark,
+);
+
 // App themes
 var kLightTheme = ThemeData(
   fontFamily: 'Josefin Sans',
   platform: TargetPlatform.iOS,
   scaffoldBackgroundColor: Colors.white,
-  textTheme: TextTheme(
-    displayLarge: TextStyle(color: kPrimaryHeaderColorLight),
-    displayMedium: TextStyle(color: kPlaceholderTextColorLight),
-    displaySmall: TextStyle(color: kArrowColorLight),
-  ),
+  extensions: <ThemeExtension<dynamic>>[lightCustomColors],
   checkboxTheme: CheckboxThemeData(
     fillColor: WidgetStatePropertyAll<Color>(kPrimaryHeaderColorDark),
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
@@ -22,11 +67,7 @@ var kDarkTheme = ThemeData(
   fontFamily: 'Josefin Sans',
   platform: TargetPlatform.iOS,
   scaffoldBackgroundColor: Color(0xFF232323),
-  textTheme: TextTheme(
-    displayLarge: TextStyle(color: kPrimaryHeaderColorDark),
-    displayMedium: TextStyle(color: kPlaceholderTextColorDark),
-    displaySmall: TextStyle(color: kArrowColorDark),
-  ),
+  extensions: <ThemeExtension<dynamic>>[darkCustomColors],
   checkboxTheme: CheckboxThemeData(
     fillColor: WidgetStatePropertyAll<Color>(kPrimaryHeaderColorDark),
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
@@ -36,13 +77,10 @@ var kDarkTheme = ThemeData(
 
 // Colors
 const kPrimaryHeaderColorDark = Color(0XFFE0E0E0);
-const kPrimaryHeaderColorLight = Colors.black54;
+const kPrimaryHeaderColorLight = Color(0xFF393939);
 
 const kTaskTileColorDark = Color(0xFF2A2A2A);
-const kTaskTileColorLight = Color(0xFF2A2A2A);
-
-const kArrowColorLight = Color(0xFF393939);
-const kArrowColorDark = Color(0xFF393939);
+const kTaskTileColorLight = Color(0xFFDFDCDC);
 
 const kPlaceholderTextColorDark = Color(0XFF7F7F7F);
 const kPlaceholderTextColorLight = Colors.black26;

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:morphe/constants.dart';
+import 'package:morphe/utils/constants.dart';
 
 class GradientButton extends StatelessWidget {
   final Gradient myGradient;
@@ -35,7 +35,8 @@ class GradientButton extends StatelessWidget {
                 title,
                 textAlign: TextAlign.center,
                 style: kGradientButtonTextSyle.copyWith(
-                  color: Theme.of(context).textTheme.displayLarge?.color,
+                  color:
+                      Theme.of(context).extension<CustomColors>()!.headerColor,
                 ),
               ),
             ),

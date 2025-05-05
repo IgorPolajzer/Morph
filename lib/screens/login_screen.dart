@@ -7,7 +7,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:toastification/toastification.dart';
 
-import '../constants.dart';
+import '../utils/constants.dart';
 
 class LoginScreen extends StatefulWidget {
   static String id = '/login_screen';
@@ -41,17 +41,20 @@ class _LoginScreenState extends State<LoginScreen> {
     late OutlineInputBorder enabledOutlineInputBorder;
     late OutlineInputBorder focusedOutlineInputBorder;
 
-    var enabledColor =
-        Theme.of(context).textTheme.displayMedium!.color ?? Colors.black12;
-    var focusedColor =
-        Theme.of(context).textTheme.labelLarge!.color ?? Colors.black54;
-
     enabledOutlineInputBorder = OutlineInputBorder(
-      borderSide: BorderSide(color: enabledColor, width: 3.0),
+      borderSide: BorderSide(
+        color:
+            Theme.of(context).extension<CustomColors>()!.placeholderTextColor,
+        width: 3.0,
+      ),
       borderRadius: BorderRadius.all(Radius.circular(32.0)),
     );
+
     focusedOutlineInputBorder = OutlineInputBorder(
-      borderSide: BorderSide(color: focusedColor, width: 2.0),
+      borderSide: BorderSide(
+        color: Theme.of(context).extension<CustomColors>()!.headerColor,
+        width: 2.0,
+      ),
       borderRadius: BorderRadius.all(Radius.circular(32.0)),
     );
 
@@ -85,7 +88,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           "Morph",
                           style: kMorphTitleStyle.copyWith(
                             color:
-                                Theme.of(context).textTheme.displayLarge?.color,
+                                Theme.of(
+                                  context,
+                                ).extension<CustomColors>()!.headerColor,
                           ),
                         ),
                       ),
@@ -95,9 +100,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           "Small Habits. Big Change.",
                           style: kMorphPhraseStyle.copyWith(
                             color:
-                                Theme.of(
-                                  context,
-                                ).textTheme.displayMedium?.color,
+                                Theme.of(context)
+                                    .extension<CustomColors>()!
+                                    .placeholderTextColor,
                           ),
                         ),
                       ),
@@ -111,7 +116,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   TextField(
                     keyboardType: TextInputType.emailAddress,
                     style: kInputPlaceHolderText.copyWith(
-                      color: Theme.of(context).textTheme.displayLarge?.color,
+                      color:
+                          Theme.of(
+                            context,
+                          ).extension<CustomColors>()!.headerColor,
                     ),
                     textAlign: TextAlign.center,
                     onChanged: (value) {
@@ -120,7 +128,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     decoration: kTextFieldDecoration.copyWith(
                       hintText: 'Enter your email',
                       hintStyle: kInputPlaceHolderText.copyWith(
-                        color: Theme.of(context).textTheme.displayMedium?.color,
+                        color:
+                            Theme.of(
+                              context,
+                            ).extension<CustomColors>()!.placeholderTextColor,
                       ),
                       enabledBorder: enabledOutlineInputBorder,
                       focusedBorder: focusedOutlineInputBorder,
@@ -129,7 +140,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   SizedBox(height: 24),
                   TextField(
                     style: kInputPlaceHolderText.copyWith(
-                      color: Theme.of(context).textTheme.displayLarge?.color,
+                      color:
+                          Theme.of(
+                            context,
+                          ).extension<CustomColors>()!.headerColor,
                     ),
                     obscureText: true,
                     textAlign: TextAlign.center,
@@ -139,7 +153,10 @@ class _LoginScreenState extends State<LoginScreen> {
                     decoration: kTextFieldDecoration.copyWith(
                       hintText: 'Enter your password',
                       hintStyle: kInputPlaceHolderText.copyWith(
-                        color: Theme.of(context).textTheme.displayMedium?.color,
+                        color:
+                            Theme.of(
+                              context,
+                            ).extension<CustomColors>()!.placeholderTextColor,
                       ),
                       enabledBorder: enabledOutlineInputBorder,
                       focusedBorder: focusedOutlineInputBorder,

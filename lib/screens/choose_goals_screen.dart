@@ -3,7 +3,7 @@ import 'package:morphe/components/arrow_button.dart';
 import 'package:morphe/components/goal_radio_menu.dart';
 
 import '../components/screen_title.dart';
-import '../constants.dart';
+import '../utils/constants.dart';
 import 'describe_your_goals.dart';
 
 class ChooseGoalsScreen extends StatelessWidget {

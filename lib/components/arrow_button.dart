@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:morphe/constants.dart';
+import 'package:morphe/utils/constants.dart';
 
 class ArrowButton extends StatelessWidget {
   final String title;
@@ -20,38 +20,53 @@ class ArrowButton extends StatelessWidget {
             children: [
               Icon(
                 Icons.arrow_forward_ios,
-                color: Theme.of(context).textTheme.displaySmall?.color,
+                color: Theme.of(
+                  context,
+                ).extension<CustomColors>()!.headerColor.withValues(alpha: 0.5),
                 size: 33,
               ),
               Icon(
                 Icons.arrow_forward_ios,
-                color: Theme.of(context).textTheme.displaySmall?.color,
+                color: Theme.of(
+                  context,
+                ).extension<CustomColors>()!.headerColor.withValues(alpha: 0.5),
                 size: 33,
               ),
               Icon(
                 Icons.arrow_forward_ios,
-                color: Theme.of(context).textTheme.displaySmall?.color,
+                color: Theme.of(
+                  context,
+                ).extension<CustomColors>()!.headerColor.withValues(alpha: 0.5),
                 size: 33,
               ),
               Text(
                 title,
                 style: kConfirmButtonTextStyle.copyWith(
-                  color: Theme.of(context).textTheme.displayMedium?.color,
+                  color: Theme.of(context)
+                      .extension<CustomColors>()!
+                      .headerColor
+                      .withValues(alpha: 0.5),
                 ),
               ),
               Icon(
                 Icons.arrow_forward_ios,
-                color: Theme.of(context).textTheme.displaySmall?.color,
+                color: Theme.of(
+                  context,
+                ).extension<CustomColors>()!.headerColor.withValues(alpha: 0.5),
                 size: 33,
               ),
               Icon(
                 Icons.arrow_forward_ios,
-                color: Theme.of(context).textTheme.displaySmall?.color,
+                color: Theme.of(
+                  context,
+                ).extension<CustomColors>()!.headerColor.withValues(alpha: 0.5),
                 size: 33,
               ),
               Icon(
                 Icons.arrow_forward_ios,
-                color: Theme.of(context).textTheme.displaySmall?.color,
+                color: Theme.of(
+                  context,
+                ).extension<CustomColors>()!.headerColor.withValues(alpha: 0.5),
                 size: 33,
               ),
             ],
