@@ -1,25 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:morphe/screens/edit_task_screen.dart';
 import 'package:morphe/utils/constants.dart';
 
 import 'package:intl/intl.dart';
 
 import '../utils/enums.dart';
 
+enum Actions { edit, delete }
+
 class TaskTile extends StatelessWidget {
-  late DateTime startTime;
-  late DateTime endTime;
+  late DateTime startDateTime;
+  late DateTime endDateTime;
   late String title;
   late String subtitle;
+  late String description;
   late TaskType type;
 
   TaskTile({
-    required this.startTime,
-    required this.endTime,
+    required this.startDateTime,
+    required this.endDateTime,
     required this.title,
     required this.subtitle,
+    required this.description,
     required this.type,
     super.key,
   });
+
+  Actions? selectedMenu;
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +47,7 @@ class TaskTile extends StatelessWidget {
                 ),
               ),
               title: Text(
-                '${DateFormat.Hm().format(startTime)}-${DateFormat.Hm().format(endTime)}',
+                '${DateFormat.EEEE().format(startDateTime)}: ${DateFormat.Hm().format(startDateTime)}-${DateFormat.Hm().format(endDateTime)}',
               ),
               titleTextStyle: kTitleTextStyle.copyWith(
                 color: Theme.of(context).extension<CustomColors>()!.headerColor,
@@ -71,9 +78,58 @@ class TaskTile extends StatelessWidget {
                   ],
                 ),
               ),
-              trailing: Icon(
-                Icons.more_vert,
-                color: Theme.of(context).extension<CustomColors>()!.headerColor,
+              trailing: MenuAnchor(
+                builder: (
+                  BuildContext context,
+                  MenuController controller,
+                  Widget? child,
+                ) {
+                  return IconButton(
+                    onPressed: () {
+                      if (controller.isOpen) {
+                        controller.close();
+                      } else {
+                        controller.open();
+                      }
+                    },
+                    icon: Icon(
+                      Icons.more_horiz,
+                      color:
+                          Theme.of(
+                            context,
+                          ).extension<CustomColors>()!.headerColor,
+                    ),
+                    tooltip: 'Show menu',
+                  );
+                },
+                menuChildren: List<MenuItemButton>.generate(
+                  2,
+                  (int index) => MenuItemButton(
+                    onPressed: () {
+                      if (Actions.values[index] == Actions.edit) {
+                        Navigator.pushNamed(
+                          context,
+                          EditTaskScreen.id,
+                          arguments: EditTaskScreenArguments(
+                            title: title,
+                            subtitle: subtitle,
+                            description: description,
+                            startDateTime: startDateTime,
+                            endDateTime: endDateTime,
+                            type: type,
+                          ),
+                        );
+                      }
+                    },
+                    child: Text(
+                      Actions.values[index].name,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ),
+                ),
               ),
               isThreeLine: true,
             ),

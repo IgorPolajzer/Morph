@@ -8,14 +8,16 @@ class ScreenTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.only(top: 63, left: 73, right: 73),
-      child: Text(
-        title,
-        style: kTitleTextStyle.copyWith(
-          color: Theme.of(context).extension<CustomColors>()!.headerColor,
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.only(top: 63, left: 73, right: 73),
+        child: Text(
+          title,
+          style: kTitleTextStyle.copyWith(
+            color: Theme.of(context).extension<CustomColors>()!.headerColor,
+          ),
+          textAlign: TextAlign.center,
         ),
-        textAlign: TextAlign.center,
       ),
     );
   }

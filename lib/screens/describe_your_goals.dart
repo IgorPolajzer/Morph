@@ -21,7 +21,6 @@ class DescribeYourGoals extends StatelessWidget {
           ScreenTitle(title: "DESCRIBE YOUR GOALS"),
           Flexible(
             child: SingleChildScrollView(
-              reverse: true,
               child: Column(
                 mainAxisSize: MainAxisSize.max,
                 crossAxisAlignment: CrossAxisAlignment.center,

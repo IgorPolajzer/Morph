@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:morphe/screens/edit_task_screen.dart';
 import 'package:morphe/utils/constants.dart';
 import 'package:morphe/screens/choose_goals_screen.dart';
 import 'package:morphe/screens/describe_your_goals.dart';
@@ -22,7 +23,7 @@ class MyApp extends StatelessWidget {
       theme: kLightTheme,
       darkTheme: kDarkTheme,
       //initialRoute: WelcomeScreen.id,
-      initialRoute: WelcomeScreen.id, //Development purposes
+      initialRoute: PhysicalPlanOverviewScreen.id, //Development purposes
       routes: {
         WelcomeScreen.id: (context) => WelcomeScreen(),
         RegistrationScreen.id: (context) => RegistrationScreen(),
@@ -31,6 +32,7 @@ class MyApp extends StatelessWidget {
         DescribeYourGoals.id: (context) => DescribeYourGoals(),
         PhysicalPlanOverviewScreen.id:
             (context) => PhysicalPlanOverviewScreen(),
+        EditTaskScreen.id: (context) => EditTaskScreen(),
       },
     );
   }
