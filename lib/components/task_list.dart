@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:morphe/components/task_tile.dart';
-import 'package:provider/provider.dart';
 
 import '../model/task_data.dart';
 

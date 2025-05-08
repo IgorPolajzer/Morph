@@ -54,10 +54,11 @@ const darkCustomColors = CustomColors(
 var kLightTheme = ThemeData(
   fontFamily: 'Josefin Sans',
   platform: TargetPlatform.iOS,
-  scaffoldBackgroundColor: Colors.white,
+  scaffoldBackgroundColor: kScaffoldColorLight,
   extensions: <ThemeExtension<dynamic>>[lightCustomColors],
   checkboxTheme: CheckboxThemeData(
     fillColor: WidgetStatePropertyAll<Color>(kPrimaryHeaderColorDark),
+    checkColor: WidgetStatePropertyAll<Color>(kScaffoldColorDark),
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
     side: BorderSide.none,
   ),
@@ -66,16 +67,20 @@ var kLightTheme = ThemeData(
 var kDarkTheme = ThemeData(
   fontFamily: 'Josefin Sans',
   platform: TargetPlatform.iOS,
-  scaffoldBackgroundColor: Color(0xFF232323),
+  scaffoldBackgroundColor: kScaffoldColorDark,
   extensions: <ThemeExtension<dynamic>>[darkCustomColors],
   checkboxTheme: CheckboxThemeData(
     fillColor: WidgetStatePropertyAll<Color>(kPrimaryHeaderColorDark),
+    checkColor: WidgetStatePropertyAll<Color>(kScaffoldColorDark),
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
     side: BorderSide.none,
   ),
 );
 
 // Colors
+const kScaffoldColorDark = Color(0xFF232323);
+const kScaffoldColorLight = Colors.white;
+
 const kPrimaryHeaderColorDark = Color(0XFFE0E0E0);
 const kPrimaryHeaderColorLight = Color(0xFF393939);
 

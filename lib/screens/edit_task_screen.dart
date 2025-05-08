@@ -11,7 +11,7 @@ class EditTaskScreenArguments {
   late String description;
   late DateTime startDateTime;
   late DateTime endDateTime;
-  late TaskType type;
+  late HabitType type;
   late Widget customWidget;
 
   EditTaskScreenArguments({

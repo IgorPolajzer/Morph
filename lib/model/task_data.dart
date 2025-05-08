@@ -13,7 +13,7 @@ class TaskData extends ChangeNotifier {
       title: "Upper body workout",
       subtitle: "Workout for the upper body",
       description: "Workout for the upper body",
-      type: TaskType.PHYSICAL,
+      type: HabitType.PHYSICAL,
     ),
     Task(
       startDateTime: DateTime(2025, 5, 6, 19, 0),
@@ -21,7 +21,7 @@ class TaskData extends ChangeNotifier {
       title: "Lower body workout",
       subtitle: "Workout for the lower body",
       description: "Workout for the lower body",
-      type: TaskType.PHYSICAL,
+      type: HabitType.PHYSICAL,
     ),
     Task(
       startDateTime: DateTime(2025, 5, 7, 19, 0),
@@ -29,7 +29,7 @@ class TaskData extends ChangeNotifier {
       title: "Swimming",
       subtitle: "Interval crawl swimming",
       description: "Interval crawl swimming",
-      type: TaskType.PHYSICAL,
+      type: HabitType.PHYSICAL,
     ),
     Task(
       startDateTime: DateTime(2025, 5, 8, 19, 0),
@@ -37,7 +37,7 @@ class TaskData extends ChangeNotifier {
       title: "Upper body workout",
       subtitle: "Workout for the upper body",
       description: "Workout for the upper body",
-      type: TaskType.PHYSICAL,
+      type: HabitType.PHYSICAL,
     ),
     Task(
       startDateTime: DateTime(2025, 5, 9, 19, 0),
@@ -45,7 +45,7 @@ class TaskData extends ChangeNotifier {
       title: "Lower body workout",
       subtitle: "Workout for the lower body",
       description: "Workout for the lower body",
-      type: TaskType.PHYSICAL,
+      type: HabitType.PHYSICAL,
     ),
   ];
 
@@ -58,7 +58,7 @@ class TaskData extends ChangeNotifier {
     String title,
     String subtitle,
     String description,
-    TaskType type,
+    HabitType type,
   ) {
     _tasks.add(
       Task(

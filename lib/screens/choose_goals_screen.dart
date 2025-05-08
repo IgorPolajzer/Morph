@@ -3,13 +3,24 @@ import 'package:morphe/components/arrow_button.dart';
 import 'package:morphe/components/goal_radio_menu.dart';
 
 import '../components/screen_title.dart';
+import '../model/user.dart';
 import '../utils/constants.dart';
 import 'describe_your_goals.dart';
 
-class ChooseGoalsScreen extends StatelessWidget {
+class ChooseGoalsScreen extends StatefulWidget {
   static String id = '/choose_goals_screen';
+  final User userData;
 
-  const ChooseGoalsScreen({super.key});
+  const ChooseGoalsScreen({required this.userData, super.key});
+
+  @override
+  State<ChooseGoalsScreen> createState() => _ChooseGoalsScreenState();
+}
+
+class _ChooseGoalsScreenState extends State<ChooseGoalsScreen> {
+  bool physical = false;
+  bool general = false;
+  bool mental = false;
 
   @override
   Widget build(BuildContext context) {
@@ -18,26 +29,38 @@ class ChooseGoalsScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           ScreenTitle(title: "CHOOSE YOUR GOALS"),
-          SizedBox(height: 10),
+          SizedBox(height: 20),
           GoalRadioMenu(
-            isChecked: false,
-            checkboxCallback: (checkboxState) {},
+            isChecked: physical,
+            checkboxCallback: (checkboxState) {
+              setState(() {
+                physical = checkboxState;
+              });
+            },
             backgroundColor: kPhysicalColor,
             title: "PHYSICAL GOALS",
             description:
                 "Improve your physical health by getting a personalised plan tailored to your to your physical goals including workout plans and general tips and recommendations which will help you transform your body.",
           ),
           GoalRadioMenu(
-            isChecked: false,
-            checkboxCallback: (checkboxState) {},
+            isChecked: general,
+            checkboxCallback: (checkboxState) {
+              setState(() {
+                general = checkboxState;
+              });
+            },
             backgroundColor: kGeneralColor,
             title: "GENERAL HABITS",
             description:
                 "Get better at adhering to your habits by getting reminders to complete everyday chores",
           ),
           GoalRadioMenu(
-            isChecked: false,
-            checkboxCallback: (checkboxState) {},
+            isChecked: mental,
+            checkboxCallback: (checkboxState) {
+              setState(() {
+                mental = checkboxState;
+              });
+            },
             backgroundColor: kMentalColor,
             title: "MENTAL GOALS",
             description:
@@ -47,6 +70,8 @@ class ChooseGoalsScreen extends StatelessWidget {
           ArrowButton(
             title: "CONFIRM",
             onPressed: () {
+              widget.userData.setGoals(physical, general, mental);
+              print("${physical} ${general} ${mental}");
               Navigator.pushNamed(context, DescribeYourGoals.id);
             },
           ),

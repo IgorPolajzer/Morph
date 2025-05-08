@@ -4,7 +4,7 @@ import 'package:morphe/utils/constants.dart';
 import '../utils/enums.dart';
 
 class DescribeGoalInputBox extends StatelessWidget {
-  final TaskType type;
+  final HabitType type;
   final String title;
   final String description;
   final String hint;

@@ -14,7 +14,7 @@ class TaskTile extends StatelessWidget {
   late String title;
   late String subtitle;
   late String description;
-  late TaskType type;
+  late HabitType type;
 
   TaskTile({
     required this.startDateTime,

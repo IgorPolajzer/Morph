@@ -1,20 +1,34 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:morphe/components/habit_tile.dart';
-import 'package:morphe/components/task_tile.dart';
 import 'package:morphe/components/arrow_button.dart';
 import 'package:morphe/utils/constants.dart';
 
+import '../components/habit_list.dart';
 import '../components/screen_title.dart';
 import '../components/subtitle.dart';
 import '../components/task_list.dart';
+import '../model/habit_data.dart';
 import '../model/task_data.dart';
-import '../utils/enums.dart';
 import 'describe_your_goals.dart';
 
-class PhysicalPlanOverviewScreen extends StatelessWidget {
+class PhysicalPlanOverviewScreen extends StatefulWidget {
   static String id = '/physical_plan_overview_screen';
+  final HabitData habitData;
 
-  const PhysicalPlanOverviewScreen({super.key});
+  const PhysicalPlanOverviewScreen({required this.habitData, super.key});
+
+  @override
+  State<PhysicalPlanOverviewScreen> createState() =>
+      _PhysicalPlanOverviewScreenState();
+}
+
+class _PhysicalPlanOverviewScreenState
+    extends State<PhysicalPlanOverviewScreen> {
+  @override
+  void initState() {
+    super.initState();
+    widget.habitData.parseHabitsFromFireBase();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,16 +57,7 @@ class PhysicalPlanOverviewScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-                  HabitTile(habit: "15000 daily steps", description: "Walk"),
-                  HabitTile(
-                    habit: "Eat healthy",
-                    description: "Eat vegetables and unprocessed foods",
-                  ),
-                  HabitTile(
-                    habit: "Prioritise sleep",
-                    description:
-                        "Go to sleep and wake up at the same time every day and get 7-9 hours of sleep",
-                  ),
+                  HabitList(),
                 ],
               ),
             ),

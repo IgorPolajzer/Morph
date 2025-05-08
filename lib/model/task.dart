@@ -7,7 +7,7 @@ class Task {
   String description;
   DateTime startDateTime;
   DateTime endDateTime;
-  TaskType type;
+  HabitType type;
   late Widget customWidget;
 
   bool isDone;

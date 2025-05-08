@@ -1,19 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:morphe/utils/constants.dart';
 
-enum TaskType {
+enum HabitType {
   PHYSICAL,
   GENERAL,
   MENTAL;
 
   Color getColor() {
     switch (this) {
-      case TaskType.PHYSICAL:
+      case HabitType.PHYSICAL:
         return kPhysicalColor;
-      case TaskType.MENTAL:
+      case HabitType.MENTAL:
         return kMentalColor;
-      case TaskType.GENERAL:
+      case HabitType.GENERAL:
         return kGeneralColor;
+    }
+  }
+
+  static HabitType getTypeFromString(String type) {
+    switch (type) {
+      case "PHYSICAL":
+        return HabitType.PHYSICAL;
+      case "MENTAL":
+        return HabitType.MENTAL;
+      case "GENERAL":
+        return HabitType.GENERAL;
+      default:
+        throw Exception('Invalid habit type provided');
     }
   }
 }
