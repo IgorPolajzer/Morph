@@ -18,52 +18,38 @@ class ArrowButton extends StatelessWidget {
           children: [
             Icon(
               Icons.arrow_forward_ios,
-              color: Theme.of(
-                context,
-              ).extension<CustomColors>()!.headerColor.withValues(alpha: 0.5),
+              color: Theme.of(context).primaryColor.withValues(alpha: 0.5),
               size: 33,
             ),
             Icon(
               Icons.arrow_forward_ios,
-              color: Theme.of(
-                context,
-              ).extension<CustomColors>()!.headerColor.withValues(alpha: 0.5),
+              color: Theme.of(context).primaryColor.withValues(alpha: 0.5),
               size: 33,
             ),
             Icon(
               Icons.arrow_forward_ios,
-              color: Theme.of(
-                context,
-              ).extension<CustomColors>()!.headerColor.withValues(alpha: 0.5),
+              color: Theme.of(context).primaryColor.withValues(alpha: 0.5),
               size: 33,
             ),
             Text(
               title,
               style: kConfirmButtonTextStyle.copyWith(
-                color: Theme.of(
-                  context,
-                ).extension<CustomColors>()!.headerColor.withValues(alpha: 0.5),
+                color: Theme.of(context).primaryColor.withValues(alpha: 0.5),
               ),
             ),
             Icon(
               Icons.arrow_forward_ios,
-              color: Theme.of(
-                context,
-              ).extension<CustomColors>()!.headerColor.withValues(alpha: 0.5),
+              color: Theme.of(context).primaryColor.withValues(alpha: 0.5),
               size: 33,
             ),
             Icon(
               Icons.arrow_forward_ios,
-              color: Theme.of(
-                context,
-              ).extension<CustomColors>()!.headerColor.withValues(alpha: 0.5),
+              color: Theme.of(context).primaryColor.withValues(alpha: 0.5),
               size: 33,
             ),
             Icon(
               Icons.arrow_forward_ios,
-              color: Theme.of(
-                context,
-              ).extension<CustomColors>()!.headerColor.withValues(alpha: 0.5),
+              color: Theme.of(context).primaryColor.withValues(alpha: 0.5),
               size: 33,
             ),
           ],

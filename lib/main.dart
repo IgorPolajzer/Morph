@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
         title: 'Morph',
         theme: kLightTheme,
         darkTheme: kDarkTheme,
-        initialRoute: WelcomeScreen.id,
+        initialRoute: WrapperScreen.id,
         routes: {
           WrapperScreen.id: (context) => WrapperScreen(),
           WelcomeScreen.id: (context) => WelcomeScreen(),
@@ -43,7 +43,6 @@ class MyApp extends StatelessWidget {
           DescribeYourGoals.id: (context) => DescribeYourGoals(),
           PhysicalPlanOverviewScreen.id:
               (context) => PhysicalPlanOverviewScreen(),
-          EditTaskScreen.id: (context) => EditTaskScreen(),
         },
       ),
     );

@@ -21,8 +21,7 @@ class DescribeGoalInputBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var disabledColor =
-        Theme.of(context).extension<CustomColors>()!.placeholderTextColor;
+    var disabledColor = Theme.of(context).secondaryHeaderColor;
 
     return Center(
       child: Padding(
@@ -39,9 +38,7 @@ class DescribeGoalInputBox extends StatelessWidget {
                 color:
                     enabled
                         ? type.getColor()
-                        : Theme.of(
-                          context,
-                        ).extension<CustomColors>()!.placeholderTextColor,
+                        : Theme.of(context).secondaryHeaderColor,
               ),
               child: Padding(
                 padding: const EdgeInsets.only(
@@ -56,19 +53,13 @@ class DescribeGoalInputBox extends StatelessWidget {
                     Text(
                       title,
                       style: kGoalTitleTextStyle.copyWith(
-                        color:
-                            Theme.of(
-                              context,
-                            ).extension<CustomColors>()!.headerColor,
+                        color: Theme.of(context).primaryColor,
                       ),
                     ),
                     SizedBox(width: 8),
                     Icon(
                       Icons.question_mark_sharp,
-                      color:
-                          Theme.of(
-                            context,
-                          ).extension<CustomColors>()!.headerColor,
+                      color: Theme.of(context).primaryColor,
                       size: 18,
                     ),
                   ],
@@ -100,10 +91,7 @@ class DescribeGoalInputBox extends StatelessWidget {
                     ), // Top padding to push text down a bit
                     hintText: description,
                     hintStyle: kPlaceHolderTextStyle.copyWith(
-                      color:
-                          Theme.of(
-                            context,
-                          ).extension<CustomColors>()!.placeholderTextColor,
+                      color: Theme.of(context).secondaryHeaderColor,
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
                     ),

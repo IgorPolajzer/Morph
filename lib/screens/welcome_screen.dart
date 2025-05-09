@@ -52,19 +52,13 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                   child: Text(
                     "Morph",
                     style: kMorphTitleStyle.copyWith(
-                      color:
-                          Theme.of(
-                            context,
-                          ).extension<CustomColors>()!.headerColor,
+                      color: Theme.of(context).primaryColor,
                     ),
                   ),
                 ),
                 Divider(
                   thickness: 2.5,
-                  color:
-                      Theme.of(
-                        context,
-                      ).extension<CustomColors>()!.placeholderTextColor,
+                  color: Theme.of(context).secondaryHeaderColor,
                   indent: 60,
                   endIndent: 60,
                 ),
@@ -73,10 +67,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                   child: Text(
                     "Small Habits. Big Change.",
                     style: kMorphPhraseStyle.copyWith(
-                      color:
-                          Theme.of(
-                            context,
-                          ).extension<CustomColors>()!.placeholderTextColor,
+                      color: Theme.of(context).secondaryHeaderColor,
                     ),
                   ),
                 ),

@@ -14,9 +14,7 @@ class ScreenTitle extends StatelessWidget implements PreferredSizeWidget {
       centerTitle: true,
       title: Text(
         title,
-        style: kTitleTextStyle.copyWith(
-          color: Theme.of(context).extension<CustomColors>()!.headerColor,
-        ),
+        style: kTitleTextStyle.copyWith(color: Theme.of(context).primaryColor),
         textAlign: TextAlign.center,
       ),
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,

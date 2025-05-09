@@ -3,13 +3,15 @@ import 'package:morphe/utils/constants.dart';
 
 import '../utils/enums.dart';
 
-class EditPropertyField extends StatelessWidget {
-  final String title;
+class TaskPropertyField extends StatelessWidget {
+  final String hint;
   final String value;
+  final double height;
 
-  const EditPropertyField({
-    required this.title,
-    required this.value,
+  const TaskPropertyField({
+    required this.hint,
+    this.value = "",
+    this.height = 45,
     super.key,
   });
 
@@ -17,30 +19,46 @@ class EditPropertyField extends StatelessWidget {
   Widget build(BuildContext context) {
     TextEditingController titlecontroller = TextEditingController(text: value);
 
+    late OutlineInputBorder enabledOutlineInputBorder;
+    late OutlineInputBorder focusedOutlineInputBorder;
+
+    enabledOutlineInputBorder = OutlineInputBorder(
+      borderSide: BorderSide(
+        color: Theme.of(context).secondaryHeaderColor,
+        width: 3.0,
+      ),
+      borderRadius: BorderRadius.all(Radius.circular(10.0)),
+    );
+
+    focusedOutlineInputBorder = OutlineInputBorder(
+      borderSide: BorderSide(color: Theme.of(context).primaryColor, width: 2.0),
+      borderRadius: BorderRadius.all(Radius.circular(10.0)),
+    );
+
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: Row(
-        children: [
-          Text(
-            title,
-            style: kTitleTextStyle.copyWith(
-              color: Theme.of(context).extension<CustomColors>()!.headerColor,
-              fontSize: 24,
+      child: SizedBox(
+        height: height,
+        child: Container(
+          child: TextField(
+            expands: true,
+            maxLines: null,
+            textAlignVertical: TextAlignVertical.top,
+            style: kInputPlaceHolderText.copyWith(
+              color: Theme.of(context).primaryColor,
             ),
-          ),
-          Expanded(
-            child: TextField(
-              controller: titlecontroller,
-              style: TextStyle(
-                inherit: false,
-                color: Theme.of(context).extension<CustomColors>()!.headerColor,
-                fontSize: 24,
-                fontWeight: FontWeight.w300,
-                textBaseline: TextBaseline.ideographic,
+            textAlign: TextAlign.start,
+            onChanged: (value) {},
+            decoration: kTextFieldDecoration.copyWith(
+              hintText: hint,
+              hintStyle: kInputPlaceHolderText.copyWith(
+                color: Theme.of(context).secondaryHeaderColor,
               ),
+              enabledBorder: enabledOutlineInputBorder,
+              focusedBorder: focusedOutlineInputBorder,
             ),
           ),
-        ],
+        ),
       ),
     );
   }

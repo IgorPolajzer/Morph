@@ -33,7 +33,7 @@ class TaskTile extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(left: 18, right: 18),
       child: Card(
-        color: Theme.of(context).extension<CustomColors>()!.taskTileColor,
+        color: Theme.of(context).cardColor,
         child: Column(
           children: [
             ListTile(
@@ -50,17 +50,14 @@ class TaskTile extends StatelessWidget {
                 '${DateFormat.EEEE().format(startDateTime)}: ${DateFormat.Hm().format(startDateTime)}-${DateFormat.Hm().format(endDateTime)}',
               ),
               titleTextStyle: kTitleTextStyle.copyWith(
-                color: Theme.of(context).extension<CustomColors>()!.headerColor,
+                color: Theme.of(context).primaryColor,
                 fontSize: 12,
               ),
               subtitle: RichText(
                 text: TextSpan(
                   style: kTitleTextStyle.copyWith(
                     fontSize: 16,
-                    color:
-                        Theme.of(
-                          context,
-                        ).extension<CustomColors>()!.headerColor,
+                    color: Theme.of(context).primaryColor,
                   ),
                   children: [
                     TextSpan(text: '$title\n'),
@@ -69,10 +66,7 @@ class TaskTile extends StatelessWidget {
                       text: '$subtitle',
                       style: kPlaceHolderTextStyle.copyWith(
                         fontSize: 12,
-                        color:
-                            Theme.of(
-                              context,
-                            ).extension<CustomColors>()!.placeholderTextColor,
+                        color: Theme.of(context).secondaryHeaderColor,
                       ), // <- your custom color here
                     ),
                   ],
@@ -94,10 +88,7 @@ class TaskTile extends StatelessWidget {
                     },
                     icon: Icon(
                       Icons.more_horiz,
-                      color:
-                          Theme.of(
-                            context,
-                          ).extension<CustomColors>()!.headerColor,
+                      color: Theme.of(context).primaryColor,
                     ),
                     tooltip: 'Show menu',
                   );
@@ -107,7 +98,7 @@ class TaskTile extends StatelessWidget {
                   (int index) => MenuItemButton(
                     onPressed: () {
                       if (Actions.values[index] == Actions.edit) {
-                        Navigator.pushNamed(
+                        /*Navigator.pushNamed(
                           context,
                           EditTaskScreen.id,
                           arguments: EditTaskScreenArguments(
@@ -118,7 +109,7 @@ class TaskTile extends StatelessWidget {
                             endDateTime: endDateTime,
                             type: type,
                           ),
-                        );
+                        );*/
                       }
                     },
                     child: Text(

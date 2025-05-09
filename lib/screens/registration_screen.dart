@@ -42,18 +42,14 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
 
     enabledOutlineInputBorder = OutlineInputBorder(
       borderSide: BorderSide(
-        color:
-            Theme.of(context).extension<CustomColors>()!.placeholderTextColor,
+        color: Theme.of(context).secondaryHeaderColor,
         width: 3.0,
       ),
       borderRadius: BorderRadius.all(Radius.circular(32.0)),
     );
 
     focusedOutlineInputBorder = OutlineInputBorder(
-      borderSide: BorderSide(
-        color: Theme.of(context).extension<CustomColors>()!.headerColor,
-        width: 2.0,
-      ),
+      borderSide: BorderSide(color: Theme.of(context).primaryColor, width: 2.0),
       borderRadius: BorderRadius.all(Radius.circular(32.0)),
     );
 
@@ -86,10 +82,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         child: Text(
                           "Morph",
                           style: kMorphTitleStyle.copyWith(
-                            color:
-                                Theme.of(
-                                  context,
-                                ).extension<CustomColors>()!.headerColor,
+                            color: Theme.of(context).primaryColor,
                           ),
                         ),
                       ),
@@ -98,10 +91,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                         child: Text(
                           "Small Habits. Big Change.",
                           style: kMorphPhraseStyle.copyWith(
-                            color:
-                                Theme.of(
-                                  context,
-                                ).textTheme.displayMedium?.color,
+                            color: Theme.of(context).secondaryHeaderColor,
                           ),
                         ),
                       ),
@@ -115,20 +105,14 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   TextField(
                     keyboardType: TextInputType.emailAddress,
                     style: kInputPlaceHolderText.copyWith(
-                      color:
-                          Theme.of(
-                            context,
-                          ).extension<CustomColors>()!.headerColor,
+                      color: Theme.of(context).primaryColor,
                     ),
                     textAlign: TextAlign.center,
                     onChanged: (value) {},
                     decoration: kTextFieldDecoration.copyWith(
                       hintText: 'Create your username',
                       hintStyle: kInputPlaceHolderText.copyWith(
-                        color:
-                            Theme.of(
-                              context,
-                            ).extension<CustomColors>()!.placeholderTextColor,
+                        color: Theme.of(context).secondaryHeaderColor,
                       ),
                       enabledBorder: enabledOutlineInputBorder,
                       focusedBorder: focusedOutlineInputBorder,
@@ -138,10 +122,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   TextField(
                     keyboardType: TextInputType.emailAddress,
                     style: kInputPlaceHolderText.copyWith(
-                      color:
-                          Theme.of(
-                            context,
-                          ).extension<CustomColors>()!.headerColor,
+                      color: Theme.of(context).primaryColor,
                     ),
                     textAlign: TextAlign.center,
                     onChanged: (value) {
@@ -150,10 +131,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     decoration: kTextFieldDecoration.copyWith(
                       hintText: 'Create your email',
                       hintStyle: kInputPlaceHolderText.copyWith(
-                        color:
-                            Theme.of(
-                              context,
-                            ).extension<CustomColors>()!.placeholderTextColor,
+                        color: Theme.of(context).secondaryHeaderColor,
                       ),
                       enabledBorder: enabledOutlineInputBorder,
                       focusedBorder: focusedOutlineInputBorder,
@@ -162,10 +140,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                   SizedBox(height: 24),
                   TextField(
                     style: kInputPlaceHolderText.copyWith(
-                      color:
-                          Theme.of(
-                            context,
-                          ).extension<CustomColors>()!.headerColor,
+                      color: Theme.of(context).primaryColor,
                     ),
                     obscureText: true,
                     textAlign: TextAlign.center,
@@ -175,10 +150,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                     decoration: kTextFieldDecoration.copyWith(
                       hintText: 'Create your password',
                       hintStyle: kInputPlaceHolderText.copyWith(
-                        color:
-                            Theme.of(
-                              context,
-                            ).extension<CustomColors>()!.placeholderTextColor,
+                        color: Theme.of(context).secondaryHeaderColor,
                       ),
                       enabledBorder: enabledOutlineInputBorder,
                       focusedBorder: focusedOutlineInputBorder,
@@ -192,10 +164,10 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 ),
                 title: "Register",
                 onPressed: () async {
-                  setState(() {
-                    showSpinner = true;
-                  });
                   try {
+                    setState(() {
+                      showSpinner = true;
+                    });
                     final newUser = await _auth.createUserWithEmailAndPassword(
                       email: email,
                       password: password,

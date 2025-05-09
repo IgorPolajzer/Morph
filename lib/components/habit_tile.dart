@@ -17,12 +17,9 @@ class HabitTile extends StatelessWidget {
       padding: const EdgeInsets.only(left: 18, right: 18),
       child: Card(
         shape: StadiumBorder(
-          side: BorderSide(
-            color: Theme.of(context).extension<CustomColors>()!.headerColor,
-            width: 1.0,
-          ),
+          side: BorderSide(color: Theme.of(context).primaryColor, width: 1.0),
         ),
-        color: Theme.of(context).extension<CustomColors>()!.taskTileColor,
+        color: Theme.of(context).cardColor,
         child: Padding(
           padding: const EdgeInsets.all(12.0),
           child: Row(
@@ -31,8 +28,7 @@ class HabitTile extends StatelessWidget {
               Text(
                 habit,
                 style: kTitleTextStyle.copyWith(
-                  color:
-                      Theme.of(context).extension<CustomColors>()!.headerColor,
+                  color: Theme.of(context).primaryColor,
                   fontSize: 24,
                 ),
               ),
@@ -41,10 +37,7 @@ class HabitTile extends StatelessWidget {
                 child: Text(
                   "Read more",
                   style: kTitleTextStyle.copyWith(
-                    color:
-                        Theme.of(
-                          context,
-                        ).extension<CustomColors>()!.headerColor,
+                    color: Theme.of(context).primaryColor,
                     fontSize: 12,
                   ),
                 ),

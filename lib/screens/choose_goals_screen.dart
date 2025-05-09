@@ -78,6 +78,7 @@ class _ChooseGoalsScreenState extends State<ChooseGoalsScreen> {
           title: "CONFIRM",
           onPressed: () {
             Navigator.pushNamed(context, DescribeYourGoals.id);
+            user.setGoals(physical, general, mental);
           },
         ),
       ),

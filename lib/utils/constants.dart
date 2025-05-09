@@ -1,61 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-@immutable
-class CustomColors extends ThemeExtension<CustomColors> {
-  final Color headerColor;
-  final Color taskTileColor;
-  final Color placeholderTextColor;
-
-  const CustomColors({
-    required this.headerColor,
-    required this.taskTileColor,
-    required this.placeholderTextColor,
-  });
-
-  @override
-  CustomColors copyWith({
-    Color? headerColor,
-    Color? taskTileColor,
-    Color? placeholderTextColor,
-  }) {
-    return CustomColors(
-      headerColor: headerColor ?? this.headerColor,
-      taskTileColor: taskTileColor ?? this.taskTileColor,
-      placeholderTextColor: placeholderTextColor ?? this.placeholderTextColor,
-    );
-  }
-
-  @override
-  CustomColors lerp(ThemeExtension<CustomColors>? other, double t) {
-    if (other is! CustomColors) return this;
-    return CustomColors(
-      headerColor: Color.lerp(headerColor, other.headerColor, t)!,
-      taskTileColor: Color.lerp(taskTileColor, other.taskTileColor, t)!,
-      placeholderTextColor:
-          Color.lerp(placeholderTextColor, other.placeholderTextColor, t)!,
-    );
-  }
-}
-
-const lightCustomColors = CustomColors(
-  headerColor: kPrimaryHeaderColorLight,
-  taskTileColor: kTaskTileColorLight,
-  placeholderTextColor: kPlaceholderTextColorLight,
-);
-
-const darkCustomColors = CustomColors(
-  headerColor: kPrimaryHeaderColorDark,
-  taskTileColor: kTaskTileColorDark,
-  placeholderTextColor: kPlaceholderTextColorDark,
-);
-
 // App themes
 var kLightTheme = ThemeData(
   fontFamily: 'Josefin Sans',
   platform: TargetPlatform.iOS,
   scaffoldBackgroundColor: kScaffoldColorLight,
-  extensions: <ThemeExtension<dynamic>>[lightCustomColors],
+  primaryColor: kPrimaryHeaderColorLight,
+  secondaryHeaderColor: kPlaceholderTextColorLight,
+  cardColor: kTaskTileColorLight,
   checkboxTheme: CheckboxThemeData(
     fillColor: WidgetStatePropertyAll<Color>(kPrimaryHeaderColorDark),
     checkColor: WidgetStatePropertyAll<Color>(kScaffoldColorDark),
@@ -68,7 +21,9 @@ var kDarkTheme = ThemeData(
   fontFamily: 'Josefin Sans',
   platform: TargetPlatform.iOS,
   scaffoldBackgroundColor: kScaffoldColorDark,
-  extensions: <ThemeExtension<dynamic>>[darkCustomColors],
+  primaryColor: kPrimaryHeaderColorDark,
+  secondaryHeaderColor: kPlaceholderTextColorDark,
+  cardColor: kTaskTileColorDark,
   checkboxTheme: CheckboxThemeData(
     fillColor: WidgetStatePropertyAll<Color>(kPrimaryHeaderColorDark),
     checkColor: WidgetStatePropertyAll<Color>(kScaffoldColorDark),

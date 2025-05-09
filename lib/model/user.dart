@@ -8,6 +8,7 @@ import 'Experience.dart';
 import 'habit.dart';
 
 class User extends ChangeNotifier {
+  bool loading = false;
   late final DateTime createdAt;
   late final String id;
 
@@ -86,6 +87,9 @@ class User extends ChangeNotifier {
   }
 
   void getUserFromFireBase() async {
+    loading = true;
+    notifyListeners();
+
     // Handle user id
     id = FirebaseAuth.instance.currentUser!.uid;
     if (id == null) return;
@@ -133,6 +137,7 @@ class User extends ChangeNotifier {
       }
     }
 
+    loading = false;
     notifyListeners();
   }
 }

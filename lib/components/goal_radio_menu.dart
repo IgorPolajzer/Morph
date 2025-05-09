@@ -37,10 +37,7 @@ class GoalRadioMenu extends StatelessWidget {
                   child: Text(
                     title,
                     style: kGoalTitleTextStyle.copyWith(
-                      color:
-                          Theme.of(
-                            context,
-                          ).extension<CustomColors>()!.headerColor,
+                      color: Theme.of(context).primaryColor,
                     ),
                     textAlign: TextAlign.center,
                   ),
@@ -59,10 +56,7 @@ class GoalRadioMenu extends StatelessWidget {
             child: Text(
               description,
               style: kPlaceHolderTextStyle.copyWith(
-                color:
-                    Theme.of(
-                      context,
-                    ).extension<CustomColors>()!.placeholderTextColor,
+                color: Theme.of(context).secondaryHeaderColor,
               ),
             ),
           ),

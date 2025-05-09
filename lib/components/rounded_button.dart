@@ -35,8 +35,7 @@ class GradientButton extends StatelessWidget {
                 title,
                 textAlign: TextAlign.center,
                 style: kGradientButtonTextSyle.copyWith(
-                  color:
-                      Theme.of(context).extension<CustomColors>()!.headerColor,
+                  color: Theme.of(context).primaryColor,
                 ),
               ),
             ),
