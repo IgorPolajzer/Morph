@@ -1,24 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:morphe/utils/constants.dart';
 
-class ScreenTitle extends StatelessWidget {
+class ScreenTitle extends StatelessWidget implements PreferredSizeWidget {
   final String title;
 
   const ScreenTitle({required this.title, super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: EdgeInsets.only(top: 63, left: 73, right: 73),
-        child: Text(
-          title,
-          style: kTitleTextStyle.copyWith(
-            color: Theme.of(context).extension<CustomColors>()!.headerColor,
-          ),
-          textAlign: TextAlign.center,
+    return AppBar(
+      automaticallyImplyLeading: false,
+      toolbarHeight: 100,
+      centerTitle: true,
+      title: Text(
+        title,
+        style: kTitleTextStyle.copyWith(
+          color: Theme.of(context).extension<CustomColors>()!.headerColor,
         ),
+        textAlign: TextAlign.center,
       ),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      elevation: 0,
     );
   }
+
+  @override
+  Size get preferredSize => const Size.fromHeight(100);
 }

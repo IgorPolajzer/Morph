@@ -19,11 +19,11 @@ enum HabitType {
 
   static HabitType getTypeFromString(String type) {
     switch (type) {
-      case "PHYSICAL":
+      case "physical":
         return HabitType.PHYSICAL;
-      case "MENTAL":
+      case "mental":
         return HabitType.MENTAL;
-      case "GENERAL":
+      case "general":
         return HabitType.GENERAL;
       default:
         throw Exception('Invalid habit type provided');

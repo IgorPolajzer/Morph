@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:morphe/screens/edit_task_screen.dart';
@@ -9,9 +8,9 @@ import 'package:morphe/screens/login_screen.dart';
 import 'package:morphe/screens/physical_plan_overview_screen.dart';
 import 'package:morphe/screens/registration_screen.dart';
 import 'package:morphe/screens/welcome_screen.dart';
+import 'package:morphe/screens/wrapper_screen.dart';
 import 'package:provider/provider.dart';
 
-import 'model/habit_data.dart';
 import 'model/user.dart';
 
 void main() async {
@@ -27,27 +26,23 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     late User userData = User();
-    late HabitData habitData = HabitData();
 
     return ChangeNotifierProvider<User>(
-      /*    return ChangeNotifierProvider<HabitData>(
-      create: (context) => habitData,*/
       create: (context) => userData,
       child: MaterialApp(
         title: 'Morph',
         theme: kLightTheme,
         darkTheme: kDarkTheme,
-        //initialRoute: WelcomeScreen.id,
-        initialRoute: ChooseGoalsScreen.id, //Development purposes
+        initialRoute: WelcomeScreen.id,
         routes: {
+          WrapperScreen.id: (context) => WrapperScreen(),
           WelcomeScreen.id: (context) => WelcomeScreen(),
           RegistrationScreen.id: (context) => RegistrationScreen(),
           LoginScreen.id: (context) => LoginScreen(),
-          ChooseGoalsScreen.id:
-              (context) => ChooseGoalsScreen(userData: userData),
+          ChooseGoalsScreen.id: (context) => ChooseGoalsScreen(),
           DescribeYourGoals.id: (context) => DescribeYourGoals(),
           PhysicalPlanOverviewScreen.id:
-              (context) => PhysicalPlanOverviewScreen(habitData: habitData),
+              (context) => PhysicalPlanOverviewScreen(),
           EditTaskScreen.id: (context) => EditTaskScreen(),
         },
       ),

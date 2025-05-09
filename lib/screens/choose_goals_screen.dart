@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:morphe/components/arrow_button.dart';
 import 'package:morphe/components/goal_radio_menu.dart';
+import 'package:provider/provider.dart';
 
 import '../components/screen_title.dart';
 import '../model/user.dart';
@@ -9,9 +10,8 @@ import 'describe_your_goals.dart';
 
 class ChooseGoalsScreen extends StatefulWidget {
   static String id = '/choose_goals_screen';
-  final User userData;
 
-  const ChooseGoalsScreen({required this.userData, super.key});
+  const ChooseGoalsScreen({super.key});
 
   @override
   State<ChooseGoalsScreen> createState() => _ChooseGoalsScreenState();
@@ -24,6 +24,8 @@ class _ChooseGoalsScreenState extends State<ChooseGoalsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final user = Provider.of<User>(context, listen: false);
+
     return Scaffold(
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -67,15 +69,17 @@ class _ChooseGoalsScreenState extends State<ChooseGoalsScreen> {
                 "Improve your mental health and clarity by getting a plan tailored to you unique circumstances and goals.",
           ),
           Spacer(),
-          ArrowButton(
-            title: "CONFIRM",
-            onPressed: () {
-              widget.userData.setGoals(physical, general, mental);
-              print("${physical} ${general} ${mental}");
-              Navigator.pushNamed(context, DescribeYourGoals.id);
-            },
-          ),
         ],
+      ),
+      bottomNavigationBar: BottomAppBar(
+        elevation: 8,
+        color: Theme.of(context).scaffoldBackgroundColor,
+        child: ArrowButton(
+          title: "CONFIRM",
+          onPressed: () {
+            Navigator.pushNamed(context, DescribeYourGoals.id);
+          },
+        ),
       ),
     );
   }

@@ -9,68 +9,64 @@ class ArrowButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(28.0),
-      child: Center(
-        child: TextButton(
-          onPressed: onPressed,
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              Icon(
-                Icons.arrow_forward_ios,
+    return Center(
+      child: TextButton(
+        onPressed: onPressed,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            Icon(
+              Icons.arrow_forward_ios,
+              color: Theme.of(
+                context,
+              ).extension<CustomColors>()!.headerColor.withValues(alpha: 0.5),
+              size: 33,
+            ),
+            Icon(
+              Icons.arrow_forward_ios,
+              color: Theme.of(
+                context,
+              ).extension<CustomColors>()!.headerColor.withValues(alpha: 0.5),
+              size: 33,
+            ),
+            Icon(
+              Icons.arrow_forward_ios,
+              color: Theme.of(
+                context,
+              ).extension<CustomColors>()!.headerColor.withValues(alpha: 0.5),
+              size: 33,
+            ),
+            Text(
+              title,
+              style: kConfirmButtonTextStyle.copyWith(
                 color: Theme.of(
                   context,
                 ).extension<CustomColors>()!.headerColor.withValues(alpha: 0.5),
-                size: 33,
               ),
-              Icon(
-                Icons.arrow_forward_ios,
-                color: Theme.of(
-                  context,
-                ).extension<CustomColors>()!.headerColor.withValues(alpha: 0.5),
-                size: 33,
-              ),
-              Icon(
-                Icons.arrow_forward_ios,
-                color: Theme.of(
-                  context,
-                ).extension<CustomColors>()!.headerColor.withValues(alpha: 0.5),
-                size: 33,
-              ),
-              Text(
-                title,
-                style: kConfirmButtonTextStyle.copyWith(
-                  color: Theme.of(context)
-                      .extension<CustomColors>()!
-                      .headerColor
-                      .withValues(alpha: 0.5),
-                ),
-              ),
-              Icon(
-                Icons.arrow_forward_ios,
-                color: Theme.of(
-                  context,
-                ).extension<CustomColors>()!.headerColor.withValues(alpha: 0.5),
-                size: 33,
-              ),
-              Icon(
-                Icons.arrow_forward_ios,
-                color: Theme.of(
-                  context,
-                ).extension<CustomColors>()!.headerColor.withValues(alpha: 0.5),
-                size: 33,
-              ),
-              Icon(
-                Icons.arrow_forward_ios,
-                color: Theme.of(
-                  context,
-                ).extension<CustomColors>()!.headerColor.withValues(alpha: 0.5),
-                size: 33,
-              ),
-            ],
-          ),
+            ),
+            Icon(
+              Icons.arrow_forward_ios,
+              color: Theme.of(
+                context,
+              ).extension<CustomColors>()!.headerColor.withValues(alpha: 0.5),
+              size: 33,
+            ),
+            Icon(
+              Icons.arrow_forward_ios,
+              color: Theme.of(
+                context,
+              ).extension<CustomColors>()!.headerColor.withValues(alpha: 0.5),
+              size: 33,
+            ),
+            Icon(
+              Icons.arrow_forward_ios,
+              color: Theme.of(
+                context,
+              ).extension<CustomColors>()!.headerColor.withValues(alpha: 0.5),
+              size: 33,
+            ),
+          ],
         ),
       ),
     );
