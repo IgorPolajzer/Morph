@@ -3,7 +3,7 @@ import 'package:morphe/utils/constants.dart';
 import 'package:morphe/screens/login_screen.dart';
 import 'package:morphe/screens/registration_screen.dart';
 
-import '../components/rounded_button.dart';
+import '../components/buttons/rounded_button.dart';
 
 class WelcomeScreen extends StatefulWidget {
   static String id = '/welcome_screen';
@@ -69,6 +69,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                     style: kMorphPhraseStyle.copyWith(
                       color: Theme.of(context).secondaryHeaderColor,
                     ),
+                    textAlign: TextAlign.center,
                   ),
                 ),
               ],

@@ -34,9 +34,14 @@ flutter:
   fonts:
     - family: Josefin Sans
       fonts:
-        - asset: assets/fonts/Josefin_Sans/JosefinSans-VariableFont_wght.ttf
-        - asset: assets/fonts/Josefin_Sans/JosefinSans-Italic-VariableFont_wght.ttf
+        - asset: assets/fonts/Josefin_Sans/static/JosefinSans-Medium.ttf
+        - asset: assets/fonts/Josefin_Sans/static/JosefinSans-MediumItalic.ttf
           style: italic
+
+    - family: Poppins
+      fonts:
+        - asset: assets/fonts/Poppins/Poppins-Medium.ttf
+        - asset: assets/fonts/Poppins/Poppins-MediumItalic.ttf
 
   assets:
     - assets/images/

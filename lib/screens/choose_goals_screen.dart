@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:morphe/components/arrow_button.dart';
-import 'package:morphe/components/goal_radio_menu.dart';
+import 'package:morphe/components/buttons/arrow_button.dart';
+import 'package:morphe/components/buttons/goal_radio_button.dart';
 import 'package:provider/provider.dart';
 
-import '../components/screen_title.dart';
+import '../components/text/screen_title.dart';
 import '../model/user.dart';
 import '../utils/constants.dart';
 import 'describe_your_goals.dart';
@@ -27,12 +27,12 @@ class _ChooseGoalsScreenState extends State<ChooseGoalsScreen> {
     final user = Provider.of<User>(context, listen: false);
 
     return Scaffold(
+      appBar: ScreenTitle(title: "CHOOSE YOUR GOALS"),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          ScreenTitle(title: "CHOOSE YOUR GOALS"),
           SizedBox(height: 20),
-          GoalRadioMenu(
+          GoalRadioButton(
             isChecked: physical,
             checkboxCallback: (checkboxState) {
               setState(() {
@@ -44,7 +44,7 @@ class _ChooseGoalsScreenState extends State<ChooseGoalsScreen> {
             description:
                 "Improve your physical health by getting a personalised plan tailored to your to your physical goals including workout plans and general tips and recommendations which will help you transform your body.",
           ),
-          GoalRadioMenu(
+          GoalRadioButton(
             isChecked: general,
             checkboxCallback: (checkboxState) {
               setState(() {
@@ -56,7 +56,7 @@ class _ChooseGoalsScreenState extends State<ChooseGoalsScreen> {
             description:
                 "Get better at adhering to your habits by getting reminders to complete everyday chores",
           ),
-          GoalRadioMenu(
+          GoalRadioButton(
             isChecked: mental,
             checkboxCallback: (checkboxState) {
               setState(() {

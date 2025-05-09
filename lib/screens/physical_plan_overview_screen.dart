@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_popup_card/flutter_popup_card.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
-import 'package:morphe/components/add_task_popup.dart';
-import 'package:morphe/components/arrow_button.dart';
+import 'package:morphe/components/buttons/add_task_popup.dart';
+import 'package:morphe/components/buttons/arrow_button.dart';
 import 'package:morphe/utils/constants.dart';
 import 'package:provider/provider.dart';
 
-import '../components/habit_list.dart';
-import '../components/screen_title.dart';
-import '../components/subtitle.dart';
-import '../components/task_list.dart';
+import '../components/lists/habit_list.dart';
+import '../components/text/screen_title.dart';
+import '../components/text/subtitle.dart';
+import '../components/lists/task_list.dart';
 import '../utils/enums.dart';
 import 'describe_your_goals.dart';
 import '../model/user.dart';

@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:morphe/utils/constants.dart';
 
-import '../utils/enums.dart';
+import '../../utils/enums.dart';
 
-class DescribeGoalInputBox extends StatelessWidget {
+class DescribeGoalField extends StatelessWidget {
   final HabitType type;
   final String title;
   final String description;
   final String hint;
   final bool enabled;
 
-  const DescribeGoalInputBox({
+  const DescribeGoalField({
     required this.type,
     required this.title,
     required this.description,

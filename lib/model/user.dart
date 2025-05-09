@@ -4,7 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:morphe/model/task.dart';
 
 import '../utils/enums.dart';
-import 'Experience.dart';
+import 'experience.dart';
 import 'habit.dart';
 
 class User extends ChangeNotifier {

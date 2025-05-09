@@ -30,3 +30,7 @@ enum HabitType {
     }
   }
 }
+
+enum Days { MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY }
+
+enum Frequency { DAILY, WEEKLY, BYWEEKLY, MONTHLY }

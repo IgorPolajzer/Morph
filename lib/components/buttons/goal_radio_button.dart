@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:morphe/utils/constants.dart';
 
-class GoalRadioMenu extends StatelessWidget {
+class GoalRadioButton extends StatelessWidget {
   final Color backgroundColor;
   final String title;
   final String description;
   final bool isChecked;
   final ValueChanged checkboxCallback;
 
-  const GoalRadioMenu({
+  const GoalRadioButton({
     required this.isChecked,
     required this.checkboxCallback,
     required this.backgroundColor,

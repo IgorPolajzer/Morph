@@ -4,9 +4,9 @@ import 'package:morphe/utils/constants.dart';
 
 import 'package:intl/intl.dart';
 
-import '../utils/enums.dart';
+import '../../utils/enums.dart';
 
-enum Actions { edit, delete }
+enum MenuActions { edit, delete }
 
 class TaskTile extends StatelessWidget {
   late DateTime startDateTime;
@@ -26,7 +26,7 @@ class TaskTile extends StatelessWidget {
     super.key,
   });
 
-  Actions? selectedMenu;
+  MenuActions? selectedMenu;
 
   @override
   Widget build(BuildContext context) {
@@ -97,7 +97,7 @@ class TaskTile extends StatelessWidget {
                   2,
                   (int index) => MenuItemButton(
                     onPressed: () {
-                      if (Actions.values[index] == Actions.edit) {
+                      if (MenuActions.values[index] == MenuActions.edit) {
                         /*Navigator.pushNamed(
                           context,
                           EditTaskScreen.id,
@@ -113,7 +113,7 @@ class TaskTile extends StatelessWidget {
                       }
                     },
                     child: Text(
-                      Actions.values[index].name,
+                      MenuActions.values[index].name,
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 12,

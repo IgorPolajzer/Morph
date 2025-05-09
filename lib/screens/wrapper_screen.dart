@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:morphe/screens/login_screen.dart';
 import 'package:morphe/screens/physical_plan_overview_screen.dart';
+import 'package:morphe/screens/welcome_screen.dart';
 
 class WrapperScreen extends StatelessWidget {
   static String id = '/wrapper_screen';
@@ -20,7 +20,7 @@ class WrapperScreen extends StatelessWidget {
             return Center(child: Text('Error'));
           } else {
             if (snapshot.data == null) {
-              return LoginScreen();
+              return WelcomeScreen();
             } else {
               return PhysicalPlanOverviewScreen();
             }

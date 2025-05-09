@@ -1,39 +1,35 @@
 import 'package:flutter/material.dart';
-import 'package:morphe/components/task_tile.dart';
 import 'package:provider/provider.dart';
 
-import '../model/user.dart';
-import '../utils/enums.dart';
+import '../../model/user.dart';
+import '../../utils/enums.dart';
+import '../tiles/habit_tile.dart';
 
-class TasksList extends StatelessWidget {
+class HabitList extends StatelessWidget {
   final HabitType type;
 
-  TasksList({required this.type});
+  HabitList({required this.type, super.key});
 
   @override
   Widget build(BuildContext context) {
     return Consumer<User>(
       builder: (BuildContext context, userData, Widget? child) {
-        var tasks = userData.getTasksFromType(type);
+        var habits = userData.getHabitsFromType(type);
 
         return ListView.builder(
           shrinkWrap: true, // Makes it take only the space it needs
           physics: NeverScrollableScrollPhysics(), // Disable inner scrolling
           itemBuilder: (context, index) {
-            final task = tasks?[index];
+            final task = habits?[index];
 
             if (task != null) {
-              return TaskTile(
-                startDateTime: task.startDateTime,
-                endDateTime: task.endDateTime,
-                title: task.title,
-                subtitle: task.subtitle,
+              return HabitTile(
+                habit: task.title,
                 description: task.description,
-                type: task.type,
               );
             }
           },
-          itemCount: tasks?.length,
+          itemCount: habits?.length,
         );
       },
     );

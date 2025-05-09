@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:morphe/components/rounded_button.dart';
+import 'package:morphe/components/buttons/rounded_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
@@ -93,6 +93,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                           style: kMorphPhraseStyle.copyWith(
                             color: Theme.of(context).secondaryHeaderColor,
                           ),
+                          textAlign: TextAlign.center,
                         ),
                       ),
                     ],

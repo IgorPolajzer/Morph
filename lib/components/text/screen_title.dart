@@ -12,10 +12,19 @@ class ScreenTitle extends StatelessWidget implements PreferredSizeWidget {
       automaticallyImplyLeading: false,
       toolbarHeight: 100,
       centerTitle: true,
-      title: Text(
-        title,
-        style: kTitleTextStyle.copyWith(color: Theme.of(context).primaryColor),
-        textAlign: TextAlign.center,
+      title: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            title,
+            style: kTitleTextStyle.copyWith(
+              color: Theme.of(context).primaryColor,
+            ),
+            textAlign: TextAlign.center,
+            softWrap: true,
+            overflow: TextOverflow.visible,
+          ),
+        ],
       ),
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       elevation: 0,

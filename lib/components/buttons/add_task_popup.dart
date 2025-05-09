@@ -1,8 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_popup_card/flutter_popup_card.dart';
-import 'package:morphe/components/edit_property_field.dart';
+import 'package:morphe/components/menus/day_picker.dart';
+import 'package:morphe/components/text_fields/add_property_field.dart';
 import 'package:morphe/utils/constants.dart';
+
+import '../menus/frequency_picker.dart';
+import '../menus/time_picker.dart';
 
 class AddTaskPopUp extends StatelessWidget {
   const AddTaskPopUp({super.key});
@@ -36,7 +40,27 @@ class AddTaskPopUp extends StatelessWidget {
                 ),
               ),
               TaskPropertyField(hint: "Task name*"),
-              TaskPropertyField(hint: "Type note here*", height: 150),
+              TaskPropertyField(hint: "Type description here*", height: 150),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 5),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Expanded(child: FrequencyPicker()),
+                    Expanded(child: DayPicker()),
+                  ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 5),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Expanded(child: TimePicker(time: DateTime.now())),
+                    Expanded(child: TimePicker(time: DateTime.now())),
+                  ],
+                ),
+              ),
             ],
           ),
         ),

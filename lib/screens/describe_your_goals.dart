@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:morphe/components/arrow_button.dart';
-import 'package:morphe/components/goal_radio_menu.dart';
+import 'package:morphe/components/buttons/arrow_button.dart';
+import 'package:morphe/components/buttons/goal_radio_button.dart';
 import 'package:morphe/screens/physical_plan_overview_screen.dart';
 import 'package:provider/provider.dart';
 
-import '../components/describe_goal_input_box.dart';
-import '../components/screen_title.dart';
+import '../components/text_fields/describe_goal_text_field.dart';
+import '../components/text/screen_title.dart';
 import '../model/user.dart';
-import '../utils/constants.dart';
 import '../utils/enums.dart';
 
 class DescribeYourGoals extends StatelessWidget {
@@ -18,9 +17,9 @@ class DescribeYourGoals extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: ScreenTitle(title: "DESCRIBE YOUR GOALS"),
       body: Column(
         children: [
-          ScreenTitle(title: "DESCRIBE YOUR GOALS"),
           Flexible(
             child: SingleChildScrollView(
               child: Column(
@@ -30,7 +29,7 @@ class DescribeYourGoals extends StatelessWidget {
                   SizedBox(height: 10),
                   Consumer<User>(
                     builder: (BuildContext context, user, Widget? child) {
-                      return DescribeGoalInputBox(
+                      return DescribeGoalField(
                         type: HabitType.PHYSICAL,
                         title: "PHYSICAL",
                         hint: "",
@@ -42,7 +41,7 @@ class DescribeYourGoals extends StatelessWidget {
                   ),
                   Consumer<User>(
                     builder: (BuildContext context, user, Widget? child) {
-                      return DescribeGoalInputBox(
+                      return DescribeGoalField(
                         type: HabitType.GENERAL,
                         title: "GENERAL",
                         hint: "",
@@ -54,7 +53,7 @@ class DescribeYourGoals extends StatelessWidget {
                   ),
                   Consumer<User>(
                     builder: (BuildContext context, user, Widget? child) {
-                      return DescribeGoalInputBox(
+                      return DescribeGoalField(
                         type: HabitType.MENTAL,
                         title: "MENTAL",
                         hint: "",

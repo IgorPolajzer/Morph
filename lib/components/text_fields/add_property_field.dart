@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:morphe/utils/constants.dart';
 
-import '../utils/enums.dart';
+import '../../utils/enums.dart';
 
 class TaskPropertyField extends StatelessWidget {
   final String hint;
@@ -11,7 +11,7 @@ class TaskPropertyField extends StatelessWidget {
   const TaskPropertyField({
     required this.hint,
     this.value = "",
-    this.height = 45,
+    this.height = 60,
     super.key,
   });
 
@@ -53,6 +53,10 @@ class TaskPropertyField extends StatelessWidget {
               hintText: hint,
               hintStyle: kInputPlaceHolderText.copyWith(
                 color: Theme.of(context).secondaryHeaderColor,
+              ),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 15.0,
+                vertical: 20.0,
               ),
               enabledBorder: enabledOutlineInputBorder,
               focusedBorder: focusedOutlineInputBorder,
