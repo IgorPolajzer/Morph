@@ -65,7 +65,7 @@ class _FrequencyPickerState extends State<FrequencyPicker> {
                 });
               },
               child: Text(
-                Frequency.values[index].name,
+                Frequency.values[index].name.toLowerCase(),
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
               ),
             ),

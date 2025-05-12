@@ -1,14 +1,14 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:morphe/screens/edit_task_screen.dart';
 import 'package:morphe/utils/constants.dart';
 import 'package:morphe/screens/choose_goals_screen.dart';
 import 'package:morphe/screens/describe_your_goals.dart';
 import 'package:morphe/screens/login_screen.dart';
-import 'package:morphe/screens/physical_plan_overview_screen.dart';
+import 'package:morphe/screens/plan_overview_screen.dart';
 import 'package:morphe/screens/registration_screen.dart';
 import 'package:morphe/screens/welcome_screen.dart';
 import 'package:morphe/screens/wrapper_screen.dart';
+import 'package:morphe/utils/enums.dart';
 import 'package:provider/provider.dart';
 
 import 'model/user.dart';
@@ -41,8 +41,12 @@ class MyApp extends StatelessWidget {
           LoginScreen.id: (context) => LoginScreen(),
           ChooseGoalsScreen.id: (context) => ChooseGoalsScreen(),
           DescribeYourGoals.id: (context) => DescribeYourGoals(),
-          PhysicalPlanOverviewScreen.id:
-              (context) => PhysicalPlanOverviewScreen(),
+          PlanOverviewScreen.id_physical:
+              (context) => PlanOverviewScreen(type: HabitType.PHYSICAL),
+          PlanOverviewScreen.id_general:
+              (context) => PlanOverviewScreen(type: HabitType.GENERAL),
+          PlanOverviewScreen.id_mental:
+              (context) => PlanOverviewScreen(type: HabitType.MENTAL),
         },
       ),
     );

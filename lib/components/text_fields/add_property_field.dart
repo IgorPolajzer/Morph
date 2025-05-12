@@ -5,20 +5,20 @@ import '../../utils/enums.dart';
 
 class TaskPropertyField extends StatelessWidget {
   final String hint;
-  final String value;
   final double height;
+  final TextEditingController controller;
+  final ValueChanged<String>? onChanged;
 
   const TaskPropertyField({
     required this.hint,
-    this.value = "",
-    this.height = 60,
+    required this.controller,
+    required this.onChanged,
+    this.height = 65,
     super.key,
   });
 
   @override
   Widget build(BuildContext context) {
-    TextEditingController titlecontroller = TextEditingController(text: value);
-
     late OutlineInputBorder enabledOutlineInputBorder;
     late OutlineInputBorder focusedOutlineInputBorder;
 
@@ -41,6 +41,7 @@ class TaskPropertyField extends StatelessWidget {
         height: height,
         child: Container(
           child: TextField(
+            controller: controller,
             expands: true,
             maxLines: null,
             textAlignVertical: TextAlignVertical.top,
@@ -48,7 +49,7 @@ class TaskPropertyField extends StatelessWidget {
               color: Theme.of(context).primaryColor,
             ),
             textAlign: TextAlign.start,
-            onChanged: (value) {},
+            onChanged: onChanged,
             decoration: kTextFieldDecoration.copyWith(
               hintText: hint,
               hintStyle: kInputPlaceHolderText.copyWith(

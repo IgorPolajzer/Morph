@@ -1,35 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:morphe/screens/edit_task_screen.dart';
+import 'package:flutter_popup_card/flutter_popup_card.dart';
 import 'package:morphe/utils/constants.dart';
 
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 
-import '../../utils/enums.dart';
+import '../../model/task.dart';
+import '../../model/user.dart';
+import '../pop_ups/edit_task_popup.dart';
 
 enum MenuActions { edit, delete }
 
 class TaskTile extends StatelessWidget {
-  late DateTime startDateTime;
-  late DateTime endDateTime;
-  late String title;
-  late String subtitle;
-  late String description;
-  late HabitType type;
+  Task task;
 
-  TaskTile({
-    required this.startDateTime,
-    required this.endDateTime,
-    required this.title,
-    required this.subtitle,
-    required this.description,
-    required this.type,
-    super.key,
-  });
+  TaskTile({required this.task, super.key});
 
   MenuActions? selectedMenu;
 
   @override
   Widget build(BuildContext context) {
+    final user = Provider.of<User>(context, listen: true);
+
     return Padding(
       padding: const EdgeInsets.only(left: 18, right: 18),
       child: Card(
@@ -42,12 +34,12 @@ class TaskTile extends StatelessWidget {
                 padding: const EdgeInsets.all(4.0),
                 child: Icon(
                   Icons.circle_rounded,
-                  color: type.getColor(),
+                  color: task.type.getColor(),
                   size: 18.0,
                 ),
               ),
               title: Text(
-                '${DateFormat.EEEE().format(startDateTime)}: ${DateFormat.Hm().format(startDateTime)}-${DateFormat.Hm().format(endDateTime)}',
+                '${DateFormat.EEEE().format(task.startDateTime)}: ${DateFormat.Hm().format(task.startDateTime)}-${DateFormat.Hm().format(task.endDateTime)}',
               ),
               titleTextStyle: kTitleTextStyle.copyWith(
                 color: Theme.of(context).primaryColor,
@@ -60,10 +52,10 @@ class TaskTile extends StatelessWidget {
                     color: Theme.of(context).primaryColor,
                   ),
                   children: [
-                    TextSpan(text: '$title\n'),
+                    TextSpan(text: '${task.title}\n'),
                     WidgetSpan(child: SizedBox(height: 20)),
                     TextSpan(
-                      text: '$subtitle',
+                      text: '${task.subtitle}',
                       style: kPlaceHolderTextStyle.copyWith(
                         fontSize: 12,
                         color: Theme.of(context).secondaryHeaderColor,
@@ -98,26 +90,23 @@ class TaskTile extends StatelessWidget {
                   (int index) => MenuItemButton(
                     onPressed: () {
                       if (MenuActions.values[index] == MenuActions.edit) {
-                        /*Navigator.pushNamed(
-                          context,
-                          EditTaskScreen.id,
-                          arguments: EditTaskScreenArguments(
-                            title: title,
-                            subtitle: subtitle,
-                            description: description,
-                            startDateTime: startDateTime,
-                            endDateTime: endDateTime,
-                            type: type,
-                          ),
-                        );*/
+                        showPopupCard(
+                          context: context,
+                          builder: (context) {
+                            return EditTaskPopUp(task: task);
+                          },
+                          alignment: Alignment.bottomCenter,
+                          useSafeArea: true,
+                          dimBackground: true,
+                        );
+                      } else if (MenuActions.values[index] ==
+                          MenuActions.delete) {
+                        user.deleteTask(task);
                       }
                     },
                     child: Text(
                       MenuActions.values[index].name,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12,
-                      ),
+                      style: TextStyle(fontSize: 12),
                     ),
                   ),
                 ),

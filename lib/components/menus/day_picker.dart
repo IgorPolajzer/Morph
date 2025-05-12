@@ -4,9 +4,9 @@ import 'package:morphe/utils/constants.dart';
 import '../../utils/enums.dart';
 
 class DayPicker extends StatefulWidget {
-  late Days day;
+  late Day day;
 
-  DayPicker({this.day = Days.MONDAY, super.key});
+  DayPicker({this.day = Day.MONDAY, super.key});
 
   @override
   State<DayPicker> createState() => _DayPickerState();
@@ -57,15 +57,15 @@ class _DayPickerState extends State<DayPicker> {
             );
           },
           menuChildren: List<MenuItemButton>.generate(
-            Days.values.length,
+            Day.values.length,
             (int index) => MenuItemButton(
               onPressed: () {
                 setState(() {
-                  widget.day = Days.values[index];
+                  widget.day = Day.values[index];
                 });
               },
               child: Text(
-                Days.values[index].name,
+                Day.values[index].name.toLowerCase(),
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
               ),
             ),

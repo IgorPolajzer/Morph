@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:morphe/utils/constants.dart';
 
-class GradientButton extends StatelessWidget {
-  final Gradient myGradient;
+class SquareButton extends StatelessWidget {
+  final Color color;
   final String title;
   final VoidCallback onPressed;
 
-  const GradientButton({
-    required this.myGradient,
+  const SquareButton({
+    required this.color,
     required this.title,
     required this.onPressed,
     super.key,
@@ -16,19 +16,18 @@ class GradientButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.symmetric(vertical: 16.0),
+      padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 12),
       child: Material(
         elevation: 5.0,
         borderRadius: BorderRadius.circular(30.0),
         child: Ink(
           decoration: BoxDecoration(
-            gradient: myGradient,
-            borderRadius: const BorderRadius.all(Radius.circular(80.0)),
+            color: color,
+            borderRadius: const BorderRadius.all(Radius.circular(10.0)),
           ),
-          child: Container(
-            constraints: const BoxConstraints(minWidth: 180.0),
+          child: SizedBox(
+            width: double.infinity,
             height: 50.0,
-            alignment: Alignment.center,
             child: TextButton(
               onPressed: onPressed,
               child: Text(

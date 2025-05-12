@@ -21,6 +21,7 @@ dependencies:
   intl: ^0.20.2
   provider: ^6.1.4
   flutter_popup_card: ^0.0.6
+  uuid: ^4.5.1
 
 dev_dependencies:
   flutter_test:

@@ -31,6 +31,55 @@ enum HabitType {
   }
 }
 
-enum Days { MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY }
+enum Day {
+  MONDAY,
+  TUESDAY,
+  WEDNESDAY,
+  THURSDAY,
+  FRIDAY,
+  SATURDAY,
+  SUNDAY;
 
-enum Frequency { DAILY, WEEKLY, BYWEEKLY, MONTHLY }
+  static Day getDayFromString(String type) {
+    switch (type) {
+      case "monday":
+        return Day.MONDAY;
+      case "tuesday":
+        return Day.TUESDAY;
+      case "wednesday":
+        return Day.WEDNESDAY;
+      case "thursday":
+        return Day.THURSDAY;
+      case "friday":
+        return Day.FRIDAY;
+      case "saturday":
+        return Day.SATURDAY;
+      case "sunday":
+        return Day.SUNDAY;
+      default:
+        throw Exception('Invalid day type provided');
+    }
+  }
+}
+
+enum Frequency {
+  DAILY,
+  WEEKLY,
+  BYWEEKLY,
+  MONTHLY;
+
+  static Frequency getFrequencyFromString(String type) {
+    switch (type) {
+      case "daily":
+        return Frequency.DAILY;
+      case "weekly":
+        return Frequency.WEEKLY;
+      case "byweekly":
+        return Frequency.BYWEEKLY;
+      case "monthly":
+        return Frequency.MONTHLY;
+      default:
+        throw Exception('Invalid frequency type provided');
+    }
+  }
+}

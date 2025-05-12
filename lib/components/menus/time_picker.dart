@@ -1,33 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:morphe/utils/constants.dart';
 
+import '../../utils/functions.dart';
+
 class TimePicker extends StatefulWidget {
   final DateTime time;
+  late TimeOfDay newTime;
 
-  const TimePicker({required this.time, super.key});
+  TimePicker({required this.time, super.key}) {
+    newTime = TimeOfDay.fromDateTime(time);
+  }
 
   @override
   State<TimePicker> createState() => _TimePickerState();
 }
 
 class _TimePickerState extends State<TimePicker> {
-  late TimeOfDay selectedTime;
-
-  @override
-  void initState() {
-    super.initState();
-    selectedTime = TimeOfDay.fromDateTime(widget.time);
-  }
-
   Future<void> _selectTime(BuildContext context) async {
     final TimeOfDay? picked = await showTimePicker(
       context: context,
-      initialTime: selectedTime,
+      initialTime: widget.newTime,
     );
 
-    if (picked != null && picked != selectedTime) {
+    if (picked != null && picked != widget.newTime) {
       setState(() {
-        selectedTime = picked;
+        widget.newTime = picked;
       });
     }
   }
@@ -56,7 +53,7 @@ class _TimePickerState extends State<TimePicker> {
               bottom: 10.0,
             ),
             leading: Text(
-              selectedTime.format(context),
+              widget.newTime.format(context),
               style: kInputPlaceHolderText.copyWith(
                 color: Theme.of(context).primaryColor,
                 fontSize: 16,

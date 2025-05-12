@@ -1,15 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:uuid/uuid.dart';
 import '../utils/enums.dart';
 
 class Task {
   String title;
   String subtitle;
   String description;
+  Frequency scheduledFrequency;
+  Day scheduledDay;
   DateTime startDateTime;
   DateTime endDateTime;
-  HabitType type;
-  late Widget customWidget;
+  final HabitType type;
+  bool notifications;
+  String id = Uuid().v4();
 
   bool isDone;
 
@@ -17,9 +21,12 @@ class Task {
     required this.title,
     required this.subtitle,
     required this.description,
+    required this.scheduledFrequency,
+    required this.scheduledDay,
     required this.startDateTime,
     required this.endDateTime,
     required this.type,
+    required this.notifications,
     this.isDone = false,
   });
 
@@ -28,14 +35,22 @@ class Task {
   }
 
   factory Task.fromJson(Map<String, dynamic> json) {
-    return Task(
+    var task = Task(
       title: json['title'] ?? '',
       subtitle: json['subtitle'] ?? '',
       description: json['description'] ?? '',
+      scheduledFrequency: Frequency.getFrequencyFromString(
+        json['scheduledFrequency'],
+      ),
+      scheduledDay: Day.getDayFromString(json['scheduledDay']),
       startDateTime: (json['startDateTime'] as Timestamp).toDate(),
       endDateTime: (json['endDateTime'] as Timestamp).toDate(),
       type: HabitType.getTypeFromString(json['type'] ?? ''),
+      notifications: json['notifications'],
     );
+    task.id = json['id'];
+
+    return task;
   }
 
   static Future<List<Task>> getTasksFromFirebase(String id) async {
@@ -47,5 +62,53 @@ class Task {
             .get();
 
     return taskDocs.docs.map((doc) => Task.fromJson(doc.data())).toList();
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'title': title,
+      'subtitle': subtitle,
+      'description': description,
+      'scheduledFrequency': scheduledFrequency.name.toLowerCase(),
+      'scheduledDay': scheduledDay.name.toLowerCase(),
+      'startDateTime': Timestamp.fromDate(startDateTime),
+      'endDateTime': Timestamp.fromDate(endDateTime),
+      'type': type.name.toLowerCase(),
+      'notifications': notifications,
+      'id': id,
+    };
+  }
+
+  // Firebase interaction
+  Future<bool> pushToFirebase() async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) {
+        throw Exception('User not logged in');
+      }
+
+      final taskMap = {
+        'title': title,
+        'subtitle': subtitle,
+        'description': description,
+        'scheduledFrequency': scheduledFrequency.name.toLowerCase(),
+        'scheduledDay': scheduledDay.name.toLowerCase(),
+        'startDateTime': Timestamp.fromDate(startDateTime),
+        'endDateTime': Timestamp.fromDate(endDateTime),
+        'type': type.name.toLowerCase(),
+        'notifications': notifications,
+      };
+
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .collection('tasks')
+          .add(taskMap);
+
+      return true;
+    } catch (e) {
+      print('Failed to push task to Firebase: $e');
+      return false;
+    }
   }
 }
