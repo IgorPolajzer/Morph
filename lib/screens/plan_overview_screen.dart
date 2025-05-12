@@ -3,6 +3,7 @@ import 'package:flutter_popup_card/flutter_popup_card.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:morphe/components/pop_ups/add_task_popup.dart';
 import 'package:morphe/components/buttons/arrow_button.dart';
+import 'package:morphe/screens/calendar_screen.dart';
 import 'package:morphe/utils/constants.dart';
 import 'package:provider/provider.dart';
 
@@ -11,7 +12,6 @@ import '../components/text/screen_title.dart';
 import '../components/text/subtitle.dart';
 import '../components/lists/task_list.dart';
 import '../utils/enums.dart';
-import 'describe_your_goals.dart';
 import '../model/user.dart';
 
 class PlanOverviewScreen extends StatefulWidget {
@@ -60,7 +60,10 @@ class _PlanOverviewScreenState extends State<PlanOverviewScreen> {
                 children: [
                   Subtitle(
                     title: widget.type.name,
-                    subtitle: "Workout plan",
+                    subtitle:
+                        widget.type == HabitType.PHYSICAL
+                            ? "Workout plan"
+                            : "Recommended habits",
                     color: widget.type.getColor(),
                   ),
                   Flexible(
@@ -70,14 +73,28 @@ class _PlanOverviewScreenState extends State<PlanOverviewScreen> {
                           TasksList(type: widget.type),
                           Padding(
                             padding: const EdgeInsets.symmetric(vertical: 20.0),
-                            child: Text(
-                              "Recommended habits",
-                              style: kTitleTextStyle.copyWith(
-                                color: widget.type.getColor(),
-                                fontSize: 20,
-                              ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Recommended habits",
+                                  style: kTitleTextStyle.copyWith(
+                                    color: widget.type.getColor(),
+                                    fontSize: 20,
+                                  ),
+                                ),
+                                Text(
+                                  "Long click to delete a habit",
+                                  style: kPlaceHolderTextStyle.copyWith(
+                                    color:
+                                        Theme.of(context).secondaryHeaderColor,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
+
                           HabitList(type: widget.type),
                         ],
                       ),
@@ -117,7 +134,7 @@ class _PlanOverviewScreenState extends State<PlanOverviewScreen> {
                 Navigator.pushNamed(context, PlanOverviewScreen.id_mental);
               case HabitType.MENTAL:
                 user.updateFirebase();
-                Navigator.pushNamed(context, DescribeYourGoals.id);
+                Navigator.pushNamed(context, CalendarScreen.id);
             }
           },
         ),

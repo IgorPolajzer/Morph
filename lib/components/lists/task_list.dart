@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_popup_card/flutter_popup_card.dart';
 import 'package:morphe/components/tiles/task_tile.dart';
 import 'package:provider/provider.dart';
 
 import '../../model/user.dart';
 import '../../utils/enums.dart';
+import '../pop_ups/show_more_popup.dart';
 
 class TasksList extends StatelessWidget {
   final HabitType type;
@@ -22,7 +24,23 @@ class TasksList extends StatelessWidget {
         final task = tasks?[index];
 
         if (task != null) {
-          return TaskTile(task: task);
+          return TaskTile(
+            task: task,
+            onTap:
+                () => showPopupCard(
+                  context: context,
+                  builder: (context) {
+                    return ShowMorePopUp(
+                      title: task.title,
+                      description: task.description,
+                      subtitle: task.subtitle,
+                    );
+                  },
+                  alignment: Alignment.center,
+                  useSafeArea: true,
+                  dimBackground: true,
+                ),
+          );
         }
       },
       itemCount: tasks?.length,

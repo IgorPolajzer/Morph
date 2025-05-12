@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:morphe/screens/calendar_screen.dart';
 import 'package:morphe/utils/constants.dart';
 import 'package:morphe/screens/choose_goals_screen.dart';
 import 'package:morphe/screens/describe_your_goals.dart';
@@ -10,10 +11,12 @@ import 'package:morphe/screens/welcome_screen.dart';
 import 'package:morphe/screens/wrapper_screen.dart';
 import 'package:morphe/utils/enums.dart';
 import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
 
 import 'model/user.dart';
 
 void main() async {
+  print("${Uuid().v4()}, ${Uuid().v4()}, ${Uuid().v4()}, ${Uuid().v4()}");
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(const MyApp());
@@ -47,6 +50,7 @@ class MyApp extends StatelessWidget {
               (context) => PlanOverviewScreen(type: HabitType.GENERAL),
           PlanOverviewScreen.id_mental:
               (context) => PlanOverviewScreen(type: HabitType.MENTAL),
+          CalendarScreen.id: (context) => CalendarScreen(),
         },
       ),
     );

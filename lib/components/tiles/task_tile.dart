@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_popup_card/flutter_popup_card.dart';
 import 'package:morphe/utils/constants.dart';
@@ -13,8 +14,9 @@ enum MenuActions { edit, delete }
 
 class TaskTile extends StatelessWidget {
   Task task;
+  final GestureTapCallback? onTap;
 
-  TaskTile({required this.task, super.key});
+  TaskTile({required this.task, required this.onTap, super.key});
 
   MenuActions? selectedMenu;
 
@@ -22,98 +24,127 @@ class TaskTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final user = Provider.of<User>(context, listen: true);
 
-    return Padding(
-      padding: const EdgeInsets.only(left: 18, right: 18),
-      child: Card(
-        color: Theme.of(context).cardColor,
-        child: Column(
-          children: [
-            ListTile(
-              visualDensity: VisualDensity(vertical: 3.0),
-              leading: Padding(
-                padding: const EdgeInsets.all(4.0),
-                child: Icon(
-                  Icons.circle_rounded,
-                  color: task.type.getColor(),
-                  size: 18.0,
-                ),
-              ),
-              title: Text(
-                '${DateFormat.EEEE().format(task.startDateTime)}: ${DateFormat.Hm().format(task.startDateTime)}-${DateFormat.Hm().format(task.endDateTime)}',
-              ),
-              titleTextStyle: kTitleTextStyle.copyWith(
-                color: Theme.of(context).primaryColor,
-                fontSize: 12,
-              ),
-              subtitle: RichText(
-                text: TextSpan(
-                  style: kTitleTextStyle.copyWith(
-                    fontSize: 16,
-                    color: Theme.of(context).primaryColor,
+    return GestureDetector(
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.only(left: 18, right: 18),
+        child: Card(
+          color: Theme.of(context).cardColor,
+          child: Column(
+            children: [
+              ListTile(
+                visualDensity: VisualDensity(vertical: 3.0),
+                leading: Padding(
+                  padding: const EdgeInsets.all(4.0),
+                  child: Icon(
+                    Icons.circle_rounded,
+                    color: task.type.getColor(),
+                    size: 18.0,
                   ),
-                  children: [
-                    TextSpan(text: '${task.title}\n'),
-                    WidgetSpan(child: SizedBox(height: 20)),
-                    TextSpan(
-                      text: '${task.subtitle}',
-                      style: kPlaceHolderTextStyle.copyWith(
-                        fontSize: 12,
-                        color: Theme.of(context).secondaryHeaderColor,
-                      ), // <- your custom color here
-                    ),
-                  ],
                 ),
-              ),
-              trailing: MenuAnchor(
-                builder: (
-                  BuildContext context,
-                  MenuController controller,
-                  Widget? child,
-                ) {
-                  return IconButton(
-                    onPressed: () {
-                      if (controller.isOpen) {
-                        controller.close();
-                      } else {
-                        controller.open();
-                      }
-                    },
-                    icon: Icon(
-                      Icons.more_horiz,
+                title: Text(
+                  '${DateFormat.EEEE().format(task.startDateTime)}: ${DateFormat.Hm().format(task.startDateTime)}-${DateFormat.Hm().format(task.endDateTime)}',
+                ),
+                titleTextStyle: kTitleTextStyle.copyWith(
+                  color: Theme.of(context).primaryColor,
+                  fontSize: 12,
+                ),
+                subtitle: RichText(
+                  text: TextSpan(
+                    style: kTitleTextStyle.copyWith(
+                      fontSize: 16,
                       color: Theme.of(context).primaryColor,
                     ),
-                    tooltip: 'Show menu',
-                  );
-                },
-                menuChildren: List<MenuItemButton>.generate(
-                  2,
-                  (int index) => MenuItemButton(
-                    onPressed: () {
-                      if (MenuActions.values[index] == MenuActions.edit) {
-                        showPopupCard(
-                          context: context,
-                          builder: (context) {
-                            return EditTaskPopUp(task: task);
-                          },
-                          alignment: Alignment.bottomCenter,
-                          useSafeArea: true,
-                          dimBackground: true,
-                        );
-                      } else if (MenuActions.values[index] ==
-                          MenuActions.delete) {
-                        user.deleteTask(task);
-                      }
-                    },
-                    child: Text(
-                      MenuActions.values[index].name,
-                      style: TextStyle(fontSize: 12),
+                    children: [
+                      TextSpan(text: '${task.title}\n'),
+                      WidgetSpan(child: SizedBox(height: 20)),
+                      TextSpan(
+                        text: '${task.subtitle}',
+                        style: kPlaceHolderTextStyle.copyWith(
+                          fontSize: 12,
+                          color: Theme.of(context).secondaryHeaderColor,
+                        ), // <- your custom color here
+                      ),
+                    ],
+                  ),
+                ),
+                trailing: MenuAnchor(
+                  builder: (
+                    BuildContext context,
+                    MenuController controller,
+                    Widget? child,
+                  ) {
+                    return IconButton(
+                      onPressed: () {
+                        if (controller.isOpen) {
+                          controller.close();
+                        } else {
+                          controller.open();
+                        }
+                      },
+                      icon: Icon(
+                        Icons.more_horiz,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                      tooltip: 'Show menu',
+                    );
+                  },
+                  menuChildren: List<MenuItemButton>.generate(
+                    2,
+                    (int index) => MenuItemButton(
+                      onPressed: () {
+                        if (MenuActions.values[index] == MenuActions.edit) {
+                          showPopupCard(
+                            context: context,
+                            builder: (context) {
+                              return EditTaskPopUp(task: task);
+                            },
+                            alignment: Alignment.bottomCenter,
+                            useSafeArea: true,
+                            dimBackground: true,
+                          );
+                        } else if (MenuActions.values[index] ==
+                            MenuActions.delete) {
+                          showCupertinoDialog<void>(
+                            context: context,
+                            builder:
+                                (BuildContext context) => CupertinoAlertDialog(
+                                  title: const Text('Confirm deletion'),
+                                  content: const Text(
+                                    'Are you sure you want to remove this task?',
+                                  ),
+                                  actions: <CupertinoDialogAction>[
+                                    CupertinoDialogAction(
+                                      isDefaultAction: true,
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      child: const Text('Cancel'),
+                                    ),
+                                    CupertinoDialogAction(
+                                      isDestructiveAction: true,
+                                      onPressed: () {
+                                        user.deleteTask(task);
+                                        Navigator.pop(context);
+                                      },
+                                      child: const Text('Delete'),
+                                    ),
+                                  ],
+                                ),
+                          );
+                        }
+                      },
+                      child: Text(
+                        MenuActions.values[index].name,
+                        style: TextStyle(fontSize: 12),
+                      ),
                     ),
                   ),
                 ),
+                isThreeLine: true,
               ),
-              isThreeLine: true,
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

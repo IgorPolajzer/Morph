@@ -1,9 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:morphe/screens/plan_overview_screen.dart';
+import 'package:morphe/screens/calendar_screen.dart';
 import 'package:morphe/screens/welcome_screen.dart';
-
-import '../utils/enums.dart';
 
 class WrapperScreen extends StatelessWidget {
   static String id = '/wrapper_screen';
@@ -24,7 +22,7 @@ class WrapperScreen extends StatelessWidget {
             if (snapshot.data == null) {
               return WelcomeScreen();
             } else {
-              return PlanOverviewScreen(type: HabitType.PHYSICAL);
+              return CalendarScreen();
             }
           }
         },

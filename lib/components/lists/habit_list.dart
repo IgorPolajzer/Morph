@@ -1,6 +1,7 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_popup_card/flutter_popup_card.dart';
-import 'package:morphe/components/pop_ups/read_more_habit_popup.dart';
+import 'package:morphe/components/pop_ups/show_more_popup.dart';
 import 'package:provider/provider.dart';
 
 import '../../model/user.dart';
@@ -32,14 +33,42 @@ class _HabitListState extends State<HabitList> {
           return HabitTile(
             habit: habit,
             onLongPress: () {
-              print("longpress");
-              user.deleteHabit(habit);
+              showCupertinoDialog<void>(
+                context: context,
+                builder:
+                    (BuildContext context) => CupertinoAlertDialog(
+                      title: const Text('Confitm deletion'),
+                      content: const Text(
+                        'Are you sure you want to delete this habit?',
+                      ),
+                      actions: <CupertinoDialogAction>[
+                        CupertinoDialogAction(
+                          isDefaultAction: true,
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: const Text('Cancel'),
+                        ),
+                        CupertinoDialogAction(
+                          isDestructiveAction: true,
+                          onPressed: () {
+                            user.deleteHabit(habit);
+                            Navigator.pop(context);
+                          },
+                          child: const Text('Delete'),
+                        ),
+                      ],
+                    ),
+              );
             },
             onTapReadMore:
                 () => showPopupCard(
                   context: context,
                   builder: (context) {
-                    return ReadMoreHabitPopUp(habit: habit);
+                    return ShowMorePopUp(
+                      title: habit.title,
+                      description: habit.description,
+                    );
                   },
                   alignment: Alignment.center,
                   useSafeArea: true,
