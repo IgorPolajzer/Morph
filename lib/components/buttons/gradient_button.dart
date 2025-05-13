@@ -27,7 +27,7 @@ class GradientButton extends StatelessWidget {
           ),
           child: SizedBox(
             height: 50,
-            width: 180,
+            width: MediaQuery.of(context).size.width / 2 - 20,
             child: TextButton(
               onPressed: onPressed,
               child: Text(

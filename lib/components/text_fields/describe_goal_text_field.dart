@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_popup_card/flutter_popup_card.dart';
 import 'package:morphe/utils/constants.dart';
 
 import '../../utils/enums.dart';
+import '../pop_ups/show_more_popup.dart';
 
 class DescribeGoalField extends StatelessWidget {
   final HabitType type;
@@ -9,12 +11,14 @@ class DescribeGoalField extends StatelessWidget {
   final String description;
   final String hint;
   final bool enabled;
+  final ValueChanged<String>? onChanged;
 
-  const DescribeGoalField({
+  DescribeGoalField({
     required this.type,
     required this.title,
     required this.description,
     required this.hint,
+    required this.onChanged,
     this.enabled = true,
     super.key,
   });
@@ -57,10 +61,22 @@ class DescribeGoalField extends StatelessWidget {
                       ),
                     ),
                     SizedBox(width: 8),
-                    Icon(
-                      Icons.question_mark_sharp,
-                      color: Theme.of(context).primaryColor,
-                      size: 18,
+                    GestureDetector(
+                      onTap:
+                          () => showPopupCard(
+                            context: context,
+                            builder: (context) {
+                              return ShowMorePopUp(
+                                title: "Tips on your prompt",
+                                description: hint,
+                              );
+                            },
+                          ),
+                      child: Icon(
+                        Icons.question_mark_sharp,
+                        color: Theme.of(context).primaryColor,
+                        size: 18,
+                      ),
                     ),
                   ],
                 ),
@@ -81,6 +97,10 @@ class DescribeGoalField extends StatelessWidget {
                   enabled: enabled,
                   expands: true,
                   maxLines: null,
+                  style: kInputPlaceHolderText.copyWith(
+                    color: Theme.of(context).primaryColor,
+                    fontSize: 14,
+                  ),
                   textAlignVertical: TextAlignVertical.top, // Align text to top
                   decoration: InputDecoration(
                     filled: true,
@@ -121,6 +141,7 @@ class DescribeGoalField extends StatelessWidget {
                       borderRadius: BorderRadius.all(Radius.circular(17)),
                     ),
                   ),
+                  onChanged: onChanged,
                 ),
               ),
             ),

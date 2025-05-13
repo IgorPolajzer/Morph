@@ -5,6 +5,7 @@ import 'package:morphe/screens/choose_goals_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+import 'package:morphe/screens/wrapper_screen.dart';
 import 'package:toastification/toastification.dart';
 
 import '../utils/constants.dart';
@@ -75,7 +76,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         tag: 'image',
                         child: Image.asset(
                           "assets/images/logo_v2.png",
-                          scale: 2,
+                          scale: 3,
                         ),
                       ),
                       Hero(
@@ -84,6 +85,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           "Morph",
                           style: kMorphTitleStyle.copyWith(
                             color: Theme.of(context).primaryColor,
+                            fontSize: 32,
                           ),
                         ),
                       ),
@@ -93,6 +95,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           "Small Habits. Big Change.",
                           style: kMorphPhraseStyle.copyWith(
                             color: Theme.of(context).secondaryHeaderColor,
+                            fontSize: 12,
                           ),
                           textAlign: TextAlign.center,
                         ),
@@ -158,7 +161,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       password: password,
                     );
                     if (user != null) {
-                      Navigator.pushNamed(context, ChooseGoalsScreen.id);
+                      Navigator.pushNamed(context, AuthWrapperScreen.id);
                     }
                     setState(() {
                       showSpinner = false;

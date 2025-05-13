@@ -7,22 +7,28 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../model/task.dart';
-import '../../model/user.dart';
+import '../../model/user_data.dart';
 import '../pop_ups/edit_task_popup.dart';
 
 enum MenuActions { edit, delete }
 
 class TaskTile extends StatelessWidget {
   Task task;
+  bool modifiable;
   final GestureTapCallback? onTap;
 
-  TaskTile({required this.task, required this.onTap, super.key});
+  TaskTile({
+    required this.task,
+    required this.onTap,
+    this.modifiable = true,
+    super.key,
+  });
 
   MenuActions? selectedMenu;
 
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<User>(context, listen: true);
+    final user = Provider.of<UserData>(context, listen: true);
 
     return GestureDetector(
       onTap: onTap,
@@ -43,7 +49,7 @@ class TaskTile extends StatelessWidget {
                   ),
                 ),
                 title: Text(
-                  '${DateFormat.EEEE().format(task.startDateTime)}: ${DateFormat.Hm().format(task.startDateTime)}-${DateFormat.Hm().format(task.endDateTime)}',
+                  '${task.scheduledDay.name}: ${DateFormat.Hm().format(task.startDateTime)}-${DateFormat.Hm().format(task.endDateTime)}',
                 ),
                 titleTextStyle: kTitleTextStyle.copyWith(
                   color: Theme.of(context).primaryColor,
@@ -68,79 +74,85 @@ class TaskTile extends StatelessWidget {
                     ],
                   ),
                 ),
-                trailing: MenuAnchor(
-                  builder: (
-                    BuildContext context,
-                    MenuController controller,
-                    Widget? child,
-                  ) {
-                    return IconButton(
-                      onPressed: () {
-                        if (controller.isOpen) {
-                          controller.close();
-                        } else {
-                          controller.open();
-                        }
-                      },
-                      icon: Icon(
-                        Icons.more_horiz,
-                        color: Theme.of(context).primaryColor,
-                      ),
-                      tooltip: 'Show menu',
-                    );
-                  },
-                  menuChildren: List<MenuItemButton>.generate(
-                    2,
-                    (int index) => MenuItemButton(
-                      onPressed: () {
-                        if (MenuActions.values[index] == MenuActions.edit) {
-                          showPopupCard(
-                            context: context,
-                            builder: (context) {
-                              return EditTaskPopUp(task: task);
-                            },
-                            alignment: Alignment.bottomCenter,
-                            useSafeArea: true,
-                            dimBackground: true,
-                          );
-                        } else if (MenuActions.values[index] ==
-                            MenuActions.delete) {
-                          showCupertinoDialog<void>(
-                            context: context,
-                            builder:
-                                (BuildContext context) => CupertinoAlertDialog(
-                                  title: const Text('Confirm deletion'),
-                                  content: const Text(
-                                    'Are you sure you want to remove this task?',
-                                  ),
-                                  actions: <CupertinoDialogAction>[
-                                    CupertinoDialogAction(
-                                      isDefaultAction: true,
-                                      onPressed: () {
-                                        Navigator.pop(context);
-                                      },
-                                      child: const Text('Cancel'),
-                                    ),
-                                    CupertinoDialogAction(
-                                      isDestructiveAction: true,
-                                      onPressed: () {
-                                        user.deleteTask(task);
-                                        Navigator.pop(context);
-                                      },
-                                      child: const Text('Delete'),
-                                    ),
-                                  ],
-                                ),
-                          );
-                        }
-                      },
-                      child: Text(
-                        MenuActions.values[index].name,
-                        style: TextStyle(fontSize: 12),
-                      ),
-                    ),
-                  ),
-                ),
+                trailing:
+                    modifiable
+                        ? MenuAnchor(
+                          builder: (
+                            BuildContext context,
+                            MenuController controller,
+                            Widget? child,
+                          ) {
+                            return IconButton(
+                              onPressed: () {
+                                if (controller.isOpen) {
+                                  controller.close();
+                                } else {
+                                  controller.open();
+                                }
+                              },
+                              icon: Icon(
+                                Icons.more_horiz,
+                                color: Theme.of(context).primaryColor,
+                              ),
+                              tooltip: 'Show menu',
+                            );
+                          },
+                          menuChildren: List<MenuItemButton>.generate(
+                            2,
+                            (int index) => MenuItemButton(
+                              onPressed: () {
+                                if (MenuActions.values[index] ==
+                                    MenuActions.edit) {
+                                  showPopupCard(
+                                    context: context,
+                                    builder: (context) {
+                                      return EditTaskPopUp(task: task);
+                                    },
+                                    alignment: Alignment.bottomCenter,
+                                    useSafeArea: true,
+                                    dimBackground: true,
+                                  );
+                                } else if (MenuActions.values[index] ==
+                                    MenuActions.delete) {
+                                  showCupertinoDialog<void>(
+                                    context: context,
+                                    builder:
+                                        (
+                                          BuildContext context,
+                                        ) => CupertinoAlertDialog(
+                                          title: const Text('Confirm deletion'),
+                                          content: const Text(
+                                            'Are you sure you want to remove this task?',
+                                          ),
+                                          actions: <CupertinoDialogAction>[
+                                            CupertinoDialogAction(
+                                              isDefaultAction: true,
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                              },
+                                              child: const Text('Cancel'),
+                                            ),
+                                            CupertinoDialogAction(
+                                              isDestructiveAction: true,
+                                              onPressed: () {
+                                                user.deleteTask(task);
+                                                Navigator.pop(context);
+                                              },
+                                              child: const Text('Delete'),
+                                            ),
+                                          ],
+                                        ),
+                                  );
+                                }
+                              },
+                              child: Text(
+                                MenuActions.values[index].name,
+                                style: TextStyle(fontSize: 12),
+                              ),
+                            ),
+                          ),
+                        )
+                        : null,
                 isThreeLine: true,
               ),
             ],

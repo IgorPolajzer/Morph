@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_popup_card/flutter_popup_card.dart';
-import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:morphe/components/pop_ups/add_task_popup.dart';
 import 'package:morphe/components/buttons/arrow_button.dart';
 import 'package:morphe/screens/calendar_screen.dart';
@@ -12,7 +11,7 @@ import '../components/text/screen_title.dart';
 import '../components/text/subtitle.dart';
 import '../components/lists/task_list.dart';
 import '../utils/enums.dart';
-import '../model/user.dart';
+import '../model/user_data.dart';
 
 class PlanOverviewScreen extends StatefulWidget {
   static String id_physical = '/physical_plan_overview_screen';
@@ -28,83 +27,69 @@ class PlanOverviewScreen extends StatefulWidget {
 }
 
 class _PlanOverviewScreenState extends State<PlanOverviewScreen> {
-  static bool _dataFetched = false;
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!_dataFetched) {
-        final user = Provider.of<User>(context, listen: false);
-        user.getFromFireBase();
-        _dataFetched = true;
-      }
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<User>(context, listen: true);
+    final userData = Provider.of<UserData>(context, listen: true);
+
+    if (userData.loading && userData.isInitialized) {
+      return Center(child: CircularProgressIndicator());
+    }
 
     return Scaffold(
       appBar: ScreenTitle(title: "PLAN OVERVIEW"),
-      body: ModalProgressHUD(
-        inAsyncCall: user.loading,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Subtitle(
-                    title: widget.type.name,
-                    subtitle:
-                        widget.type == HabitType.PHYSICAL
-                            ? "Workout plan"
-                            : "Recommended habits",
-                    color: widget.type.getColor(),
-                  ),
-                  Flexible(
-                    child: SingleChildScrollView(
-                      child: Column(
-                        children: [
-                          TasksList(type: widget.type),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 20.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Recommended habits",
-                                  style: kTitleTextStyle.copyWith(
-                                    color: widget.type.getColor(),
-                                    fontSize: 20,
-                                  ),
+      body: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Subtitle(
+                  title: widget.type.name,
+                  subtitle:
+                      widget.type == HabitType.PHYSICAL
+                          ? "Workout plan"
+                          : "Recommended habits",
+                  color: widget.type.getColor(),
+                ),
+                Flexible(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        TasksList(type: widget.type),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 20.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Recommended habits",
+                                style: kTitleTextStyle.copyWith(
+                                  color: widget.type.getColor(),
+                                  fontSize: 20,
                                 ),
-                                Text(
-                                  "Long click to delete a habit",
-                                  style: kPlaceHolderTextStyle.copyWith(
-                                    color:
-                                        Theme.of(context).secondaryHeaderColor,
-                                    fontSize: 12,
-                                  ),
+                              ),
+                              Text(
+                                "Long click to delete a habit",
+                                style: kPlaceHolderTextStyle.copyWith(
+                                  color: Theme.of(context).secondaryHeaderColor,
+                                  fontSize: 12,
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
+                        ),
 
-                          HabitList(type: widget.type),
-                        ],
-                      ),
+                        HabitList(type: widget.type),
+                      ],
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: widget.type.getColor(),
@@ -133,7 +118,7 @@ class _PlanOverviewScreenState extends State<PlanOverviewScreen> {
               case HabitType.GENERAL:
                 Navigator.pushNamed(context, PlanOverviewScreen.id_mental);
               case HabitType.MENTAL:
-                user.updateFirebase();
+                userData.pushToFirebase();
                 Navigator.pushNamed(context, CalendarScreen.id);
             }
           },

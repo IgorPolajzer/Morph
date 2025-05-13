@@ -16,7 +16,7 @@ class _DayPickerState extends State<DayPicker> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 60, // adjust as neede
+      height: 60,
       child: Card.outlined(
         shape: OutlineInputBorder(
           borderSide: BorderSide(

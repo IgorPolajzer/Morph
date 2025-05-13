@@ -53,15 +53,19 @@ class Task {
     return task;
   }
 
-  static Future<List<Task>> getTasksFromFirebase(String id) async {
-    final taskDocs =
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(id)
-            .collection('tasks')
-            .get();
+  static Future<List<Task>> pullFromFirebase(String id) async {
+    try {
+      final taskDocs =
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(id)
+              .collection('tasks')
+              .get();
 
-    return taskDocs.docs.map((doc) => Task.fromJson(doc.data())).toList();
+      return taskDocs.docs.map((doc) => Task.fromJson(doc.data())).toList();
+    } catch (e) {
+      return [];
+    }
   }
 
   Map<String, dynamic> toMap() {

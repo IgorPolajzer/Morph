@@ -60,6 +60,17 @@ enum Day {
         throw Exception('Invalid day type provided');
     }
   }
+
+  DateTime toDateTime({DateTime? fromDate}) {
+    final now = fromDate ?? DateTime.now();
+    final todayWeekday = now.weekday; // 1 (Mon) - 7 (Sun)
+    final targetWeekday = index + 1; // Because MONDAY.index = 0 => 1 (Mon)
+
+    int daysDifference = (targetWeekday - todayWeekday) % 7;
+    if (daysDifference < 0) daysDifference += 7;
+
+    return now.add(Duration(days: daysDifference));
+  }
 }
 
 enum Frequency {

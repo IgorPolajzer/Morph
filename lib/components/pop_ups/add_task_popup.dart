@@ -10,7 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:toastification/toastification.dart';
 
 import '../../model/task.dart';
-import '../../model/user.dart';
+import '../../model/user_data.dart';
 import '../../utils/functions.dart';
 import '../menus/frequency_picker.dart';
 import '../menus/time_picker.dart';
@@ -74,7 +74,7 @@ class _AddTaskPopUpState extends State<AddTaskPopUp>
 
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<User>(context, listen: true);
+    final user = Provider.of<UserData>(context, listen: true);
 
     return SlideTransition(
       position: _offsetAnimation,
@@ -91,126 +91,127 @@ class _AddTaskPopUpState extends State<AddTaskPopUp>
           child: SizedBox(
             width: MediaQuery.sizeOf(context).width - 50,
             height: MediaQuery.sizeOf(context).height - 200,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 15.0, bottom: 5.0),
-                  child: Text(
-                    "Add new task",
-                    style: kTitleTextStyle.copyWith(
-                      color: Theme.of(context).primaryColor,
-                      fontSize: 25,
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 15.0, bottom: 5.0),
+                    child: Text(
+                      "Add new task",
+                      style: kTitleTextStyle.copyWith(
+                        color: Theme.of(context).primaryColor,
+                        fontSize: 25,
+                      ),
                     ),
                   ),
-                ),
-                TaskPropertyField(
-                  hint: "Task name*",
-                  controller: taskTitleController,
-                  onChanged: (newTaskName) {
-                    setState(() {
-                      taskTitle = newTaskName;
-                    });
-                  },
-                ),
-                TaskPropertyField(
-                  hint: "Task subtitle*",
-                  controller: taskSubtitleController,
-                  height: 100,
-                  onChanged: (newTaskSubtitle) {
-                    setState(() {
-                      taskSubtitle = newTaskSubtitle;
-                    });
-                  },
-                ),
-                TaskPropertyField(
-                  hint: "Type description here*",
-                  controller: taskDescriptionController,
-                  height: 150,
-                  onChanged: (newTaskDescription) {
-                    setState(() {
-                      taskDescription = newTaskDescription;
-                    });
-                  },
-                ),
-                Text(
-                  "*Day is irrelevant if frequency is daily",
-                  style: kPlaceHolderTextStyle,
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 5),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Expanded(child: frequencyPicker),
-                      Expanded(child: dayPicker),
-                    ],
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 5),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Expanded(child: startTimePicker),
-                      Expanded(child: endTimePicker),
-                    ],
-                  ),
-                ),
-                ListTile(
-                  leading: Text(
-                    "Reminds me",
-                    style: kTitleTextStyle.copyWith(
-                      color: Theme.of(context).primaryColor,
-                      fontSize: 16,
-                    ),
-                  ),
-                  trailing: CupertinoSwitch(
-                    value: notifications,
-                    onChanged: (bool value) {
+                  TaskPropertyField(
+                    hint: "Task name*",
+                    controller: taskTitleController,
+                    onChanged: (newTaskName) {
                       setState(() {
-                        notifications = value;
+                        taskTitle = newTaskName;
                       });
                     },
-                    activeTrackColor: CupertinoColors.activeGreen,
                   ),
-                ),
-                Spacer(),
-                SquareButton(
-                  color: widget.type.getColor(),
-                  title: "Add Task",
-                  onPressed: () {
-                    print(
-                      "${taskTitle} ${taskSubtitle} ${taskDescription} ${frequencyPicker.frequency} ${dayPicker.day} ${startTimePicker.newTime} ${endTimePicker.newTime} ${notifications}",
-                    );
-                    try {
-                      Task newTask = Task(
-                        title: taskTitle,
-                        subtitle: taskSubtitle,
-                        description: taskDescription,
-                        scheduledFrequency: frequencyPicker.frequency,
-                        scheduledDay: dayPicker.day,
-                        startDateTime: toDateTime(startTimePicker.newTime),
-                        endDateTime: toDateTime(endTimePicker.newTime),
-                        notifications: notifications,
-                        type: widget.type,
-                      );
+                  TaskPropertyField(
+                    hint: "Task subtitle*",
+                    controller: taskSubtitleController,
+                    height: 100,
+                    onChanged: (newTaskSubtitle) {
+                      setState(() {
+                        taskSubtitle = newTaskSubtitle;
+                      });
+                    },
+                  ),
+                  TaskPropertyField(
+                    hint: "Type description here*",
+                    controller: taskDescriptionController,
+                    height: 150,
+                    onChanged: (newTaskDescription) {
+                      setState(() {
+                        taskDescription = newTaskDescription;
+                      });
+                    },
+                  ),
+                  Text(
+                    "*Day is irrelevant if frequency is daily",
+                    style: kPlaceHolderTextStyle,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 5),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Expanded(child: frequencyPicker),
+                        Expanded(child: dayPicker),
+                      ],
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 5),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Expanded(child: startTimePicker),
+                        Expanded(child: endTimePicker),
+                      ],
+                    ),
+                  ),
+                  ListTile(
+                    leading: Text(
+                      "Reminds me",
+                      style: kTitleTextStyle.copyWith(
+                        color: Theme.of(context).primaryColor,
+                        fontSize: 16,
+                      ),
+                    ),
+                    trailing: CupertinoSwitch(
+                      value: notifications,
+                      onChanged: (bool value) {
+                        setState(() {
+                          notifications = value;
+                        });
+                      },
+                      activeTrackColor: CupertinoColors.activeGreen,
+                    ),
+                  ),
+                  SizedBox(height: 20),
+                  SquareButton(
+                    color: widget.type.getColor(),
+                    title: "Add Task",
+                    onPressed: () {
+                      try {
+                        Task newTask = Task(
+                          title: taskTitle,
+                          subtitle: taskSubtitle,
+                          description: taskDescription,
+                          scheduledFrequency: frequencyPicker.frequency,
+                          scheduledDay: dayPicker.day,
+                          startDateTime: toDateTime(startTimePicker.newTime),
+                          endDateTime: toDateTime(endTimePicker.newTime),
+                          notifications: notifications,
+                          type: widget.type,
+                        );
 
-                      user.addTask(newTask);
+                        user.addTask(newTask);
 
-                      Navigator.of(context).pop();
-                    } catch (e) {
-                      toastification.show(
-                        context: context,
-                        title: Text('Try again'),
-                        description: Text('Something went wrong'),
-                        type: ToastificationType.error,
-                        autoCloseDuration: Duration(seconds: 3),
-                      );
-                    }
-                  },
-                ),
-              ],
+                        Navigator.of(context).pop();
+                      } catch (e) {
+                        toastification.show(
+                          context: context,
+                          title: Text('Try again'),
+                          description: Text(
+                            'Something went wrong while creating a task',
+                          ),
+                          type: ToastificationType.error,
+                          autoCloseDuration: Duration(seconds: 3),
+                        );
+                      }
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
         ),

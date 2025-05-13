@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:morphe/components/buttons/arrow_button.dart';
 import 'package:morphe/components/buttons/goal_radio_button.dart';
 import 'package:provider/provider.dart';
+import 'package:toastification/toastification.dart';
 
 import '../components/text/screen_title.dart';
-import '../model/user.dart';
+import '../model/user_data.dart';
 import '../utils/constants.dart';
 import 'describe_your_goals.dart';
 
@@ -24,52 +25,54 @@ class _ChooseGoalsScreenState extends State<ChooseGoalsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<User>(context, listen: false);
+    final user = Provider.of<UserData>(context, listen: false);
 
     return Scaffold(
       appBar: ScreenTitle(title: "CHOOSE YOUR GOALS"),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          SizedBox(height: 20),
-          GoalRadioButton(
-            isChecked: physical,
-            checkboxCallback: (checkboxState) {
-              setState(() {
-                physical = checkboxState;
-              });
-            },
-            backgroundColor: kPhysicalColor,
-            title: "PHYSICAL GOALS",
-            description:
-                "Improve your physical health by getting a personalised plan tailored to your to your physical goals including workout plans and general tips and recommendations which will help you transform your body.",
-          ),
-          GoalRadioButton(
-            isChecked: general,
-            checkboxCallback: (checkboxState) {
-              setState(() {
-                general = checkboxState;
-              });
-            },
-            backgroundColor: kGeneralColor,
-            title: "GENERAL HABITS",
-            description:
-                "Get better at adhering to your habits by getting reminders to complete everyday chores",
-          ),
-          GoalRadioButton(
-            isChecked: mental,
-            checkboxCallback: (checkboxState) {
-              setState(() {
-                mental = checkboxState;
-              });
-            },
-            backgroundColor: kMentalColor,
-            title: "MENTAL GOALS",
-            description:
-                "Improve your mental health and clarity by getting a plan tailored to you unique circumstances and goals.",
-          ),
-          Spacer(),
-        ],
+      body: SingleChildScrollView(
+        // Make the entire body scrollable
+        child: Column(
+          children: [
+            SizedBox(height: 20),
+            GoalRadioButton(
+              isChecked: physical,
+              checkboxCallback: (checkboxState) {
+                setState(() {
+                  physical = checkboxState;
+                });
+              },
+              backgroundColor: kPhysicalColor,
+              title: "PHYSICAL GOALS",
+              description:
+                  "Improve your physical health by getting a personalised plan tailored to your physical goals including workout plans and general tips and recommendations which will help you transform your body.",
+            ),
+            GoalRadioButton(
+              isChecked: general,
+              checkboxCallback: (checkboxState) {
+                setState(() {
+                  general = checkboxState;
+                });
+              },
+              backgroundColor: kGeneralColor,
+              title: "GENERAL HABITS",
+              description:
+                  "Get better at adhering to your habits by getting reminders to complete everyday chores",
+            ),
+            GoalRadioButton(
+              isChecked: mental,
+              checkboxCallback: (checkboxState) {
+                setState(() {
+                  mental = checkboxState;
+                });
+              },
+              backgroundColor: kMentalColor,
+              title: "MENTAL GOALS",
+              description:
+                  "Improve your mental health and clarity by getting a plan tailored to your unique circumstances and goals.",
+            ),
+            SizedBox(height: 20), // Optional spacing before the bottom bar
+          ],
+        ),
       ),
       bottomNavigationBar: BottomAppBar(
         elevation: 8,
@@ -77,8 +80,18 @@ class _ChooseGoalsScreenState extends State<ChooseGoalsScreen> {
         child: ArrowButton(
           title: "CONFIRM",
           onPressed: () {
-            Navigator.pushNamed(context, DescribeYourGoals.id);
-            user.setGoals(physical, general, mental);
+            if (!general && !physical && !mental) {
+              toastification.show(
+                context: context,
+                title: Text('Invalid choice'),
+                description: Text('You have to choose at least one goal'),
+                type: ToastificationType.info,
+                autoCloseDuration: Duration(seconds: 3),
+              );
+            } else {
+              user.setGoals(physical, general, mental);
+              Navigator.pushNamed(context, DescribeYourGoals.id);
+            }
           },
         ),
       ),

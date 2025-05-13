@@ -4,17 +4,37 @@ import 'package:flutter/cupertino.dart';
 import 'package:morphe/model/task.dart';
 
 import '../utils/enums.dart';
+import '../utils/functions.dart';
 import 'experience.dart';
 import 'habit.dart';
 
-class User extends ChangeNotifier {
+class UserData extends ChangeNotifier {
   bool loading = false;
   late final String id;
+
+  late String _email;
+  String get email => _email;
+
+  late String _password;
+  String get password => _password;
+
+  late String _username;
+  String get username => _username;
+
+  bool _isInitialized = false;
+  bool get isInitialized => _isInitialized;
 
   Map<HabitType, bool> _selectedHabits = {};
   Map<HabitType, List<Habit>> _habits = {};
   Map<HabitType, List<Task>> _tasks = {};
   Map<HabitType, Experience> _xp = {};
+
+  // User auth operations
+  void setCredentials(String email, String username, String password) {
+    _email = email;
+    _username = username;
+    _password = password;
+  }
 
   // Selected goals operations
   void setGoals(bool physical, bool general, bool mental) async {
@@ -53,6 +73,14 @@ class User extends ChangeNotifier {
   }
 
   // Habit operations
+  void deleteHabit(Habit habit) {
+    final habits = _habits[habit.type];
+    if (habits == null) return;
+
+    habits.removeWhere((habitEntry) => habit.id == habitEntry.id);
+    notifyListeners();
+  }
+
   get getSelectedHabits {
     return {
       HabitType.PHYSICAL: _selectedHabits[HabitType.PHYSICAL] ?? false,
@@ -72,26 +100,7 @@ class User extends ChangeNotifier {
     }
   }
 
-  void deleteHabit(Habit habit) {
-    final habits = _habits[habit.type];
-    if (habits == null) return;
-
-    habits.removeWhere((habitEntry) => habit.id == habitEntry.id);
-    notifyListeners();
-  }
-
   // Task operations
-  List<Task>? getTasksFromType(HabitType type) {
-    switch (type) {
-      case HabitType.PHYSICAL:
-        return _tasks[HabitType.PHYSICAL];
-      case HabitType.GENERAL:
-        return _tasks[HabitType.GENERAL];
-      case HabitType.MENTAL:
-        return _tasks[HabitType.MENTAL];
-    }
-  }
-
   void addTask(Task task) {
     switch (task.type) {
       case HabitType.PHYSICAL:
@@ -144,23 +153,87 @@ class User extends ChangeNotifier {
     notifyListeners();
   }
 
+  List<Task> getTasks(DateTime date) {
+    final List<Task> allTasks = [];
+
+    for (final type in HabitType.values) {
+      final tasksOfType = _tasks[type] ?? [];
+
+      for (final task in tasksOfType) {
+        final isDaily = task.scheduledFrequency == Frequency.DAILY;
+        final isByweekly = task.scheduledFrequency == Frequency.BYWEEKLY;
+        final isWeekly = task.scheduledFrequency == Frequency.WEEKLY;
+        final isMonthly = task.scheduledFrequency == Frequency.MONTHLY;
+
+        if (isDaily) {
+          allTasks.add(task);
+        } else if (isWeekly) {
+          final isSameWeekday = date.weekday == task.scheduledDay.index + 1;
+          if (isSameWeekday) {
+            allTasks.add(task);
+          }
+        } else if (isByweekly) {
+          final taskStartDate = stripTime(task.startDateTime);
+          final currentDate = stripTime(date);
+          final diff = currentDate.difference(taskStartDate).inDays;
+
+          if (diff >= 0 && diff % 14 == 0) {
+            allTasks.add(task);
+          }
+        } else if (isMonthly) {
+          final isSameDayInMonth = date.day == task.startDateTime.day;
+
+          if (isSameDayInMonth) {
+            allTasks.add(task);
+          }
+        }
+      }
+    }
+
+    return allTasks;
+  }
+
+  List<Task>? getTasksFromType(HabitType type) {
+    switch (type) {
+      case HabitType.PHYSICAL:
+        return _tasks[HabitType.PHYSICAL];
+      case HabitType.GENERAL:
+        return _tasks[HabitType.GENERAL];
+      case HabitType.MENTAL:
+        return _tasks[HabitType.MENTAL];
+    }
+  }
+
   //Firebase interactions
-  void getFromFireBase() async {
+  void pullFromFireBase() async {
+    if (_isInitialized) return;
+
     loading = true;
-    notifyListeners();
 
-    // Handle user id
-    id = FirebaseAuth.instance.currentUser!.uid;
-    if (id == null) return;
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null) {
+      loading = false;
+      return;
+    }
+    id = currentUser.uid;
 
-    // Handle selected habits
-    final doc =
+    // Get user document
+    final docSnapshot =
         await FirebaseFirestore.instance.collection('users').doc(id).get();
-    final selectedHabits = doc.data()?['selectedHabits'];
+    final data = docSnapshot.data();
+    if (data == null) {
+      loading = false;
+      return;
+    }
+    // Get username and email
+    _username = data['username'] ?? '';
+    _email = data['email'] ?? '';
 
-    _selectedHabits[HabitType.PHYSICAL] = selectedHabits['physical'];
-    _selectedHabits[HabitType.GENERAL] = selectedHabits['general'];
-    _selectedHabits[HabitType.MENTAL] = selectedHabits['mental'];
+    // Get selected habits
+    final selectedHabits = data['selectedHabits'] ?? {};
+    _selectedHabits[HabitType.PHYSICAL] = selectedHabits['physical'] ?? false;
+    _selectedHabits[HabitType.GENERAL] = selectedHabits['general'] ?? false;
+    _selectedHabits[HabitType.MENTAL] = selectedHabits['mental'] ?? false;
 
     setGoals(
       _selectedHabits[HabitType.PHYSICAL]!,
@@ -169,38 +242,23 @@ class User extends ChangeNotifier {
     );
 
     // Get habits
-    final habits = await Habit.getHabitsFromFirebase(id);
-
+    final habits = await Habit.pullFromFirebase(id);
     for (Habit habit in habits) {
-      switch (habit.type) {
-        case HabitType.PHYSICAL:
-          _habits[HabitType.PHYSICAL]?.add(habit);
-        case HabitType.GENERAL:
-          _habits[HabitType.GENERAL]?.add(habit);
-        case HabitType.MENTAL:
-          _habits[HabitType.MENTAL]?.add(habit);
-      }
+      _habits[habit.type]?.add(habit);
     }
 
-    // Handle tasks
-    final tasks = await Task.getTasksFromFirebase(id);
-
+    // Get tasks
+    final tasks = await Task.pullFromFirebase(id);
     for (Task task in tasks) {
-      switch (task.type) {
-        case HabitType.PHYSICAL:
-          _tasks[HabitType.PHYSICAL]?.add(task);
-        case HabitType.GENERAL:
-          _tasks[HabitType.GENERAL]?.add(task);
-        case HabitType.MENTAL:
-          _tasks[HabitType.MENTAL]?.add(task);
-      }
+      _tasks[task.type]?.add(task);
     }
 
+    _isInitialized = true;
     loading = false;
     notifyListeners();
   }
 
-  void updateFirebase() async {
+  void pushToFirebase() async {
     try {
       final currentUser = FirebaseAuth.instance.currentUser;
       if (currentUser == null) throw Exception("User not authenticated");
@@ -208,6 +266,12 @@ class User extends ChangeNotifier {
       final userDoc = FirebaseFirestore.instance
           .collection('users')
           .doc(userId);
+
+      // Store username and email
+      await userDoc.set({
+        'username': username,
+        'email': email,
+      }, SetOptions(merge: true));
 
       // Store selected habits
       await userDoc.set({
@@ -227,6 +291,7 @@ class User extends ChangeNotifier {
 
       for (HabitType type in HabitType.values) {
         final habits = _habits[type] ?? [];
+
         for (final habit in habits) {
           await habitsRef.doc(habit.id).set(habit.toMap());
         }

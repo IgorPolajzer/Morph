@@ -3,7 +3,7 @@ import 'package:flutter_popup_card/flutter_popup_card.dart';
 import 'package:morphe/components/tiles/task_tile.dart';
 import 'package:provider/provider.dart';
 
-import '../../model/user.dart';
+import '../../model/user_data.dart';
 import '../../utils/enums.dart';
 import '../pop_ups/show_more_popup.dart';
 
@@ -14,7 +14,7 @@ class TasksList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<User>(context, listen: true);
+    final user = Provider.of<UserData>(context, listen: true);
     var tasks = user.getTasksFromType(type);
 
     return ListView.builder(

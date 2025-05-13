@@ -4,7 +4,7 @@ import 'package:flutter_popup_card/flutter_popup_card.dart';
 import 'package:morphe/components/pop_ups/show_more_popup.dart';
 import 'package:provider/provider.dart';
 
-import '../../model/user.dart';
+import '../../model/user_data.dart';
 import '../../utils/enums.dart';
 import '../tiles/habit_tile.dart';
 
@@ -20,7 +20,7 @@ class HabitList extends StatefulWidget {
 class _HabitListState extends State<HabitList> {
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<User>(context, listen: true);
+    final user = Provider.of<UserData>(context, listen: true);
     var habits = user.getHabitsFromType(widget.type);
 
     return ListView.builder(

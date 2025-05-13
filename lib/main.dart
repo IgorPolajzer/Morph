@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:morphe/screens/calendar_screen.dart';
@@ -13,7 +14,7 @@ import 'package:morphe/utils/enums.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
-import 'model/user.dart';
+import 'model/user_data.dart';
 
 void main() async {
   print("${Uuid().v4()}, ${Uuid().v4()}, ${Uuid().v4()}, ${Uuid().v4()}");
@@ -28,17 +29,17 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    late User userData = User();
+    late UserData userData = UserData();
 
-    return ChangeNotifierProvider<User>(
+    return ChangeNotifierProvider<UserData>(
       create: (context) => userData,
       child: MaterialApp(
         title: 'Morph',
         theme: kLightTheme,
         darkTheme: kDarkTheme,
-        initialRoute: WrapperScreen.id,
+        initialRoute: AuthWrapperScreen.id,
         routes: {
-          WrapperScreen.id: (context) => WrapperScreen(),
+          AuthWrapperScreen.id: (context) => AuthWrapperScreen(),
           WelcomeScreen.id: (context) => WelcomeScreen(),
           RegistrationScreen.id: (context) => RegistrationScreen(),
           LoginScreen.id: (context) => LoginScreen(),

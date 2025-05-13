@@ -1,11 +1,17 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_popup_card/flutter_popup_card.dart';
+import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
+import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-import '../../utils/constants.dart';
+import '../../model/task.dart';
+import '../../model/user_data.dart';
+import '../pop_ups/show_more_popup.dart';
+import '../tiles/task_tile.dart';
 
 class Calendar extends StatefulWidget {
-  const Calendar({super.key});
+  Calendar({super.key});
 
   @override
   State<Calendar> createState() => _CalendarState();
@@ -13,75 +19,180 @@ class Calendar extends StatefulWidget {
 
 class _CalendarState extends State<Calendar> {
   DateTime _selectedDay = DateTime.now();
-  DateTime _focusedDay = DateTime.now();
+  late DateTime _focusedDay;
   CalendarFormat _calendarFormat = CalendarFormat.month;
+  late ValueNotifier<List<Task>> _selectedTasks = ValueNotifier([]);
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _focusedDay = _selectedDay;
+
+    final user = Provider.of<UserData>(context, listen: true);
+    _selectedTasks.value = user.getTasks(_selectedDay!);
+  }
 
   @override
   Widget build(BuildContext context) {
-    return TableCalendar(
-      firstDay: DateTime.utc(2024, 1, 4),
-      lastDay: DateTime.utc(2035, 1, 4),
-      focusedDay: _focusedDay,
-      selectedDayPredicate: (day) {
-        return isSameDay(_selectedDay, day);
-      },
-      onDaySelected: (selectedDay, focusedDay) {
-        setState(() {
-          _selectedDay = selectedDay;
-          _focusedDay = focusedDay;
-        });
-      },
-      calendarFormat: _calendarFormat,
-      onFormatChanged: (format) {
-        setState(() {
-          _calendarFormat = format;
-        });
-      },
-      calendarStyle: CalendarStyle(
-        selectedDecoration: BoxDecoration(
-          color: Theme.of(context).highlightColor,
-          shape: BoxShape.circle,
+    final user = Provider.of<UserData>(context, listen: true);
+
+    return Column(
+      children: [
+        TableCalendar<Task>(
+          firstDay: DateTime.utc(2024, 1, 4),
+          lastDay: DateTime.utc(2035, 1, 4),
+          focusedDay: _focusedDay,
+          selectedDayPredicate: (day) {
+            return isSameDay(_selectedDay, day);
+          },
+          onDaySelected: (selectedDay, focusedDay) {
+            setState(() {
+              if (!isSameDay(_selectedDay, selectedDay)) {
+                setState(() {
+                  _selectedDay = selectedDay;
+                  _focusedDay = focusedDay;
+                });
+
+                _selectedTasks.value = user.getTasks(selectedDay);
+              }
+            });
+          },
+          calendarFormat: _calendarFormat,
+          onFormatChanged: (format) {
+            setState(() {
+              _calendarFormat = format;
+            });
+          },
+          eventLoader: (day) {
+            print(day);
+            return user.getTasks(day);
+          },
+          calendarBuilders: CalendarBuilders(
+            markerBuilder: (context, date, events) {
+              if (events.isEmpty) return SizedBox();
+
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children:
+                    events.map((event) {
+                      if (event is! Task)
+                        return SizedBox.shrink(); // Skip invalid types
+
+                      final task = event as Task;
+
+                      return Container(
+                        width: 6,
+                        height: 6,
+                        margin: EdgeInsets.only(top: 25, right: 2),
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          color: task.type.getColor(),
+                        ),
+                      );
+                    }).toList(),
+              );
+            },
+          ),
+          calendarStyle: CalendarStyle(
+            selectedDecoration: BoxDecoration(
+              color: Theme.of(context).highlightColor,
+              shape: BoxShape.circle,
+            ),
+            selectedTextStyle: TextStyle(color: Colors.white),
+            todayDecoration: BoxDecoration(
+              color: Theme.of(context).highlightColor.withAlpha(80),
+              shape: BoxShape.circle,
+            ),
+            weekendTextStyle: TextStyle(color: Theme.of(context).primaryColor),
+            outsideTextStyle: TextStyle(
+              color: Theme.of(context).secondaryHeaderColor,
+            ),
+            defaultTextStyle: TextStyle(color: Theme.of(context).primaryColor),
+          ),
+          daysOfWeekStyle: DaysOfWeekStyle(
+            weekdayStyle: TextStyle(
+              color: Theme.of(context).highlightColor,
+              fontWeight: FontWeight.bold,
+            ),
+            weekendStyle: TextStyle(
+              color: Theme.of(context).highlightColor,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          headerStyle: HeaderStyle(
+            formatButtonDecoration: BoxDecoration(
+              borderRadius: BorderRadius.all(Radius.circular(8)),
+              border: Border.all(
+                color: Theme.of(context).highlightColor,
+                width: 2,
+              ),
+              color: Theme.of(context).highlightColor.withAlpha(50),
+            ),
+            formatButtonTextStyle: TextStyle(
+              color: Theme.of(context).highlightColor,
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+            ),
+            titleCentered: true,
+            titleTextStyle: TextStyle(
+              color: Theme.of(context).primaryColor,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+            leftChevronIcon: Icon(
+              Icons.chevron_left,
+              color: Theme.of(context).primaryColor,
+              size: 30,
+            ),
+            rightChevronIcon: Icon(
+              Icons.chevron_right,
+              color: Theme.of(context).primaryColor,
+              size: 30,
+            ),
+          ),
         ),
-        selectedTextStyle: TextStyle(color: Colors.white),
-        todayDecoration: BoxDecoration(
-          color: Theme.of(context).highlightColor.withAlpha(80),
-          shape: BoxShape.circle,
+        const SizedBox(height: 8.0),
+        Expanded(
+          child: ValueListenableBuilder<List<Task>>(
+            valueListenable: _selectedTasks,
+            builder: (context, value, _) {
+              if (value.isEmpty) {
+                return Center(child: CircularProgressIndicator());
+              } else {
+                return ListView.builder(
+                  itemCount: value.length,
+                  itemBuilder: (context, index) {
+                    return TaskTile(
+                      modifiable: false,
+                      task: value[index],
+                      onTap:
+                          () => showPopupCard(
+                            context: context,
+                            builder: (context) {
+                              return ShowMorePopUp(
+                                title: value[index].title,
+                                description: value[index].description,
+                                subtitle: value[index].subtitle,
+                              );
+                            },
+                            alignment: Alignment.center,
+                            useSafeArea: true,
+                            dimBackground: true,
+                          ),
+                    );
+                  },
+                );
+              }
+            },
+          ),
         ),
-        weekendTextStyle: TextStyle(color: Theme.of(context).primaryColor),
-        outsideTextStyle: TextStyle(
-          color: Theme.of(context).secondaryHeaderColor,
-        ),
-        defaultTextStyle: TextStyle(color: Theme.of(context).primaryColor),
-      ),
-      daysOfWeekStyle: DaysOfWeekStyle(
-        weekdayStyle: TextStyle(
-          color: Theme.of(context).highlightColor,
-          fontWeight: FontWeight.bold,
-        ),
-        weekendStyle: TextStyle(
-          color: Theme.of(context).highlightColor,
-          fontWeight: FontWeight.bold,
-        ),
-      ),
-      headerStyle: HeaderStyle(
-        formatButtonVisible: false,
-        titleCentered: true,
-        titleTextStyle: TextStyle(
-          color: Theme.of(context).primaryColor,
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-        ),
-        leftChevronIcon: Icon(
-          Icons.chevron_left,
-          color: Theme.of(context).primaryColor,
-          size: 30,
-        ),
-        rightChevronIcon: Icon(
-          Icons.chevron_right,
-          color: Theme.of(context).primaryColor,
-          size: 30,
-        ),
-      ),
+      ],
     );
+  }
+
+  @override
+  void dispose() {
+    _selectedTasks.dispose();
+    super.dispose();
   }
 }

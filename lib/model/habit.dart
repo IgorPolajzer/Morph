@@ -22,15 +22,19 @@ class Habit {
     return habit;
   }
 
-  static Future<List<Habit>> getHabitsFromFirebase(String id) async {
-    final habitDocs =
-        await FirebaseFirestore.instance
-            .collection('users')
-            .doc(id)
-            .collection('habits')
-            .get();
+  static Future<List<Habit>> pullFromFirebase(String id) async {
+    try {
+      final habitDocs =
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(id)
+              .collection('habits')
+              .get();
 
-    return habitDocs.docs.map((doc) => Habit.fromJson(doc.data())).toList();
+      return habitDocs.docs.map((doc) => Habit.fromJson(doc.data())).toList();
+    } catch (e) {
+      return [];
+    }
   }
 
   Map<String, dynamic> toMap() {
