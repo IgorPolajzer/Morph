@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:morphe/utils/constants.dart';
@@ -20,6 +21,16 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     late UserData userData = UserData();
+    //FirebaseAuth.instance.signOut();
+
+    // User is logged in
+    if (FirebaseAuth.instance.currentUser != null) {
+      if (!userData.loading && !userData.isInitialized) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          userData.pullFromFireBase();
+        });
+      }
+    }
 
     return ChangeNotifierProvider<UserData>(
       create: (context) => userData,

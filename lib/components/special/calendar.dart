@@ -1,13 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_popup_card/flutter_popup_card.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import '../../model/task.dart';
 import '../../model/user_data.dart';
-import '../pop_ups/show_more_popup.dart';
-import '../tiles/task_tile.dart';
+import '../lists/daily_task_list.dart';
 
 class Calendar extends StatefulWidget {
   Calendar({super.key});
@@ -157,29 +155,7 @@ class _CalendarState extends State<Calendar> {
               if (user.loading) {
                 return Center(child: CircularProgressIndicator());
               } else {
-                return ListView.builder(
-                  itemCount: value.length,
-                  itemBuilder: (context, index) {
-                    return TaskTile(
-                      modifiable: false,
-                      task: value[index],
-                      onTap:
-                          () => showPopupCard(
-                            context: context,
-                            builder: (context) {
-                              return ShowMorePopUp(
-                                title: value[index].title,
-                                description: value[index].description,
-                                subtitle: value[index].subtitle,
-                              );
-                            },
-                            alignment: Alignment.center,
-                            useSafeArea: true,
-                            dimBackground: true,
-                          ),
-                    );
-                  },
-                );
+                return DailyTasksList(tasks: value);
               }
             },
           ),

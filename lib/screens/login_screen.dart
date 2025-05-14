@@ -5,8 +5,10 @@ import 'package:morphe/components/buttons/gradient_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:morphe/screens/your_day_screen.dart';
+import 'package:provider/provider.dart';
 import 'package:toastification/toastification.dart';
 
+import '../model/user_data.dart';
 import '../utils/constants.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -38,6 +40,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final userData = Provider.of<UserData>(context, listen: true);
+
     late OutlineInputBorder enabledOutlineInputBorder;
     late OutlineInputBorder focusedOutlineInputBorder;
 
@@ -160,6 +164,11 @@ class _LoginScreenState extends State<LoginScreen> {
                       password: password,
                     );
                     if (user != null) {
+                      if (!userData.loading && !userData.isInitialized) {
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          userData.pullFromFireBase();
+                        });
+                      }
                       context.go(YourDayScreen.id);
                     }
                     setState(() {

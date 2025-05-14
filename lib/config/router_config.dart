@@ -12,7 +12,7 @@ import 'package:morphe/screens/registration_screen.dart';
 import 'package:morphe/screens/welcome_screen.dart';
 import 'package:morphe/utils/enums.dart';
 
-import '../components/special/NavBar.dart';
+import '../components/special/navbar.dart';
 
 class AuthNotifier extends ChangeNotifier {
   AuthNotifier() {
@@ -45,7 +45,7 @@ final GoRouter router = GoRouter(
         ),
         GoRoute(
           path: YourDayScreen.id,
-          builder: (context, state) => const YourDayScreen(),
+          builder: (context, state) => YourDayScreen(),
         ),
         GoRoute(
           path: ProfileScreen.id,
@@ -113,10 +113,13 @@ final GoRouter router = GoRouter(
   redirect: (context, state) {
     //FirebaseAuth.instance.signOut();
     final isLoggedIn = FirebaseAuth.instance.currentUser != null;
+
     final isAuthPage =
         state.fullPath == LoginScreen.id ||
         state.fullPath == RegistrationScreen.id;
+
     final isInitalLocation = state.fullPath == '/';
+
     final isOnboardingPage =
         state.fullPath == ChooseGoalsScreen.id ||
         state.fullPath == DescribeYourGoalsScreen.id ||
@@ -131,7 +134,7 @@ final GoRouter router = GoRouter(
 
     if (isLoggedIn && isInitalLocation) {
       // Logged in coming from initial page
-      return CalendarScreen.id;
+      return ProfileScreen.id;
     }
 
     // Otherwise allow navigation

@@ -10,6 +10,7 @@ var kLightTheme = ThemeData(
   secondaryHeaderColor: kSecondaryTextColorLight,
   highlightColor: kCalendarDayTextColorLight,
   cardColor: kTaskTileColorLight,
+  canvasColor: kNavBarColorLight,
   checkboxTheme: CheckboxThemeData(
     fillColor: WidgetStatePropertyAll<Color>(kPrimaryHeaderColorDark),
     checkColor: WidgetStatePropertyAll<Color>(kScaffoldColorDark),
@@ -48,6 +49,7 @@ var kDarkTheme = ThemeData(
   secondaryHeaderColor: kSecondaryTextColorDark,
   cardColor: kTaskTileColorDark,
   highlightColor: kCalendarDayTextColorDark,
+  canvasColor: kNavBarColorDark,
   checkboxTheme: CheckboxThemeData(
     fillColor: WidgetStatePropertyAll<Color>(kPrimaryHeaderColorDark),
     checkColor: WidgetStatePropertyAll<Color>(kScaffoldColorDark),
@@ -81,6 +83,9 @@ var kDarkTheme = ThemeData(
 // Colors
 const kScaffoldColorDark = Color(0xFF232323);
 const kScaffoldColorLight = Colors.white;
+
+const kNavBarColorDark = Color(0xFF1A1A1A);
+const kNavBarColorLight = Color(0xFFE0E0E0);
 
 const kCalendarDayTextColorDark = Color(0xFFc7c7ff);
 const kCalendarDayTextColorLight = Color(0xff6961b3);
