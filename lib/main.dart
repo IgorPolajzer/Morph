@@ -1,7 +1,9 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:morphe/screens/calendar_screen.dart';
+import 'package:morphe/screens/profile_screen.dart';
+import 'package:morphe/screens/your_day_screen.dart';
 import 'package:morphe/utils/constants.dart';
 import 'package:morphe/screens/choose_goals_screen.dart';
 import 'package:morphe/screens/describe_your_goals.dart';
@@ -14,6 +16,8 @@ import 'package:morphe/utils/enums.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
+import 'components/special/NavBar.dart';
+import 'config/router_config.dart';
 import 'model/user_data.dart';
 
 void main() async {
@@ -26,34 +30,58 @@ void main() async {
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     late UserData userData = UserData();
 
     return ChangeNotifierProvider<UserData>(
       create: (context) => userData,
-      child: MaterialApp(
-        title: 'Morph',
-        theme: kLightTheme,
-        darkTheme: kDarkTheme,
-        initialRoute: AuthWrapperScreen.id,
-        routes: {
-          AuthWrapperScreen.id: (context) => AuthWrapperScreen(),
-          WelcomeScreen.id: (context) => WelcomeScreen(),
-          RegistrationScreen.id: (context) => RegistrationScreen(),
-          LoginScreen.id: (context) => LoginScreen(),
-          ChooseGoalsScreen.id: (context) => ChooseGoalsScreen(),
-          DescribeYourGoals.id: (context) => DescribeYourGoals(),
-          PlanOverviewScreen.id_physical:
-              (context) => PlanOverviewScreen(type: HabitType.PHYSICAL),
-          PlanOverviewScreen.id_general:
-              (context) => PlanOverviewScreen(type: HabitType.GENERAL),
-          PlanOverviewScreen.id_mental:
-              (context) => PlanOverviewScreen(type: HabitType.MENTAL),
-          CalendarScreen.id: (context) => CalendarScreen(),
-        },
+      child: SafeArea(
+        child: MaterialApp.router(
+          routerConfig: router,
+          title: 'Morph',
+          theme: kLightTheme,
+          darkTheme: kDarkTheme,
+        ),
       ),
     );
   }
 }
+
+/*class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    late UserData userData = UserData();
+
+    return ChangeNotifierProvider<UserData>(
+      create: (context) => userData,
+      child: SafeArea(
+        child: MaterialApp(
+          title: 'Morph',
+          theme: kLightTheme,
+          darkTheme: kDarkTheme,
+          initialRoute: AuthWrapperScreen.id,
+          routes: {
+            AuthWrapperScreen.id: (context) => AuthWrapperScreen(),
+            WelcomeScreen.id: (context) => WelcomeScreen(),
+            RegistrationScreen.id: (context) => RegistrationScreen(),
+            LoginScreen.id: (context) => LoginScreen(),
+            ChooseGoalsScreen.id: (context) => ChooseGoalsScreen(),
+            DescribeYourGoals.id: (context) => DescribeYourGoals(),
+            PlanOverviewScreen.id_physical:
+                (context) => PlanOverviewScreen(type: HabitType.PHYSICAL),
+            PlanOverviewScreen.id_general:
+                (context) => PlanOverviewScreen(type: HabitType.GENERAL),
+            PlanOverviewScreen.id_mental:
+                (context) => PlanOverviewScreen(type: HabitType.MENTAL),
+            CalendarScreen.id: (context) => CalendarScreen(),
+            ProfileScreen.id: (context) => ProfileScreen(),
+            YourDayScreen.id: (context) => YourDayScreen(),
+          },
+        ),
+      ),
+    );
+  }
+}*/

@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_popup_card/flutter_popup_card.dart';
-import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -64,7 +63,6 @@ class _CalendarState extends State<Calendar> {
             });
           },
           eventLoader: (day) {
-            print(day);
             return user.getTasks(day);
           },
           calendarBuilders: CalendarBuilders(
@@ -156,7 +154,7 @@ class _CalendarState extends State<Calendar> {
           child: ValueListenableBuilder<List<Task>>(
             valueListenable: _selectedTasks,
             builder: (context, value, _) {
-              if (value.isEmpty) {
+              if (user.loading) {
                 return Center(child: CircularProgressIndicator());
               } else {
                 return ListView.builder(

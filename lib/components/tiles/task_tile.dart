@@ -69,7 +69,7 @@ class TaskTile extends StatelessWidget {
                         style: kPlaceHolderTextStyle.copyWith(
                           fontSize: 12,
                           color: Theme.of(context).secondaryHeaderColor,
-                        ), // <- your custom color here
+                        ),
                       ),
                     ],
                   ),

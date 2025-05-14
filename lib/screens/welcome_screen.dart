@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:morphe/utils/constants.dart';
 import 'package:morphe/screens/login_screen.dart';
 import 'package:morphe/screens/registration_screen.dart';
@@ -84,7 +85,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                 ),
                 title: 'Register',
                 onPressed: () {
-                  Navigator.pushNamed(context, RegistrationScreen.id);
+                  context.go(RegistrationScreen.id);
                 },
               ),
               GradientButton(
@@ -93,7 +94,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                 ),
                 title: 'Login',
                 onPressed: () {
-                  Navigator.pushNamed(context, LoginScreen.id);
+                  context.go(LoginScreen.id);
                 },
               ),
             ],

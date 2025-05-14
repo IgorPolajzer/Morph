@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:morphe/components/buttons/arrow_button.dart';
 import 'package:morphe/components/buttons/goal_radio_button.dart';
 import 'package:provider/provider.dart';
@@ -90,7 +91,7 @@ class _ChooseGoalsScreenState extends State<ChooseGoalsScreen> {
               );
             } else {
               user.setGoals(physical, general, mental);
-              Navigator.pushNamed(context, DescribeYourGoals.id);
+              context.go(DescribeYourGoals.id);
             }
           },
         ),

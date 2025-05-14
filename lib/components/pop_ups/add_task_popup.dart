@@ -135,7 +135,7 @@ class _AddTaskPopUpState extends State<AddTaskPopUp>
                     },
                   ),
                   Text(
-                    "*Day is irrelevant if frequency is daily",
+                    "*Day is irrelevant if frequency is daily or monthly",
                     style: kPlaceHolderTextStyle,
                   ),
                   Padding(
@@ -176,7 +176,6 @@ class _AddTaskPopUpState extends State<AddTaskPopUp>
                       activeTrackColor: CupertinoColors.activeGreen,
                     ),
                   ),
-                  SizedBox(height: 20),
                   SquareButton(
                     color: widget.type.getColor(),
                     title: "Add Task",
@@ -202,9 +201,9 @@ class _AddTaskPopUpState extends State<AddTaskPopUp>
                           context: context,
                           title: Text('Try again'),
                           description: Text(
-                            'Something went wrong while creating a task',
+                            'Something went wrong while creating a task, make sure no field is empty',
                           ),
-                          type: ToastificationType.error,
+                          type: ToastificationType.info,
                           autoCloseDuration: Duration(seconds: 3),
                         );
                       }

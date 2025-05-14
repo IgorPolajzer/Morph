@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_popup_card/flutter_popup_card.dart';
+import 'package:go_router/go_router.dart';
 import 'package:morphe/components/pop_ups/add_task_popup.dart';
 import 'package:morphe/components/buttons/arrow_button.dart';
 import 'package:morphe/screens/calendar_screen.dart';
@@ -114,12 +115,15 @@ class _PlanOverviewScreenState extends State<PlanOverviewScreen> {
           onPressed: () {
             switch (widget.type) {
               case HabitType.PHYSICAL:
-                Navigator.pushNamed(context, PlanOverviewScreen.id_general);
+                context.go(PlanOverviewScreen.id_general);
+                break;
               case HabitType.GENERAL:
-                Navigator.pushNamed(context, PlanOverviewScreen.id_mental);
+                context.go(PlanOverviewScreen.id_mental);
+                break;
               case HabitType.MENTAL:
                 userData.pushToFirebase();
-                Navigator.pushNamed(context, CalendarScreen.id);
+                context.go(CalendarScreen.id);
+                break;
             }
           },
         ),

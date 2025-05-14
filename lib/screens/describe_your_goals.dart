@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:morphe/components/buttons/arrow_button.dart';
 import 'package:morphe/components/buttons/goal_radio_button.dart';
 import 'package:morphe/screens/plan_overview_screen.dart';
@@ -118,7 +119,7 @@ class _DescribeYourGoalsState extends State<DescribeYourGoals> {
                 );
                 if (newUser != null) {
                   user.pushToFirebase();
-                  Navigator.pushNamed(context, PlanOverviewScreen.id_physical);
+                  context.go(PlanOverviewScreen.id_physical);
                 } else
                   throw Exception("newUser is null");
               } catch (e) {
@@ -131,7 +132,7 @@ class _DescribeYourGoalsState extends State<DescribeYourGoals> {
                   type: ToastificationType.error,
                   autoCloseDuration: Duration(seconds: 3),
                 );
-                Navigator.pushNamed(context, RegistrationScreen.id);
+                context.go(RegistrationScreen.id);
               }
             } else {
               toastification.show(

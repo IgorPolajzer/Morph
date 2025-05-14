@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:morphe/components/buttons/arrow_button.dart';
 import 'package:provider/provider.dart';
 
 import '../components/special/calendar.dart';
 import '../model/user_data.dart';
 
 class CalendarScreen extends StatelessWidget {
-  static String id = '/calendar__screen';
+  static String id = '/calendar_screen';
 
   const CalendarScreen({super.key});
 
@@ -18,15 +17,9 @@ class CalendarScreen extends StatelessWidget {
       return Center(child: CircularProgressIndicator());
     }
 
-    return SafeArea(
-      child: Scaffold(
-        body: Calendar(),
-        bottomNavigationBar: BottomAppBar(
-          elevation: 8,
-          color: Theme.of(context).scaffoldBackgroundColor,
-          child: ArrowButton(title: "CONFIRM", onPressed: () {}),
-        ),
-      ),
+    return PopScope(
+      canPop: true, // false to disable backwards routing
+      child: Scaffold(body: Calendar()),
     );
   }
 }

@@ -6,5 +6,3 @@ DateTime toDateTime(TimeOfDay time) {
 }
 
 DateTime stripTime(DateTime dt) => DateTime(dt.year, dt.month, dt.day);
-
-int getWeekOfMonth(DateTime dt) => ((dt.day - 1) / 7).floor() + 1;

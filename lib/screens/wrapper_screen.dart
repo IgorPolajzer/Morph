@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:morphe/screens/calendar_screen.dart';
 import 'package:morphe/screens/plan_overview_screen.dart';
 import 'package:morphe/screens/welcome_screen.dart';
@@ -38,7 +39,8 @@ class AuthWrapperScreen extends StatelessWidget {
               });
             }
 
-            return PlanOverviewScreen(type: HabitType.PHYSICAL);
+            // Let GoRouter handle the routing based on auth state
+            return const SizedBox.shrink(); // Nothing to render
           }
         },
       ),

@@ -1,5 +1,6 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:morphe/components/buttons/gradient_button.dart';
 import 'package:morphe/screens/choose_goals_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -161,7 +162,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       password: password,
                     );
                     if (user != null) {
-                      Navigator.pushNamed(context, AuthWrapperScreen.id);
+                      context.go('/');
                     }
                     setState(() {
                       showSpinner = false;

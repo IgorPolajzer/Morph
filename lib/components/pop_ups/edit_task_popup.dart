@@ -173,14 +173,10 @@ class _EditTaskPopUpState extends State<EditTaskPopUp>
                       activeTrackColor: CupertinoColors.activeGreen,
                     ),
                   ),
-                  SizedBox(height: 20),
                   SquareButton(
                     color: widget.task.type.getColor(),
                     title: "Save changes",
                     onPressed: () {
-                      print(
-                        "${widget.task.title} ${widget.task.subtitle} ${widget.task.description} ${frequencyPicker.frequency} ${dayPicker.day} ${startTimePicker.newTime} ${endTimePicker.newTime} ${notifications}",
-                      );
                       try {
                         user.updateTask(
                           widget.task.title,

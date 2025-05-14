@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:morphe/components/buttons/gradient_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -190,7 +191,7 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                       );
                     } else {
                       userData.setCredentials(email, username, password);
-                      Navigator.pushNamed(context, ChooseGoalsScreen.id);
+                      context.go(ChooseGoalsScreen.id);
                     }
 
                     setState(() {

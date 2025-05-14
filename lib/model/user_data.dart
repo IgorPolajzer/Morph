@@ -153,39 +153,48 @@ class UserData extends ChangeNotifier {
     notifyListeners();
   }
 
-  List<Task> getTasks(DateTime date) {
+  List<Task> getTasks(DateTime currentDateTime) {
     final List<Task> allTasks = [];
 
     for (final type in HabitType.values) {
       final tasksOfType = _tasks[type] ?? [];
 
       for (final task in tasksOfType) {
-        final isDaily = task.scheduledFrequency == Frequency.DAILY;
-        final isByweekly = task.scheduledFrequency == Frequency.BYWEEKLY;
-        final isWeekly = task.scheduledFrequency == Frequency.WEEKLY;
-        final isMonthly = task.scheduledFrequency == Frequency.MONTHLY;
+        final taskStartDateTime = task.scheduledDay.toDateTime(
+          date: task.startDateTime,
+        );
 
-        if (isDaily) {
-          allTasks.add(task);
-        } else if (isWeekly) {
-          final isSameWeekday = date.weekday == task.scheduledDay.index + 1;
-          if (isSameWeekday) {
-            allTasks.add(task);
-          }
-        } else if (isByweekly) {
-          final taskStartDate = stripTime(task.startDateTime);
-          final currentDate = stripTime(date);
-          final diff = currentDate.difference(taskStartDate).inDays;
+        final taskStartDate = stripTime(taskStartDateTime);
+        final currentDate = stripTime(currentDateTime);
 
-          if (diff >= 0 && diff % 14 == 0) {
-            allTasks.add(task);
-          }
-        } else if (isMonthly) {
-          final isSameDayInMonth = date.day == task.startDateTime.day;
+        final isSameWeekday =
+            currentDateTime.weekday == task.scheduledDay.index + 1;
+        final isBeforeOrToday =
+            task.startDateTime.isBefore(currentDate) ||
+            task.startDateTime.day == currentDate.day;
 
-          if (isSameDayInMonth) {
-            allTasks.add(task);
-          }
+        switch (task.scheduledFrequency) {
+          case Frequency.DAILY:
+            if (isBeforeOrToday) allTasks.add(task);
+            break;
+          case Frequency.WEEKLY:
+            if (isBeforeOrToday && isSameWeekday) allTasks.add(task);
+            break;
+          case Frequency.BYWEEKLY:
+            final diff = currentDate.difference(taskStartDate).inDays;
+
+            if (isBeforeOrToday && isSameWeekday) {
+              if (diff >= 0 && diff % 14 == 0) {
+                allTasks.add(task);
+              }
+            }
+            break;
+          case Frequency.MONTHLY:
+            if (currentDateTime.day == taskStartDateTime.day &&
+                isBeforeOrToday) {
+              allTasks.add(task);
+            }
+            break;
         }
       }
     }
