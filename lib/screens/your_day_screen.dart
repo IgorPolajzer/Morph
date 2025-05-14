@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../components/special/NavBar.dart';
-
 class YourDayScreen extends StatelessWidget {
   static String id = '/your_day_screen';
 

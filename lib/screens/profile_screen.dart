@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../components/special/NavBar.dart';
-
 class ProfileScreen extends StatelessWidget {
   static String id = '/profile_screen';
 

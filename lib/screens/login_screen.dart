@@ -2,11 +2,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:morphe/components/buttons/gradient_button.dart';
-import 'package:morphe/screens/choose_goals_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
-import 'package:morphe/screens/wrapper_screen.dart';
+import 'package:morphe/screens/your_day_screen.dart';
 import 'package:toastification/toastification.dart';
 
 import '../utils/constants.dart';
@@ -162,7 +160,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       password: password,
                     );
                     if (user != null) {
-                      context.go('/');
+                      context.go(YourDayScreen.id);
                     }
                     setState(() {
                       showSpinner = false;

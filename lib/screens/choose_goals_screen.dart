@@ -91,7 +91,7 @@ class _ChooseGoalsScreenState extends State<ChooseGoalsScreen> {
               );
             } else {
               user.setGoals(physical, general, mental);
-              context.go(DescribeYourGoals.id);
+              context.go(DescribeYourGoalsScreen.id);
             }
           },
         ),

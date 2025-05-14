@@ -10,10 +10,19 @@ import 'package:morphe/screens/login_screen.dart';
 import 'package:morphe/screens/plan_overview_screen.dart';
 import 'package:morphe/screens/registration_screen.dart';
 import 'package:morphe/screens/welcome_screen.dart';
-import 'package:morphe/screens/wrapper_screen.dart';
 import 'package:morphe/utils/enums.dart';
 
 import '../components/special/NavBar.dart';
+
+class AuthNotifier extends ChangeNotifier {
+  AuthNotifier() {
+    FirebaseAuth.instance.authStateChanges().listen((user) {
+      notifyListeners();
+    });
+  }
+}
+
+final authNotifier = AuthNotifier();
 
 final GlobalKey<NavigatorState> _rootNavigatorKey = GlobalKey<NavigatorState>();
 final GlobalKey<NavigatorState> _shellNavigatorKey =
@@ -21,6 +30,7 @@ final GlobalKey<NavigatorState> _shellNavigatorKey =
 
 /// The route configuration.
 final GoRouter router = GoRouter(
+  refreshListenable: authNotifier,
   navigatorKey: _rootNavigatorKey,
   routes: <RouteBase>[
     ShellRoute(
@@ -47,7 +57,6 @@ final GoRouter router = GoRouter(
     GoRoute(
       path: '/',
       builder: (context, state) {
-        // Show loading while redirect logic resolves.
         return const Scaffold(body: Center(child: CircularProgressIndicator()));
       },
     ),
@@ -76,9 +85,9 @@ final GoRouter router = GoRouter(
       },
     ),
     GoRoute(
-      path: DescribeYourGoals.id,
+      path: DescribeYourGoalsScreen.id,
       builder: (BuildContext context, GoRouterState state) {
-        return const DescribeYourGoals();
+        return const DescribeYourGoalsScreen();
       },
     ),
     GoRoute(
@@ -102,18 +111,26 @@ final GoRouter router = GoRouter(
   ],
   initialLocation: '/',
   redirect: (context, state) {
+    //FirebaseAuth.instance.signOut();
     final isLoggedIn = FirebaseAuth.instance.currentUser != null;
     final isAuthPage =
         state.fullPath == LoginScreen.id ||
         state.fullPath == RegistrationScreen.id;
+    final isInitalLocation = state.fullPath == '/';
+    final isOnboardingPage =
+        state.fullPath == ChooseGoalsScreen.id ||
+        state.fullPath == DescribeYourGoalsScreen.id ||
+        state.fullPath == PlanOverviewScreen.id_physical ||
+        state.fullPath == PlanOverviewScreen.id_general ||
+        state.fullPath == PlanOverviewScreen.id_mental;
 
-    if (!isLoggedIn && !isAuthPage) {
+    if (!isLoggedIn && !isAuthPage && !isOnboardingPage) {
       // Not logged in and trying to go somewhere protected
       return WelcomeScreen.id;
     }
 
-    if (isLoggedIn && isAuthPage) {
-      // Logged in but trying to go to login/register/welcome
+    if (isLoggedIn && isInitalLocation) {
+      // Logged in coming from initial page
       return CalendarScreen.id;
     }
 

@@ -3,7 +3,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:morphe/components/buttons/arrow_button.dart';
-import 'package:morphe/components/buttons/goal_radio_button.dart';
 import 'package:morphe/screens/plan_overview_screen.dart';
 import 'package:morphe/screens/registration_screen.dart';
 import 'package:provider/provider.dart';
@@ -14,16 +13,17 @@ import '../components/text/screen_title.dart';
 import '../model/user_data.dart';
 import '../utils/enums.dart';
 
-class DescribeYourGoals extends StatefulWidget {
+class DescribeYourGoalsScreen extends StatefulWidget {
   static String id = '/describe_your_goals_screen';
 
-  const DescribeYourGoals({super.key});
+  const DescribeYourGoalsScreen({super.key});
 
   @override
-  State<DescribeYourGoals> createState() => _DescribeYourGoalsState();
+  State<DescribeYourGoalsScreen> createState() =>
+      _DescribeYourGoalsScreenState();
 }
 
-class _DescribeYourGoalsState extends State<DescribeYourGoals> {
+class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
   late final FirebaseApp _app;
   late final _auth;
 
