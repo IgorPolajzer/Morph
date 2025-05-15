@@ -10,24 +10,39 @@ import 'habit.dart';
 
 class UserData extends ChangeNotifier {
   bool loading = false;
+  bool _isInitialized = false;
+
   late final String id;
 
   String? _email;
-  String get email => _email ?? "";
 
   String? _password;
-  String get password => _password ?? "";
 
   String? _username;
-  String get username => _username ?? "";
-
-  bool _isInitialized = false;
-  bool get isInitialized => _isInitialized;
 
   int _metaLevel = 1;
-  int get metaLevel => _metaLevel;
 
   Map<HabitType, bool> _selectedHabits = {};
+  Map<HabitType, Experience> _experience = {};
+  Map<HabitType, List<Habit>> _habits = {};
+  Map<HabitType, List<Task>> _tasks = {};
+
+  // Constructors
+  UserData() {
+    for (HabitType type in HabitType.values) {
+      _habits[type] = <Habit>[];
+      _tasks[type] = <Task>[];
+      _experience[type] = Experience();
+    }
+  }
+
+  // Getters and setters
+  String get email => _email ?? "";
+  String get password => _password ?? "";
+  String get username => _username ?? "";
+  bool get isInitialized => _isInitialized;
+  int get metaLevel => _metaLevel;
+
   get selectedHabits {
     return {
       HabitType.PHYSICAL: _selectedHabits[HabitType.PHYSICAL] ?? false,
@@ -36,7 +51,6 @@ class UserData extends ChangeNotifier {
     };
   }
 
-  Map<HabitType, Experience> _experience = {};
   get experience {
     return {
       HabitType.PHYSICAL: _experience[HabitType.PHYSICAL] ?? Experience(),
@@ -45,37 +59,10 @@ class UserData extends ChangeNotifier {
     };
   }
 
-  Map<HabitType, List<Habit>> _habits = {};
-  Map<HabitType, List<Task>> _tasks = {};
-
-  // User auth operations
   void setCredentials(String email, String username, String password) {
     _email = email;
     _username = username;
     _password = password;
-  }
-
-  // Selected goals operations
-  void setSelectedHabits(bool physical, bool general, bool mental) async {
-    // Set selected habits
-    _selectedHabits[HabitType.PHYSICAL] = physical;
-    _selectedHabits[HabitType.GENERAL] = general;
-    _selectedHabits[HabitType.MENTAL] = mental;
-
-    for (HabitType type in HabitType.values) {
-      _habits[type] = <Habit>[];
-      _tasks[type] = <Task>[];
-      _experience[type] = Experience();
-    }
-  }
-
-  // Habit operations
-  void deleteHabit(Habit habit) {
-    final habits = _habits[habit.type];
-    if (habits == null) return;
-
-    habits.removeWhere((habitEntry) => habit.id == habitEntry.id);
-    notifyListeners();
   }
 
   List<Habit>? getHabitsFromType(HabitType type) {
@@ -87,59 +74,6 @@ class UserData extends ChangeNotifier {
       case HabitType.MENTAL:
         return _habits[HabitType.MENTAL];
     }
-  }
-
-  // Task operations
-  void addTask(Task task) {
-    switch (task.type) {
-      case HabitType.PHYSICAL:
-        _tasks[HabitType.PHYSICAL]?.add(task);
-      case HabitType.GENERAL:
-        _tasks[HabitType.GENERAL]?.add(task);
-      case HabitType.MENTAL:
-        _tasks[HabitType.MENTAL]?.add(task);
-    }
-
-    notifyListeners();
-  }
-
-  void deleteTask(Task newTask) {
-    final tasks = _tasks[newTask.type];
-    if (tasks == null) return;
-
-    tasks.removeWhere((taskEntry) => newTask.id == taskEntry.id);
-    notifyListeners();
-  }
-
-  void updateTask(
-    String title,
-    String subtitle,
-    String description,
-    Frequency frequency,
-    Day day,
-    DateTime startDateTime,
-    DateTime endDateTime,
-    bool notifications,
-    HabitType type,
-    String taskId,
-  ) {
-    final tasks = _tasks[type];
-    if (tasks == null) return;
-
-    final index = tasks.indexWhere((task) => task.id == taskId);
-    if (index != -1) {
-      Task task = tasks[index];
-      task.title = title;
-      task.subtitle = subtitle;
-      task.description = description;
-      task.scheduledFrequency = frequency;
-      task.scheduledDay = day;
-      task.startDateTime = startDateTime;
-      task.endDateTime = endDateTime;
-      task.notifications = notifications;
-    }
-
-    notifyListeners();
   }
 
   List<Task> getTasks(DateTime currentDateTime) {
@@ -202,6 +136,75 @@ class UserData extends ChangeNotifier {
       case HabitType.MENTAL:
         return _tasks[HabitType.MENTAL];
     }
+  }
+
+  void setSelectedHabits(bool physical, bool general, bool mental) {
+    // Set selected habits
+    _selectedHabits[HabitType.PHYSICAL] = physical;
+    _selectedHabits[HabitType.GENERAL] = general;
+    _selectedHabits[HabitType.MENTAL] = mental;
+  }
+
+  // Habit operations
+  void deleteHabit(Habit habit) {
+    final habits = _habits[habit.type];
+    if (habits == null) return;
+
+    habits.removeWhere((habitEntry) => habit.id == habitEntry.id);
+    notifyListeners();
+  }
+
+  // Task operations
+  void addTask(Task task) {
+    switch (task.type) {
+      case HabitType.PHYSICAL:
+        _tasks[HabitType.PHYSICAL]?.add(task);
+      case HabitType.GENERAL:
+        _tasks[HabitType.GENERAL]?.add(task);
+      case HabitType.MENTAL:
+        _tasks[HabitType.MENTAL]?.add(task);
+    }
+
+    notifyListeners();
+  }
+
+  void deleteTask(Task newTask) {
+    final tasks = _tasks[newTask.type];
+    if (tasks == null) return;
+
+    tasks.removeWhere((taskEntry) => newTask.id == taskEntry.id);
+    notifyListeners();
+  }
+
+  void updateTask(
+    String title,
+    String subtitle,
+    String description,
+    Frequency frequency,
+    Day day,
+    DateTime startDateTime,
+    DateTime endDateTime,
+    bool notifications,
+    HabitType type,
+    String taskId,
+  ) {
+    final tasks = _tasks[type];
+    if (tasks == null) return;
+
+    final index = tasks.indexWhere((task) => task.id == taskId);
+    if (index != -1) {
+      Task task = tasks[index];
+      task.title = title;
+      task.subtitle = subtitle;
+      task.description = description;
+      task.scheduledFrequency = frequency;
+      task.scheduledDay = day;
+      task.startDateTime = startDateTime;
+      task.endDateTime = endDateTime;
+      task.notifications = notifications;
+    }
+
+    notifyListeners();
   }
 
   //Firebase interactions
