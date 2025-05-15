@@ -134,7 +134,7 @@ final GoRouter router = GoRouter(
 
     if (isLoggedIn && isInitalLocation) {
       // Logged in coming from initial page
-      return YourDayScreen.id;
+      return CalendarScreen.id;
     }
 
     // Otherwise allow navigation

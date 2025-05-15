@@ -20,6 +20,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   final ValueNotifier<double> _valueNotifier = ValueNotifier(0);
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final userData = Provider.of<UserData>(context, listen: true);
+    //_selectedTasks.value = userData.getTasks(_selectedDay!);
+  }
+
+  @override
   Widget build(BuildContext context) {
     final userData = Provider.of<UserData>(context, listen: true);
 

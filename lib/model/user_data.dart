@@ -25,9 +25,19 @@ class UserData extends ChangeNotifier {
   bool get isInitialized => _isInitialized;
 
   Map<HabitType, bool> _selectedHabits = {};
+  get getSelectedHabits {
+    return {
+      HabitType.PHYSICAL: _selectedHabits[HabitType.PHYSICAL] ?? false,
+      HabitType.GENERAL: _selectedHabits[HabitType.GENERAL] ?? false,
+      HabitType.MENTAL: _selectedHabits[HabitType.MENTAL] ?? false,
+    };
+  }
+
+  Map<HabitType, Experience> _xp = {};
+  Map<HabitType, Experience> get xp => _xp;
+
   Map<HabitType, List<Habit>> _habits = {};
   Map<HabitType, List<Task>> _tasks = {};
-  Map<HabitType, Experience> _xp = {};
 
   // User auth operations
   void setCredentials(String email, String username, String password) {
@@ -37,39 +47,17 @@ class UserData extends ChangeNotifier {
   }
 
   // Selected goals operations
-  void setGoals(bool physical, bool general, bool mental) async {
+  void setSelectedHabits(bool physical, bool general, bool mental) async {
     // Set selected habits
     _selectedHabits[HabitType.PHYSICAL] = physical;
     _selectedHabits[HabitType.GENERAL] = general;
     _selectedHabits[HabitType.MENTAL] = mental;
 
-    // Set habit lists
-    if (_selectedHabits[HabitType.PHYSICAL]! &&
-        _habits[HabitType.PHYSICAL] == null)
-      _habits[HabitType.PHYSICAL] = <Habit>[];
-    if (_selectedHabits[HabitType.GENERAL]! &&
-        _habits[HabitType.GENERAL] == null)
-      _habits[HabitType.GENERAL] = <Habit>[];
-    if (_selectedHabits[HabitType.MENTAL]! && _habits[HabitType.MENTAL] == null)
-      _habits[HabitType.MENTAL] = <Habit>[];
-
-    // Set task lists
-    if (_selectedHabits[HabitType.PHYSICAL]! &&
-        _tasks[HabitType.PHYSICAL] == null)
-      _tasks[HabitType.PHYSICAL] = <Task>[];
-    if (_selectedHabits[HabitType.GENERAL]! &&
-        _tasks[HabitType.GENERAL] == null)
-      _tasks[HabitType.GENERAL] = <Task>[];
-    if (_selectedHabits[HabitType.MENTAL]! && _tasks[HabitType.MENTAL] == null)
-      _tasks[HabitType.MENTAL] = <Task>[];
-
-    // Set experience lists
-    if (_selectedHabits[HabitType.PHYSICAL]! && _xp[HabitType.PHYSICAL] == null)
-      _xp[HabitType.PHYSICAL] = Experience();
-    if (_selectedHabits[HabitType.GENERAL]! && _xp[HabitType.GENERAL] == null)
-      _xp[HabitType.GENERAL] = Experience();
-    if (_selectedHabits[HabitType.MENTAL]! && _xp[HabitType.MENTAL] == null)
-      _xp[HabitType.MENTAL] = Experience();
+    for (HabitType type in HabitType.values) {
+      _habits[type] = <Habit>[];
+      _tasks[type] = <Task>[];
+      _xp[type] = Experience();
+    }
   }
 
   // Habit operations
@@ -79,14 +67,6 @@ class UserData extends ChangeNotifier {
 
     habits.removeWhere((habitEntry) => habit.id == habitEntry.id);
     notifyListeners();
-  }
-
-  get getSelectedHabits {
-    return {
-      HabitType.PHYSICAL: _selectedHabits[HabitType.PHYSICAL] ?? false,
-      HabitType.GENERAL: _selectedHabits[HabitType.GENERAL] ?? false,
-      HabitType.MENTAL: _selectedHabits[HabitType.MENTAL] ?? false,
-    };
   }
 
   List<Habit>? getHabitsFromType(HabitType type) {
@@ -159,42 +139,44 @@ class UserData extends ChangeNotifier {
     for (final type in HabitType.values) {
       final tasksOfType = _tasks[type] ?? [];
 
-      for (final task in tasksOfType) {
-        final taskStartDateTime = task.scheduledDay.toDateTime(
-          date: task.startDateTime,
-        );
+      if (_selectedHabits[type] ?? false) {
+        for (final task in tasksOfType) {
+          final taskStartDateTime = task.scheduledDay.toDateTime(
+            date: task.startDateTime,
+          );
 
-        final taskStartDate = stripTime(taskStartDateTime);
-        final currentDate = stripTime(currentDateTime);
+          final taskStartDate = stripTime(taskStartDateTime);
+          final currentDate = stripTime(currentDateTime);
 
-        final isSameWeekday =
-            currentDateTime.weekday == task.scheduledDay.index + 1;
-        final isBeforeOrToday =
-            task.startDateTime.isBefore(currentDate) ||
-            task.startDateTime.day == currentDate.day;
+          final isSameWeekday =
+              currentDateTime.weekday == task.scheduledDay.index + 1;
+          final isBeforeOrToday =
+              task.startDateTime.isBefore(currentDate) ||
+              task.startDateTime.day == currentDate.day;
 
-        switch (task.scheduledFrequency) {
-          case Frequency.DAILY:
-            if (isBeforeOrToday) allTasks.add(task);
-            break;
-          case Frequency.WEEKLY:
-            if (isBeforeOrToday && isSameWeekday) allTasks.add(task);
-            break;
-          case Frequency.BYWEEKLY:
-            final diff = currentDate.difference(taskStartDate).inDays;
+          switch (task.scheduledFrequency) {
+            case Frequency.DAILY:
+              if (isBeforeOrToday) allTasks.add(task);
+              break;
+            case Frequency.WEEKLY:
+              if (isBeforeOrToday && isSameWeekday) allTasks.add(task);
+              break;
+            case Frequency.BYWEEKLY:
+              final diff = currentDate.difference(taskStartDate).inDays;
 
-            if (isBeforeOrToday && isSameWeekday) {
-              if (diff >= 0 && diff % 14 == 0) {
+              if (isBeforeOrToday && isSameWeekday) {
+                if (diff >= 0 && diff % 14 == 0) {
+                  allTasks.add(task);
+                }
+              }
+              break;
+            case Frequency.MONTHLY:
+              if (currentDateTime.day == taskStartDateTime.day &&
+                  isBeforeOrToday) {
                 allTasks.add(task);
               }
-            }
-            break;
-          case Frequency.MONTHLY:
-            if (currentDateTime.day == taskStartDateTime.day &&
-                isBeforeOrToday) {
-              allTasks.add(task);
-            }
-            break;
+              break;
+          }
         }
       }
     }
@@ -241,19 +223,23 @@ class UserData extends ChangeNotifier {
     _username = data['username'] ?? '';
     _email = data['email'] ?? '';
 
-    print("username in pulUser $_username");
-
     // Get selected habits
     final selectedHabits = data['selectedHabits'] ?? {};
     _selectedHabits[HabitType.PHYSICAL] = selectedHabits['physical'] ?? false;
     _selectedHabits[HabitType.GENERAL] = selectedHabits['general'] ?? false;
     _selectedHabits[HabitType.MENTAL] = selectedHabits['mental'] ?? false;
 
-    setGoals(
+    setSelectedHabits(
       _selectedHabits[HabitType.PHYSICAL]!,
       _selectedHabits[HabitType.GENERAL]!,
       _selectedHabits[HabitType.MENTAL]!,
     );
+
+    // Get experience
+    final experience = data['experience'] ?? {};
+    _xp[HabitType.PHYSICAL] = Experience.fromJson(experience['physical']);
+    _xp[HabitType.GENERAL] = Experience.fromJson(experience['general']);
+    _xp[HabitType.MENTAL] = Experience.fromJson(experience['mental']);
 
     // Get habits
     final habits = await Habit.pullFromFirebase(id);
@@ -285,6 +271,15 @@ class UserData extends ChangeNotifier {
       await userDoc.set({
         'username': username,
         'email': email,
+      }, SetOptions(merge: true));
+
+      // Store experience
+      await userDoc.set({
+        'experience': {
+          'physical': _xp[HabitType.PHYSICAL]?.toMap(),
+          'general': _xp[HabitType.GENERAL]?.toMap(),
+          'mental': _xp[HabitType.MENTAL]?.toMap(),
+        },
       }, SetOptions(merge: true));
 
       // Store selected habits

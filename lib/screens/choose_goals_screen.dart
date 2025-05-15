@@ -85,12 +85,12 @@ class _ChooseGoalsScreenState extends State<ChooseGoalsScreen> {
               toastification.show(
                 context: context,
                 title: Text('Invalid choice'),
-                description: Text('You have to choose at least one goal'),
+                description: Text('You have to choose at least one habit type'),
                 type: ToastificationType.info,
                 autoCloseDuration: Duration(seconds: 3),
               );
             } else {
-              user.setGoals(physical, general, mental);
+              user.setSelectedHabits(physical, general, mental);
               context.go(DescribeYourGoalsScreen.id);
             }
           },

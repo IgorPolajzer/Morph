@@ -17,16 +17,17 @@ class Calendar extends StatefulWidget {
 class _CalendarState extends State<Calendar> {
   DateTime _selectedDay = DateTime.now();
   late DateTime _focusedDay;
+
   CalendarFormat _calendarFormat = CalendarFormat.month;
-  late ValueNotifier<List<Task>> _selectedTasks = ValueNotifier([]);
+  ValueNotifier<List<Task>> _selectedTasks = ValueNotifier([]);
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     _focusedDay = _selectedDay;
 
-    final user = Provider.of<UserData>(context, listen: true);
-    _selectedTasks.value = user.getTasks(_selectedDay!);
+    final userData = Provider.of<UserData>(context, listen: true);
+    _selectedTasks.value = userData.getTasks(_selectedDay!);
   }
 
   @override

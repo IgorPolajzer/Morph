@@ -28,6 +28,35 @@ class PlanOverviewScreen extends StatefulWidget {
 }
 
 class _PlanOverviewScreenState extends State<PlanOverviewScreen> {
+  void toNextPlanOverview(UserData userData) {
+    var selectedHabits = userData.getSelectedHabits;
+
+    switch (widget.type) {
+      case HabitType.PHYSICAL:
+        if (selectedHabits[HabitType.GENERAL])
+          context.go(PlanOverviewScreen.id_general);
+        else if (selectedHabits[HabitType.MENTAL])
+          context.go(PlanOverviewScreen.id_mental);
+        else {
+          userData.pushToFirebase();
+          context.go(CalendarScreen.id);
+        }
+        break;
+      case HabitType.GENERAL:
+        if (selectedHabits[HabitType.MENTAL])
+          context.go(PlanOverviewScreen.id_mental);
+        else {
+          userData.pushToFirebase();
+          context.go(CalendarScreen.id);
+        }
+        break;
+      case HabitType.MENTAL:
+        userData.pushToFirebase();
+        context.go(CalendarScreen.id);
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final userData = Provider.of<UserData>(context, listen: true);
@@ -113,18 +142,7 @@ class _PlanOverviewScreenState extends State<PlanOverviewScreen> {
         child: ArrowButton(
           title: "CONFIRM",
           onPressed: () {
-            switch (widget.type) {
-              case HabitType.PHYSICAL:
-                context.go(PlanOverviewScreen.id_general);
-                break;
-              case HabitType.GENERAL:
-                context.go(PlanOverviewScreen.id_mental);
-                break;
-              case HabitType.MENTAL:
-                userData.pushToFirebase();
-                context.go(CalendarScreen.id);
-                break;
-            }
+            toNextPlanOverview(userData);
           },
         ),
       ),
