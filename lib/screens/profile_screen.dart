@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:morphe/components/progress_bars/meta_progress_bar.dart';
+import 'package:morphe/model/experience.dart';
 import 'package:provider/provider.dart';
 
 import '../components/progress_bars/habit_progress_bar.dart';
@@ -18,12 +19,15 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   final ValueNotifier<double> _valueNotifier = ValueNotifier(0);
+  late Map _selectedHabits = {};
+  late Map<HabitType, Experience> _experience = {};
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     final userData = Provider.of<UserData>(context, listen: true);
-    //_selectedTasks.value = userData.getTasks(_selectedDay!);
+    _selectedHabits = userData.selectedHabits;
+    _experience = userData.experience;
   }
 
   @override
@@ -33,6 +37,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (userData.loading && userData.isInitialized) {
       return Center(child: CircularProgressIndicator());
     }
+
+    final metaXp = Experience.getMetaXp(
+      _experience[HabitType.PHYSICAL]!.points,
+      _experience[HabitType.GENERAL]!.points,
+      _experience[HabitType.MENTAL]!.points,
+    );
+
+    final maxMetaXp = Experience.getMetaXp(
+      _experience[HabitType.PHYSICAL]!.maxXp,
+      _experience[HabitType.GENERAL]!.maxXp,
+      _experience[HabitType.MENTAL]!.maxXp,
+    );
 
     return PopScope(
       canPop: true, // false to disable backwards routing
@@ -47,10 +63,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 right: 65.0,
                 bottom: 20,
               ),
-              child: MetaProgressBar(valueNotifier: _valueNotifier),
+              child: MetaProgressBar(
+                valueNotifier: _valueNotifier,
+                xp: metaXp.roundToDouble(),
+                maxXp: maxMetaXp.roundToDouble(),
+                level: userData.metaLevel,
+              ),
             ),
             Text(
-              '80/100xp',
+              '$metaXp/300xp',
               style: kTitleTextStyle.copyWith(
                 color: kMetaLevelColor,
                 fontSize: 16,
@@ -69,9 +90,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
             ),
-            HabitProgressBar(xp: 20, level: 3, type: HabitType.PHYSICAL),
-            HabitProgressBar(xp: 30, level: 3, type: HabitType.GENERAL),
-            HabitProgressBar(xp: 60, level: 3, type: HabitType.MENTAL),
+            HabitProgressBar(
+              xp: _experience[HabitType.PHYSICAL]!.points,
+              level: _experience[HabitType.PHYSICAL]!.level,
+              type: HabitType.PHYSICAL,
+              enabled: _selectedHabits[HabitType.PHYSICAL],
+            ),
+            HabitProgressBar(
+              xp: _experience[HabitType.GENERAL]!.points,
+              level: _experience[HabitType.GENERAL]!.level,
+              type: HabitType.GENERAL,
+              enabled: _selectedHabits[HabitType.GENERAL],
+            ),
+            HabitProgressBar(
+              xp: _experience[HabitType.MENTAL]!.points,
+              level: _experience[HabitType.MENTAL]!.level,
+              type: HabitType.MENTAL,
+              enabled: _selectedHabits[HabitType.MENTAL],
+            ),
           ],
         ),
       ),

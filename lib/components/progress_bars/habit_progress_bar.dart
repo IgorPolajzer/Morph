@@ -9,11 +9,13 @@ class HabitProgressBar extends StatelessWidget {
   int xp;
   int level;
   final HabitType type;
+  final bool enabled;
 
   HabitProgressBar({
     required this.xp,
     required this.level,
     required this.type,
+    this.enabled = true,
     super.key,
   });
 
@@ -35,14 +37,20 @@ class HabitProgressBar extends StatelessWidget {
                     Text(
                       "${type.format()}: ",
                       style: kPlaceHolderTextStyle.copyWith(
-                        color: type.getColor(),
+                        color:
+                            enabled
+                                ? type.getColor()
+                                : Theme.of(context).secondaryHeaderColor,
                         fontSize: 16,
                       ),
                     ),
                     Text(
                       "$xp/100xp",
                       style: kPlaceHolderTextStyle.copyWith(
-                        color: Theme.of(context).primaryColor,
+                        color:
+                            enabled
+                                ? Theme.of(context).primaryColor
+                                : Theme.of(context).secondaryHeaderColor,
                         fontSize: 16,
                       ),
                     ),
@@ -55,7 +63,10 @@ class HabitProgressBar extends StatelessWidget {
                 lineHeight: 16.0,
                 percent: xp / 100,
                 backgroundColor: Theme.of(context).secondaryHeaderColor,
-                progressColor: type.getColor(),
+                progressColor:
+                    enabled
+                        ? type.getColor()
+                        : Theme.of(context).secondaryHeaderColor,
                 barRadius: Radius.circular(10),
                 animation: true,
               ),
@@ -70,7 +81,13 @@ class HabitProgressBar extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: Theme.of(context).cardColor,
                   shape: BoxShape.circle,
-                  border: Border.all(color: type.getColor(), width: 2.0),
+                  border: Border.all(
+                    color:
+                        enabled
+                            ? type.getColor()
+                            : Theme.of(context).secondaryHeaderColor,
+                    width: 2.0,
+                  ),
                 ),
                 height: 62,
                 width: 62,

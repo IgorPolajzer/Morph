@@ -34,7 +34,7 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
 
   void toPlanOverview(UserData userData) {
     // Navigate to first selected habit type
-    var selectedHabits = userData.getSelectedHabits;
+    var selectedHabits = userData.selectedHabits;
 
     if (selectedHabits[HabitType.PHYSICAL])
       context.go(PlanOverviewScreen.id_physical);
@@ -77,7 +77,7 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
                         "Tips for describing physical goals:\n- State your desired outcome (e.g., build muscle, lose fat, increase energy).\n- Mention preferred activities (e.g., running, weightlifting, yoga).\n- Include any constraints or limitations (e.g., no access to gym, previous injury).\n- Add timeline or urgency if relevant (e.g., in 3 months, before summer)",
                     description:
                         "Describe your physical goals.\nExample: I want to reach a healthy bodyfat range, improve my general strength and health. I would like to achieve those goals through weight training and swimming.",
-                    enabled: userData.getSelectedHabits[HabitType.PHYSICAL],
+                    enabled: userData.selectedHabits[HabitType.PHYSICAL],
                     onChanged: (value) {
                       physicalGoals = value;
                     },
@@ -89,7 +89,7 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
                         "Tips for describing general goals:\n- Focus on daily habits or routines (e.g., cleaning, reading, studying).\n- Mention specific tasks or responsibilities you want to be consistent with.\n- Include projects or hobbies you're working on (e.g., learning a language, building an app).\n- Indicate how often or how long you want to work on these (e.g., 3x a week, 15 mins daily).",
                     description:
                         "Describe your general goals.\nExample: I want to improve adhere better to doing my chores more specifically: cleaning my room, reading at least 1 book a month, revising after my classes and working on my personal project “Morphe” at least 5 hours a week.",
-                    enabled: userData.getSelectedHabits[HabitType.GENERAL],
+                    enabled: userData.selectedHabits[HabitType.GENERAL],
                     onChanged: (value) {
                       generalGoals = value;
                     },
@@ -101,7 +101,7 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
                         "Tips for describing mental goals:\n- Identify what you want to improve (e.g., focus, memory, mindfulness).\n- Mention emotional goals (e.g., reduce anxiety, increase motivation).\n- Describe situations or patterns you struggle with (e.g., overthinking, low energy in mornings).\n- Note if you're interested in specific methods (e.g., meditation, journaling, therapy techniques).",
                     description:
                         "Describe your mental goals.\nExample: I want to improve my memory, mental clarity and get better at managing stress and anxiety.",
-                    enabled: userData.getSelectedHabits[HabitType.MENTAL],
+                    enabled: userData.selectedHabits[HabitType.MENTAL],
                     onChanged: (value) {
                       mentalGoals = value;
                     },
@@ -118,11 +118,11 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
         child: ArrowButton(
           title: "GENERATE",
           onPressed: () async {
-            if (userData.getSelectedHabits[HabitType.PHYSICAL] ==
+            if (userData.selectedHabits[HabitType.PHYSICAL] ==
                     physicalGoals.isNotEmpty &&
-                userData.getSelectedHabits[HabitType.GENERAL] ==
+                userData.selectedHabits[HabitType.GENERAL] ==
                     generalGoals.isNotEmpty &&
-                userData.getSelectedHabits[HabitType.MENTAL] ==
+                userData.selectedHabits[HabitType.MENTAL] ==
                     mentalGoals.isNotEmpty) {
               print("$physicalGoals $generalGoals $mentalGoals");
               try {

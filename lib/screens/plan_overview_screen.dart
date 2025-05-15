@@ -29,7 +29,7 @@ class PlanOverviewScreen extends StatefulWidget {
 
 class _PlanOverviewScreenState extends State<PlanOverviewScreen> {
   void toNextPlanOverview(UserData userData) {
-    var selectedHabits = userData.getSelectedHabits;
+    var selectedHabits = userData.selectedHabits;
 
     switch (widget.type) {
       case HabitType.PHYSICAL:

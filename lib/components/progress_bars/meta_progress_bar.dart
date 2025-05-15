@@ -6,8 +6,17 @@ import '../../utils/constants.dart';
 
 class MetaProgressBar extends StatelessWidget {
   final ValueNotifier<double> valueNotifier;
+  final double xp;
+  final double maxXp;
+  final int level;
 
-  const MetaProgressBar({required this.valueNotifier, super.key});
+  const MetaProgressBar({
+    required this.valueNotifier,
+    required this.xp,
+    required this.maxXp,
+    required this.level,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -18,8 +27,8 @@ class MetaProgressBar extends StatelessWidget {
         DashedCircularProgressBar.aspectRatio(
           aspectRatio: 1, // width ÷ height
           valueNotifier: valueNotifier,
-          progress: 80,
-          maxProgress: 100,
+          progress: xp,
+          maxProgress: maxXp,
           startAngle: 90,
           corners: StrokeCap.round,
           foregroundColor: kMetaLevelColor,
@@ -46,7 +55,7 @@ class MetaProgressBar extends StatelessWidget {
               width: 62,
               child: Center(
                 child: Text(
-                  "12 lvl",
+                  "$level lvl",
                   style: kPlaceHolderTextStyle.copyWith(
                     color: Theme.of(context).primaryColor,
                     fontSize: 16,

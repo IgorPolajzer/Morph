@@ -24,8 +24,11 @@ class UserData extends ChangeNotifier {
   bool _isInitialized = false;
   bool get isInitialized => _isInitialized;
 
+  int _metaLevel = 1;
+  int get metaLevel => _metaLevel;
+
   Map<HabitType, bool> _selectedHabits = {};
-  get getSelectedHabits {
+  get selectedHabits {
     return {
       HabitType.PHYSICAL: _selectedHabits[HabitType.PHYSICAL] ?? false,
       HabitType.GENERAL: _selectedHabits[HabitType.GENERAL] ?? false,
@@ -33,8 +36,14 @@ class UserData extends ChangeNotifier {
     };
   }
 
-  Map<HabitType, Experience> _xp = {};
-  Map<HabitType, Experience> get xp => _xp;
+  Map<HabitType, Experience> _experience = {};
+  get experience {
+    return {
+      HabitType.PHYSICAL: _experience[HabitType.PHYSICAL] ?? Experience(),
+      HabitType.GENERAL: _experience[HabitType.GENERAL] ?? Experience(),
+      HabitType.MENTAL: _experience[HabitType.MENTAL] ?? Experience(),
+    };
+  }
 
   Map<HabitType, List<Habit>> _habits = {};
   Map<HabitType, List<Task>> _tasks = {};
@@ -56,7 +65,7 @@ class UserData extends ChangeNotifier {
     for (HabitType type in HabitType.values) {
       _habits[type] = <Habit>[];
       _tasks[type] = <Task>[];
-      _xp[type] = Experience();
+      _experience[type] = Experience();
     }
   }
 
@@ -222,6 +231,7 @@ class UserData extends ChangeNotifier {
     // Get username and email
     _username = data['username'] ?? '';
     _email = data['email'] ?? '';
+    _metaLevel = data['metaLevel'] ?? 1;
 
     // Get selected habits
     final selectedHabits = data['selectedHabits'] ?? {};
@@ -237,9 +247,11 @@ class UserData extends ChangeNotifier {
 
     // Get experience
     final experience = data['experience'] ?? {};
-    _xp[HabitType.PHYSICAL] = Experience.fromJson(experience['physical']);
-    _xp[HabitType.GENERAL] = Experience.fromJson(experience['general']);
-    _xp[HabitType.MENTAL] = Experience.fromJson(experience['mental']);
+    _experience[HabitType.PHYSICAL] = Experience.fromJson(
+      experience['physical'],
+    );
+    _experience[HabitType.GENERAL] = Experience.fromJson(experience['general']);
+    _experience[HabitType.MENTAL] = Experience.fromJson(experience['mental']);
 
     // Get habits
     final habits = await Habit.pullFromFirebase(id);
@@ -267,18 +279,19 @@ class UserData extends ChangeNotifier {
           .collection('users')
           .doc(userId);
 
-      // Store username and email
+      // Store username, email and metaLevel
       await userDoc.set({
         'username': username,
         'email': email,
+        'metaLevel': _metaLevel,
       }, SetOptions(merge: true));
 
       // Store experience
       await userDoc.set({
         'experience': {
-          'physical': _xp[HabitType.PHYSICAL]?.toMap(),
-          'general': _xp[HabitType.GENERAL]?.toMap(),
-          'mental': _xp[HabitType.MENTAL]?.toMap(),
+          'physical': _experience[HabitType.PHYSICAL]?.toMap(),
+          'general': _experience[HabitType.GENERAL]?.toMap(),
+          'mental': _experience[HabitType.MENTAL]?.toMap(),
         },
       }, SetOptions(merge: true));
 
