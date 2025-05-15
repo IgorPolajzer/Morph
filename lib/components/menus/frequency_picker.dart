@@ -43,7 +43,7 @@ class _FrequencyPickerState extends State<FrequencyPicker> {
                   bottom: 10.0,
                 ),
                 leading: Text(
-                  widget.frequency.name.toLowerCase(),
+                  widget.frequency.format(),
                   style: kInputPlaceHolderText.copyWith(
                     color: Theme.of(context).primaryColor,
                     fontSize: 16,
@@ -65,7 +65,7 @@ class _FrequencyPickerState extends State<FrequencyPicker> {
                 });
               },
               child: Text(
-                Frequency.values[index].name.toLowerCase(),
+                Frequency.values[index].format(),
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
               ),
             ),

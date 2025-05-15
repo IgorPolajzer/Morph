@@ -29,6 +29,10 @@ enum HabitType {
         throw Exception('Invalid habit type provided');
     }
   }
+
+  String format() {
+    return name[0] + name.substring(1, name.length).toLowerCase();
+  }
 }
 
 enum Day {
@@ -71,6 +75,10 @@ enum Day {
 
     return fromDate.add(Duration(days: daysDifference));
   }
+
+  String format() {
+    return name[0] + name.substring(1, name.length).toLowerCase();
+  }
 }
 
 enum Frequency {
@@ -92,5 +100,9 @@ enum Frequency {
       default:
         throw Exception('Invalid frequency type provided');
     }
+  }
+
+  String format() {
+    return name[0] + name.substring(1, name.length).toLowerCase();
   }
 }

@@ -13,8 +13,8 @@ class YourDayScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<UserData>(context, listen: true);
-    final tasks = user.getTasks(DateTime.now());
+    final userData = Provider.of<UserData>(context, listen: true);
+    final tasks = userData.getTasks(DateTime.now());
 
     return PopScope(
       canPop: true, // false to disable backwards routing

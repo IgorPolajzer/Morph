@@ -12,14 +12,14 @@ class UserData extends ChangeNotifier {
   bool loading = false;
   late final String id;
 
-  late String _email;
-  String get email => _email;
+  String? _email;
+  String get email => _email ?? "";
 
-  late String _password;
-  String get password => _password;
+  String? _password;
+  String get password => _password ?? "";
 
-  late String _username;
-  String get username => _username;
+  String? _username;
+  String get username => _username ?? "";
 
   bool _isInitialized = false;
   bool get isInitialized => _isInitialized;
@@ -218,10 +218,12 @@ class UserData extends ChangeNotifier {
     if (_isInitialized) return;
 
     loading = true;
+    notifyListeners();
 
     final currentUser = FirebaseAuth.instance.currentUser;
     if (currentUser == null) {
       loading = false;
+      notifyListeners();
       return;
     }
     id = currentUser.uid;
@@ -232,11 +234,14 @@ class UserData extends ChangeNotifier {
     final data = docSnapshot.data();
     if (data == null) {
       loading = false;
+      notifyListeners();
       return;
     }
     // Get username and email
     _username = data['username'] ?? '';
     _email = data['email'] ?? '';
+
+    print("username in pulUser $_username");
 
     // Get selected habits
     final selectedHabits = data['selectedHabits'] ?? {};

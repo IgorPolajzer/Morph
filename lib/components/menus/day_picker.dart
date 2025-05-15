@@ -43,7 +43,7 @@ class _DayPickerState extends State<DayPicker> {
                   bottom: 10.0,
                 ),
                 leading: Text(
-                  widget.day.name.toLowerCase(),
+                  widget.day.format(),
                   style: kInputPlaceHolderText.copyWith(
                     color: Theme.of(context).primaryColor,
                     fontSize: 16,
@@ -65,7 +65,7 @@ class _DayPickerState extends State<DayPicker> {
                 });
               },
               child: Text(
-                Day.values[index].name.toLowerCase(),
+                Day.values[index].format(),
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 12),
               ),
             ),

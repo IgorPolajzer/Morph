@@ -15,23 +15,31 @@ void main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    late UserData userData = UserData();
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  late UserData userData = UserData();
+
+  @override
+  void initState() {
     //FirebaseAuth.instance.signOut();
 
     // User is logged in
     if (FirebaseAuth.instance.currentUser != null) {
       if (!userData.loading && !userData.isInitialized) {
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          userData.pullFromFireBase();
-        });
+        userData.pullFromFireBase();
       }
     }
+    super.initState();
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return ChangeNotifierProvider<UserData>(
       create: (context) => userData,
       child: SafeArea(

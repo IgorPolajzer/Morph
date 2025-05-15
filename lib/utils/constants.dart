@@ -103,6 +103,8 @@ const kPhysicalColor = Color(0xFF27AE60);
 const kMentalColor = Color(0xFF9B59B6);
 const kGeneralColor = Color(0xFF3498DB);
 
+const kMetaLevelColor = Color(0xFF00FF6C);
+
 // Text fields
 const kTextFieldDecoration = InputDecoration(
   hintText: 'hintText',
