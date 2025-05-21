@@ -19,6 +19,8 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   final ValueNotifier<double> _valueNotifier = ValueNotifier(0);
+  late int maxMetaXp;
+
   late Map _selectedHabits = {};
   late Map<HabitType, Experience> _experience = {};
 
@@ -26,8 +28,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     final userData = Provider.of<UserData>(context, listen: true);
+
     _selectedHabits = userData.selectedHabits;
     _experience = userData.experience;
+
+    maxMetaXp = Experience.getMetaMaxXp(_experience);
+
+    userData.updateMetaLevel(Experience.getMetaXp(_experience), (level) => 300);
   }
 
   @override
@@ -37,10 +44,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     if (userData.loading && userData.isInitialized) {
       return Center(child: CircularProgressIndicator());
     }
-
-    final metaXp = Experience.getMetaXp(_experience);
-
-    final maxMetaXp = Experience.getMetaMaxXp(_experience);
 
     return PopScope(
       canPop: true, // false to disable backwards routing
@@ -57,13 +60,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               child: MetaProgressBar(
                 valueNotifier: _valueNotifier,
-                xp: metaXp.roundToDouble(),
+                xp: userData.metaXp.roundToDouble(),
                 maxXp: maxMetaXp.roundToDouble(),
                 level: userData.metaLevel,
               ),
             ),
             Text(
-              '$metaXp/300xp',
+              '${userData.metaXp}/300xp',
               style: kTitleTextStyle.copyWith(
                 color: kMetaLevelColor,
                 fontSize: 16,

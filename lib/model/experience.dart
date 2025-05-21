@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:morphe/model/habit.dart';
 
 import '../utils/enums.dart';
 import '../utils/functions.dart';
@@ -34,7 +33,8 @@ class Experience {
       Experience experience = experiences[type]!;
 
       if (experience.level > 1) {
-        xp += 100;
+        xp += 100 * (experience.level - 1);
+        xp += experience.points;
       } else {
         xp += experience.points;
       }
@@ -65,12 +65,14 @@ class Experience {
   }
 
   // Firebase interaction
-  Future<bool> pushToFirebase() async {
+  Future<bool> pushToFirebase(HabitType type) async {
     try {
       await FirebaseFirestore.instance
           .collection('users')
           .doc(getUserFirebaseId())
-          .update({'experience': toMap()});
+          .set({
+            'experience': {type.name.toLowerCase(): toMap()},
+          }, SetOptions(merge: true));
 
       return true;
     } catch (e) {

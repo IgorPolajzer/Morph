@@ -22,6 +22,7 @@ class UserData extends ChangeNotifier {
   String? _password;
   String? _username;
   int _metaLevel = 1;
+  int _metaXp = 0;
 
   Map<HabitType, bool> _selectedHabits = {};
   Map<HabitType, Experience> _experience = {};
@@ -47,6 +48,7 @@ class UserData extends ChangeNotifier {
   bool get isInitialized => _isInitialized;
   bool get executableTasksLoaded => _executableTasksLoaded;
   int get metaLevel => _metaLevel;
+  int get metaXp => _metaXp;
 
   get selectedHabits {
     return {
@@ -211,9 +213,29 @@ class UserData extends ChangeNotifier {
   }
 
   // Experience operations
+  void updateMetaLevel(int summedXp, int Function(int level) getMaxXp) {
+    int newLevel = 1;
+    int remainingXp = summedXp;
+
+    while (true) {
+      int requiredXp = getMaxXp(newLevel);
+      if (remainingXp < requiredXp) break;
+
+      remainingXp -= requiredXp;
+      newLevel++;
+    }
+
+    _metaLevel = newLevel;
+    _metaXp = remainingXp;
+  }
+
   void incrementExperience(HabitType type) {
     _experience[type]?.increment();
-    _experience[type]?.pushToFirebase();
+    _experience[type]?.pushToFirebase(type);
+    updateMetaLevel(
+      Experience.getMetaXp(_experience),
+      (level) => Experience.getMetaMaxXp(_experience),
+    );
     notifyListeners();
   }
 
@@ -306,7 +328,6 @@ class UserData extends ChangeNotifier {
     // Get username and email
     _username = data['username'] ?? '';
     _email = data['email'] ?? '';
-    _metaLevel = data['metaLevel'] ?? 1;
 
     // Get selected habits
     final selectedHabits = data['selectedHabits'] ?? {};
@@ -354,11 +375,10 @@ class UserData extends ChangeNotifier {
           .collection('users')
           .doc(getUserFirebaseId());
 
-      // Store username, email and metaLevel
+      // Store username and email
       await userDoc.set({
         'username': username,
         'email': email,
-        'metaLevel': _metaLevel,
       }, SetOptions(merge: true));
 
       // Store completedTasks
