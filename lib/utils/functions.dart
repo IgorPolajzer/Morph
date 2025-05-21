@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 import '../model/task.dart';
@@ -25,4 +26,10 @@ bool isSameDay(DateTime? a, DateTime? b) {
 
 String getCompletedTaskId(Task task, DateTime date) {
   return "${task.id};${date.toString()}";
+}
+
+String getUserFirebaseId() {
+  final currentUser = FirebaseAuth.instance.currentUser;
+  if (currentUser == null) throw Exception("User not authenticated");
+  return currentUser.uid;
 }

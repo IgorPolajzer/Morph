@@ -106,3 +106,5 @@ enum Frequency {
     return name[0] + name.substring(1, name.length).toLowerCase();
   }
 }
+
+enum AppLoadState { notInitialized, loading, ready, error }

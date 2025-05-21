@@ -4,30 +4,54 @@ import 'package:provider/provider.dart';
 
 import '../components/lists/daily_task_list.dart';
 import '../components/text/screen_title.dart';
+import '../model/task.dart';
 import '../model/user_data.dart';
 
-class YourDayScreen extends StatelessWidget {
+class YourDayScreen extends StatefulWidget {
   static String id = '/your_day_screen';
-  DateTime date = DateTime.now();
 
   YourDayScreen({super.key});
 
   @override
+  State<YourDayScreen> createState() => _YourDayScreenState();
+}
+
+class _YourDayScreenState extends State<YourDayScreen> {
+  ValueNotifier<List<Task>> _scheduledTasks = ValueNotifier([]);
+  ValueNotifier<List<ExecutableTask>> _executableTasks = ValueNotifier([]);
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final userData = Provider.of<UserData>(context, listen: true);
+
+    DateTime date = DateTime.now();
+    _scheduledTasks.value = userData.getTasks(date);
+    _executableTasks.value = userData.getExecutableTasks(date);
+  }
+
+  @override
   Widget build(BuildContext context) {
     final userData = Provider.of<UserData>(context, listen: true);
-    final executableTasks = userData.getExecutableTasks(DateTime.now());
-    final tasks = userData.getTasks(DateTime.now());
 
-    if (userData.loading || !userData.isInitialized) {
-      return Center(child: CircularProgressIndicator());
-    } else {
-      return PopScope(
-        canPop: true, // false to disable backwards routing
-        child: Scaffold(
-          appBar: ScreenTitle(title: "MY DAY"),
-          body: DailyTasksList(tasks: tasks, executableTasks: executableTasks),
+    return PopScope(
+      canPop: true, // false to disable backwards routing
+      child: Scaffold(
+        appBar: ScreenTitle(title: "MY DAY"),
+        body: ValueListenableBuilder<List<Task>>(
+          valueListenable: _scheduledTasks,
+          builder: (context, value, _) {
+            if (!userData.executableTasksLoaded) {
+              return Center(child: CircularProgressIndicator());
+            } else {
+              return DailyTasksList(
+                tasks: value,
+                executableTasks: _executableTasks.value,
+              );
+            }
+          },
         ),
-      );
-    }
+      ),
+    );
   }
 }

@@ -2,9 +2,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_popup_card/flutter_popup_card.dart';
 import 'package:morphe/components/tiles/task_tile.dart';
+import 'package:provider/provider.dart';
 
 import '../../model/executable_task.dart';
 import '../../model/task.dart';
+import '../../model/user_data.dart';
 import '../pop_ups/show_more_popup.dart';
 
 class DailyTasksList extends StatefulWidget {
@@ -24,6 +26,8 @@ class DailyTasksList extends StatefulWidget {
 class _DailyTasksListState extends State<DailyTasksList> {
   @override
   Widget build(BuildContext context) {
+    final userData = Provider.of<UserData>(context, listen: true);
+
     var executableTaskIds = [];
     for (ExecutableTask executableTask in widget.executableTasks) {
       executableTaskIds.add(executableTask.task.id);
@@ -59,6 +63,10 @@ class _DailyTasksListState extends State<DailyTasksList> {
                           onPressed: () {
                             setState(() {
                               widget.executableTasks[index].complete();
+                              // Add xp to user
+                              userData.incrementExperience(
+                                widget.executableTasks[index].task.type,
+                              );
                             });
                             Navigator.pop(context);
                           },

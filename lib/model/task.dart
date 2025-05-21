@@ -1,8 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:morphe/model/user_data.dart';
 import 'package:uuid/uuid.dart';
 import '../utils/enums.dart';
+import '../utils/functions.dart';
 
 class Task {
   String id = Uuid().v4();
@@ -119,7 +118,7 @@ class Task {
 
       await FirebaseFirestore.instance
           .collection('users')
-          .doc(UserData.getUserFirebaseId())
+          .doc(getUserFirebaseId())
           .collection('tasks')
           .add(taskMap);
 

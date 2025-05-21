@@ -159,7 +159,7 @@ class _CalendarState extends State<Calendar> {
           child: ValueListenableBuilder<List<Task>>(
             valueListenable: _scheduledTasks,
             builder: (context, value, _) {
-              if (userData.loading) {
+              if (!userData.executableTasksLoaded) {
                 return Center(child: CircularProgressIndicator());
               } else {
                 return DailyTasksList(

@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:morphe/model/executable_task.dart';
 import 'package:morphe/model/task.dart';
-import 'package:uuid/uuid.dart';
 
 import '../utils/enums.dart';
 import '../utils/functions.dart';
@@ -13,14 +12,9 @@ import 'habit.dart';
 class UserData extends ChangeNotifier {
   static int TASK_RANGE = 7; // can complete tasks up to a maximum of 7 days old
 
-  static String getUserFirebaseId() {
-    final currentUser = FirebaseAuth.instance.currentUser;
-    if (currentUser == null) throw Exception("User not authenticated");
-    return currentUser.uid;
-  }
-
   bool loading = false;
   bool _isInitialized = false;
+  bool _executableTasksLoaded = false;
 
   late final String id;
 
@@ -51,6 +45,7 @@ class UserData extends ChangeNotifier {
   String get password => _password ?? "";
   String get username => _username ?? "";
   bool get isInitialized => _isInitialized;
+  bool get executableTasksLoaded => _executableTasksLoaded;
   int get metaLevel => _metaLevel;
 
   get selectedHabits {
@@ -140,6 +135,9 @@ class UserData extends ChangeNotifier {
 
       from = from.add(Duration(days: 1));
     }
+
+    _executableTasksLoaded = true;
+    notifyListeners();
   }
 
   // Gets all tasks scheduled on provided date
@@ -210,6 +208,13 @@ class UserData extends ChangeNotifier {
     _selectedHabits[HabitType.PHYSICAL] = physical;
     _selectedHabits[HabitType.GENERAL] = general;
     _selectedHabits[HabitType.MENTAL] = mental;
+  }
+
+  // Experience operations
+  void incrementExperience(HabitType type) {
+    _experience[type]?.increment();
+    _experience[type]?.pushToFirebase();
+    notifyListeners();
   }
 
   // Habit operations
@@ -355,6 +360,9 @@ class UserData extends ChangeNotifier {
         'email': email,
         'metaLevel': _metaLevel,
       }, SetOptions(merge: true));
+
+      // Store completedTasks
+      await userDoc.set({'completedTasks': []});
 
       // Store experience
       await userDoc.set({

@@ -115,7 +115,10 @@ class TaskTile extends StatelessWidget {
       } else if (executable) {
         return Padding(
           padding: const EdgeInsets.only(top: 15.0),
-          child: Checkbox(value: completed, onChanged: onChecked),
+          child:
+              completed
+                  ? Checkbox(value: completed, onChanged: (value) {})
+                  : Checkbox(value: completed, onChanged: onChecked),
         );
       }
 

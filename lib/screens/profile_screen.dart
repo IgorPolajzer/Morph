@@ -38,17 +38,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       return Center(child: CircularProgressIndicator());
     }
 
-    final metaXp = Experience.getMetaXp(
-      _experience[HabitType.PHYSICAL]!.points,
-      _experience[HabitType.GENERAL]!.points,
-      _experience[HabitType.MENTAL]!.points,
-    );
+    final metaXp = Experience.getMetaXp(_experience);
 
-    final maxMetaXp = Experience.getMetaXp(
-      _experience[HabitType.PHYSICAL]!.maxXp,
-      _experience[HabitType.GENERAL]!.maxXp,
-      _experience[HabitType.MENTAL]!.maxXp,
-    );
+    final maxMetaXp = Experience.getMetaMaxXp(_experience);
 
     return PopScope(
       canPop: true, // false to disable backwards routing
