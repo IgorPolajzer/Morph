@@ -20,7 +20,7 @@ class YourDayScreen extends StatelessWidget {
       canPop: true, // false to disable backwards routing
       child: Scaffold(
         appBar: ScreenTitle(title: "MY DAY"),
-        body: DailyTasksList(tasks: tasks),
+        body: DailyTasksList(tasks: tasks, executableDates: []),
       ),
     );
   }

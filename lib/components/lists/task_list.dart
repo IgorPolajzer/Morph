@@ -25,6 +25,7 @@ class TasksList extends StatelessWidget {
 
         if (task != null) {
           return TaskTile(
+            modifiable: true,
             task: task,
             onTap:
                 () => showPopupCard(

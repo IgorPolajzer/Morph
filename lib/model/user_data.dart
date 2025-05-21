@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:morphe/model/task.dart';
+import 'package:uuid/uuid.dart';
 
 import '../utils/enums.dart';
 import '../utils/functions.dart';
@@ -9,23 +10,25 @@ import 'experience.dart';
 import 'habit.dart';
 
 class UserData extends ChangeNotifier {
+  static int TASK_RANGE = 7; // can complete tasks up to a maximum of 7 days old
+
   bool loading = false;
   bool _isInitialized = false;
 
   late final String id;
 
   String? _email;
-
   String? _password;
-
   String? _username;
-
   int _metaLevel = 1;
 
   Map<HabitType, bool> _selectedHabits = {};
   Map<HabitType, Experience> _experience = {};
   Map<HabitType, List<Habit>> _habits = {};
   Map<HabitType, List<Task>> _tasks = {};
+
+  // Tasks which can be completed today
+  List<Task> _executableTasks = <Task>[];
 
   // Constructors
   UserData() {
@@ -73,6 +76,51 @@ class UserData extends ChangeNotifier {
         return _habits[HabitType.GENERAL];
       case HabitType.MENTAL:
         return _habits[HabitType.MENTAL];
+    }
+  }
+
+  get executableTasks => _executableTasks;
+
+  List<Task> getExecutableTasks(DateTime day) {
+    var tasks = <Task>[];
+
+    for (Task task in _executableTasks) {
+      if (isSameDay(task.scheduledDateTime, day)) {
+        Task clonedTask = Task.clone(task);
+        tasks.add(clonedTask);
+      }
+    }
+
+    return tasks;
+  }
+
+  List<DateTime> getExecutableDates(DateTime day) {
+    var dates = <DateTime>[];
+
+    for (Task task in _executableTasks) {
+      if (isSameDay(task.scheduledDateTime, day)) {
+        dates.add(task.scheduledDateTime!);
+      }
+    }
+
+    return dates;
+  }
+
+  // Sets tasks that can be completed in this day
+  void setExecutableTasks(DateTime today) {
+    var from = today.subtract(Duration(days: TASK_RANGE));
+
+    while (today.difference(from).inDays >= 0) {
+      List<Task> tasks = getTasks(from);
+
+      for (Task task in tasks) {
+        Task cloned = Task.clone(task);
+        cloned.scheduledDateTime = DateTime(from.year, from.month, from.day);
+        cloned.id = task.id;
+        _executableTasks.add(cloned);
+      }
+
+      from = from.add(Duration(days: 1));
     }
   }
 
@@ -267,6 +315,9 @@ class UserData extends ChangeNotifier {
     for (Task task in tasks) {
       _tasks[task.type]?.add(task);
     }
+
+    // Set tasks that are available for execution
+    setExecutableTasks(DateTime.now());
 
     _isInitialized = true;
     loading = false;

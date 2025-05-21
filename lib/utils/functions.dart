@@ -6,3 +6,17 @@ DateTime toDateTime(TimeOfDay time) {
 }
 
 DateTime stripTime(DateTime dt) => DateTime(dt.year, dt.month, dt.day);
+
+bool isToday(DateTime? date) {
+  if (date == null) return false;
+
+  final now = DateTime.now();
+  return date.year == now.year &&
+      date.month == now.month &&
+      date.day == now.day;
+}
+
+bool isSameDay(DateTime? a, DateTime? b) {
+  if (a == null || b == null) return false;
+  return a.year == b.year && a.month == b.month && a.day == b.day;
+}

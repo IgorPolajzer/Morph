@@ -19,7 +19,9 @@ class _CalendarState extends State<Calendar> {
   late DateTime _focusedDay;
 
   CalendarFormat _calendarFormat = CalendarFormat.month;
-  ValueNotifier<List<Task>> _selectedTasks = ValueNotifier([]);
+
+  ValueNotifier<List<Task>> _scheduledTasks = ValueNotifier([]);
+  ValueNotifier<List<Task>> _executableTasks = ValueNotifier([]);
 
   @override
   void didChangeDependencies() {
@@ -27,12 +29,13 @@ class _CalendarState extends State<Calendar> {
     _focusedDay = _selectedDay;
 
     final userData = Provider.of<UserData>(context, listen: true);
-    _selectedTasks.value = userData.getTasks(_selectedDay!);
+    _scheduledTasks.value = userData.getTasks(_selectedDay);
+    _executableTasks.value = userData.getExecutableTasks(_selectedDay);
   }
 
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<UserData>(context, listen: true);
+    final userData = Provider.of<UserData>(context, listen: true);
 
     return Column(
       children: [
@@ -51,7 +54,10 @@ class _CalendarState extends State<Calendar> {
                   _focusedDay = focusedDay;
                 });
 
-                _selectedTasks.value = user.getTasks(selectedDay);
+                _scheduledTasks.value = userData.getTasks(_selectedDay);
+                _executableTasks.value = userData.getExecutableTasks(
+                  _selectedDay,
+                );
               }
             });
           },
@@ -62,7 +68,7 @@ class _CalendarState extends State<Calendar> {
             });
           },
           eventLoader: (day) {
-            return user.getTasks(day);
+            return userData.getTasks(day);
           },
           calendarBuilders: CalendarBuilders(
             markerBuilder: (context, date, events) {
@@ -72,18 +78,13 @@ class _CalendarState extends State<Calendar> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children:
                     events.map((event) {
-                      if (event is! Task)
-                        return SizedBox.shrink(); // Skip invalid types
-
-                      final task = event as Task;
-
                       return Container(
                         width: 6,
                         height: 6,
                         margin: EdgeInsets.only(top: 25, right: 2),
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: task.type.getColor(),
+                          color: event.type.getColor(),
                         ),
                       );
                     }).toList(),
@@ -151,12 +152,15 @@ class _CalendarState extends State<Calendar> {
         const SizedBox(height: 8.0),
         Expanded(
           child: ValueListenableBuilder<List<Task>>(
-            valueListenable: _selectedTasks,
+            valueListenable: _scheduledTasks,
             builder: (context, value, _) {
-              if (user.loading) {
+              if (userData.loading) {
                 return Center(child: CircularProgressIndicator());
               } else {
-                return DailyTasksList(tasks: value);
+                return DailyTasksList(
+                  tasks: value,
+                  executableDates: _executableTasks.value,
+                );
               }
             },
           ),
@@ -167,7 +171,7 @@ class _CalendarState extends State<Calendar> {
 
   @override
   void dispose() {
-    _selectedTasks.dispose();
+    _executableTasks.dispose();
     super.dispose();
   }
 }

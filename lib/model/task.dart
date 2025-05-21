@@ -4,6 +4,9 @@ import 'package:uuid/uuid.dart';
 import '../utils/enums.dart';
 
 class Task {
+  String id = Uuid().v4();
+  DateTime? scheduledDateTime;
+
   String title;
   String subtitle;
   String description;
@@ -13,8 +16,6 @@ class Task {
   DateTime endDateTime;
   final HabitType type;
   bool notifications;
-  String id = Uuid().v4();
-
   bool isDone;
 
   Task({
@@ -29,6 +30,25 @@ class Task {
     required this.notifications,
     this.isDone = false,
   });
+
+  factory Task.clone(Task t) {
+    Task task = Task(
+      title: t.title,
+      subtitle: t.subtitle,
+      description: t.description,
+      scheduledFrequency: t.scheduledFrequency,
+      scheduledDay: t.scheduledDay,
+      startDateTime: t.startDateTime,
+      endDateTime: t.endDateTime,
+      type: t.type,
+      notifications: t.notifications,
+      isDone: t.isDone,
+    );
+    task.id = t.id;
+    task.scheduledDateTime = t.scheduledDateTime;
+
+    return task;
+  }
 
   void toggleDone() {
     isDone = !isDone;
