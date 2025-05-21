@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:morphe/model/executable_task.dart';
 import 'package:morphe/model/task.dart';
 import 'package:uuid/uuid.dart';
 
@@ -11,6 +12,12 @@ import 'habit.dart';
 
 class UserData extends ChangeNotifier {
   static int TASK_RANGE = 7; // can complete tasks up to a maximum of 7 days old
+
+  static String getUserFirebaseId() {
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null) throw Exception("User not authenticated");
+    return currentUser.uid;
+  }
 
   bool loading = false;
   bool _isInitialized = false;
@@ -28,7 +35,7 @@ class UserData extends ChangeNotifier {
   Map<HabitType, List<Task>> _tasks = {};
 
   // Tasks which can be completed today
-  List<Task> _executableTasks = <Task>[];
+  List<ExecutableTask> _executableTasks = <ExecutableTask>[];
 
   // Constructors
   UserData() {
@@ -81,49 +88,61 @@ class UserData extends ChangeNotifier {
 
   get executableTasks => _executableTasks;
 
-  List<Task> getExecutableTasks(DateTime day) {
-    var tasks = <Task>[];
+  // Gets all executable tasks scheduled on provided date
+  List<ExecutableTask> getExecutableTasks(DateTime day) {
+    var tasks = <ExecutableTask>[];
 
-    for (Task task in _executableTasks) {
+    for (ExecutableTask task in _executableTasks) {
       if (isSameDay(task.scheduledDateTime, day)) {
-        Task clonedTask = Task.clone(task);
-        tasks.add(clonedTask);
+        tasks.add(task);
       }
     }
 
     return tasks;
   }
 
-  List<DateTime> getExecutableDates(DateTime day) {
-    var dates = <DateTime>[];
+  // Sets executable tasks that can be completed in provided day
+  Future<void> setExecutableTasks(DateTime today) async {
+    var from = today.subtract(
+      Duration(days: TASK_RANGE),
+    ); // Tasks can be completed for TASK_RANGE number of days behind schedule
 
-    for (Task task in _executableTasks) {
-      if (isSameDay(task.scheduledDateTime, day)) {
-        dates.add(task.scheduledDateTime!);
-      }
-    }
-
-    return dates;
-  }
-
-  // Sets tasks that can be completed in this day
-  void setExecutableTasks(DateTime today) {
-    var from = today.subtract(Duration(days: TASK_RANGE));
-
+    // Executable tasks are tasks which are scheduled for TASK_RANGE number of days behind
     while (today.difference(from).inDays >= 0) {
       List<Task> tasks = getTasks(from);
 
       for (Task task in tasks) {
-        Task cloned = Task.clone(task);
-        cloned.scheduledDateTime = DateTime(from.year, from.month, from.day);
-        cloned.id = task.id;
-        _executableTasks.add(cloned);
+        final scheduledDateTime = DateTime(from.year, from.month, from.day);
+
+        ExecutableTask executableTask = ExecutableTask(
+          task: task,
+          scheduledDateTime: scheduledDateTime,
+          notifications: task.notifications,
+        );
+
+        // Check if task is in completedTasks
+        DocumentSnapshot doc =
+            await FirebaseFirestore.instance
+                .collection('users')
+                .doc(getUserFirebaseId())
+                .get();
+
+        List<dynamic> completedTasks = doc['completedTasks'] ?? [];
+
+        if (completedTasks.contains(
+          getCompletedTaskId(task, scheduledDateTime),
+        )) {
+          executableTask.setIsDone = true;
+        }
+
+        _executableTasks.add(executableTask);
       }
 
       from = from.add(Duration(days: 1));
     }
   }
 
+  // Gets all tasks scheduled on provided date
   List<Task> getTasks(DateTime currentDateTime) {
     final List<Task> allTasks = [];
 
@@ -326,12 +345,9 @@ class UserData extends ChangeNotifier {
 
   void pushToFirebase() async {
     try {
-      final currentUser = FirebaseAuth.instance.currentUser;
-      if (currentUser == null) throw Exception("User not authenticated");
-      final userId = currentUser.uid;
       final userDoc = FirebaseFirestore.instance
           .collection('users')
-          .doc(userId);
+          .doc(getUserFirebaseId());
 
       // Store username, email and metaLevel
       await userDoc.set({

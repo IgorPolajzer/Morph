@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:morphe/model/executable_task.dart';
 import 'package:provider/provider.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -21,7 +22,7 @@ class _CalendarState extends State<Calendar> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
 
   ValueNotifier<List<Task>> _scheduledTasks = ValueNotifier([]);
-  ValueNotifier<List<Task>> _executableTasks = ValueNotifier([]);
+  ValueNotifier<List<ExecutableTask>> _executableTasks = ValueNotifier([]);
 
   @override
   void didChangeDependencies() {
@@ -29,8 +30,12 @@ class _CalendarState extends State<Calendar> {
     _focusedDay = _selectedDay;
 
     final userData = Provider.of<UserData>(context, listen: true);
-    _scheduledTasks.value = userData.getTasks(_selectedDay);
-    _executableTasks.value = userData.getExecutableTasks(_selectedDay);
+    _scheduledTasks.value = userData.getTasks(
+      _selectedDay,
+    ); // All tasks on provided day based on their frequency scheduling
+    _executableTasks.value = userData.getExecutableTasks(
+      _selectedDay,
+    ); // All executable tasks based on the provided day
   }
 
   @override
@@ -159,7 +164,7 @@ class _CalendarState extends State<Calendar> {
               } else {
                 return DailyTasksList(
                   tasks: value,
-                  executableDates: _executableTasks.value,
+                  executableTasks: _executableTasks.value,
                 );
               }
             },

@@ -1,17 +1,19 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_popup_card/flutter_popup_card.dart';
 import 'package:morphe/components/tiles/task_tile.dart';
 
+import '../../model/executable_task.dart';
 import '../../model/task.dart';
 import '../pop_ups/show_more_popup.dart';
 
 class DailyTasksList extends StatefulWidget {
   final List<Task> tasks;
-  final List<Task> executableDates;
+  final List<ExecutableTask> executableTasks;
 
   const DailyTasksList({
     required this.tasks,
-    required this.executableDates,
+    required this.executableTasks,
     super.key,
   });
 
@@ -23,8 +25,8 @@ class _DailyTasksListState extends State<DailyTasksList> {
   @override
   Widget build(BuildContext context) {
     var executableTaskIds = [];
-    for (Task task in widget.executableDates) {
-      executableTaskIds.add(task.id);
+    for (ExecutableTask executableTask in widget.executableTasks) {
+      executableTaskIds.add(executableTask.task.id);
     }
 
     return ListView.builder(
@@ -33,14 +35,38 @@ class _DailyTasksListState extends State<DailyTasksList> {
         if (executableTaskIds.contains(widget.tasks[index].id)) {
           // Executable task
           return TaskTile(
-            completed: widget.tasks[index].isDone,
+            completed: widget.executableTasks[index].isDone,
             task: widget.tasks[index],
             onChecked: (value) {
-              setState(() {
-                if (!widget.tasks[index].isDone) {
-                  widget.tasks[index].isDone = value!;
-                }
-              });
+              showCupertinoDialog<void>(
+                context: context,
+                builder:
+                    (BuildContext context) => CupertinoAlertDialog(
+                      title: const Text('Complete task'),
+                      content: const Text(
+                        "Please check this box only after you have genuinely completed the task. After this you won' t be able to uncheck it.",
+                      ),
+                      actions: <CupertinoDialogAction>[
+                        CupertinoDialogAction(
+                          isDefaultAction: true,
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: const Text('Cancel'),
+                        ),
+                        CupertinoDialogAction(
+                          isDestructiveAction: true,
+                          onPressed: () {
+                            setState(() {
+                              widget.executableTasks[index].complete();
+                            });
+                            Navigator.pop(context);
+                          },
+                          child: const Text('Complete'),
+                        ),
+                      ],
+                    ),
+              );
             },
             onTap:
                 () => showPopupCard(
@@ -60,7 +86,6 @@ class _DailyTasksListState extends State<DailyTasksList> {
         } else {
           // Completed task
           return TaskTile(
-            completed: widget.tasks[index].isDone,
             executable: false,
             task: widget.tasks[index],
             onTap:

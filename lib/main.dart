@@ -35,6 +35,8 @@ class _MyAppState extends State<MyApp> {
         userData.pullFromFireBase();
       }
     }
+    // TODO handle if network isnt available
+
     super.initState();
   }
 

@@ -1,11 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:morphe/model/user_data.dart';
 import 'package:uuid/uuid.dart';
 import '../utils/enums.dart';
 
 class Task {
   String id = Uuid().v4();
-  DateTime? scheduledDateTime;
 
   String title;
   String subtitle;
@@ -45,7 +45,6 @@ class Task {
       isDone: t.isDone,
     );
     task.id = t.id;
-    task.scheduledDateTime = t.scheduledDateTime;
 
     return task;
   }
@@ -106,11 +105,6 @@ class Task {
   // Firebase interaction
   Future<bool> pushToFirebase() async {
     try {
-      final user = FirebaseAuth.instance.currentUser;
-      if (user == null) {
-        throw Exception('User not logged in');
-      }
-
       final taskMap = {
         'title': title,
         'subtitle': subtitle,
@@ -125,7 +119,7 @@ class Task {
 
       await FirebaseFirestore.instance
           .collection('users')
-          .doc(user.uid)
+          .doc(UserData.getUserFirebaseId())
           .collection('tasks')
           .add(taskMap);
 

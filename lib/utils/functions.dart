@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../model/task.dart';
+
 DateTime toDateTime(TimeOfDay time) {
   final now = new DateTime.now();
   return new DateTime(now.year, now.month, now.day, time.hour, time.minute);
@@ -19,4 +21,8 @@ bool isToday(DateTime? date) {
 bool isSameDay(DateTime? a, DateTime? b) {
   if (a == null || b == null) return false;
   return a.year == b.year && a.month == b.month && a.day == b.day;
+}
+
+String getCompletedTaskId(Task task, DateTime date) {
+  return "${task.id};${date.toString()}";
 }
