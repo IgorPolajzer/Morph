@@ -54,7 +54,7 @@ class GoalRadioButton extends StatelessWidget {
                         Icons.more_horiz,
                         color: Theme.of(context).primaryColor,
                       ),
-                      onTap: editOnTap,
+                      onTap: isChecked ? editOnTap : () {},
                     ),
                   if (editable) SizedBox(width: 10),
                 ],

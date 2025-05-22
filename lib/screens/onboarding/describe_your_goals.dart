@@ -132,8 +132,7 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
                   password: userData.password,
                 );
                 if (newUser != null) {
-                  userData
-                      .pushToFirebase(); //TODO consider removing this pushToFirebase call, test with new user registration
+                  //userData.pushToFirebase(); //TODO consider removing this pushToFirebase call, test with new user registration
                   toPlanOverview(userData);
                 } else
                   throw Exception("newUser is null");

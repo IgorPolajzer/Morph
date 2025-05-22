@@ -5,7 +5,6 @@ import 'package:morphe/model/executable_task.dart';
 import 'package:provider/provider.dart';
 
 import '../../components/buttons/arrow_button.dart';
-import '../../components/lists/daily_task_list.dart';
 import '../../components/lists/habit_list.dart';
 import '../../components/lists/task_list.dart';
 import '../../components/pop_ups/add_task_popup.dart';
@@ -93,7 +92,7 @@ class _EditPlanScreenState extends State<EditPlanScreen> {
                           ),
                         ),
 
-                        HabitList(type: widget.type),
+                        HabitList(type: widget.type, modifiable: true),
                       ],
                     ),
                   ),
@@ -124,6 +123,7 @@ class _EditPlanScreenState extends State<EditPlanScreen> {
         child: ArrowButton(
           title: "CONFIRM",
           onPressed: () {
+            userData.pushHabitsToFirebase();
             userData.pushTasksToFireBase();
             context.pop();
           },

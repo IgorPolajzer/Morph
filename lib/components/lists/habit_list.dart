@@ -9,9 +9,10 @@ import '../../utils/enums.dart';
 import '../tiles/habit_tile.dart';
 
 class HabitList extends StatefulWidget {
-  final HabitType type;
+  final HabitType? type;
+  final modifiable;
 
-  HabitList({required this.type, super.key});
+  HabitList({this.type, this.modifiable = false, super.key});
 
   @override
   State<HabitList> createState() => _HabitListState();
@@ -31,13 +32,14 @@ class _HabitListState extends State<HabitList> {
 
         if (habit != null) {
           return HabitTile(
+            modifiable: widget.modifiable,
             habit: habit,
             onLongPress: () {
               showCupertinoDialog<void>(
                 context: context,
                 builder:
                     (BuildContext context) => CupertinoAlertDialog(
-                      title: const Text('Confitm deletion'),
+                      title: const Text('Confirm deletion'),
                       content: const Text(
                         'Are you sure you want to delete this habit?',
                       ),

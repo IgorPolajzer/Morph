@@ -148,6 +148,7 @@ class TaskTile extends StatelessWidget {
                 '${task.scheduledDay.name}: ${DateFormat.Hm().format(task.startDateTime)}-${DateFormat.Hm().format(task.endDateTime)}',
                 style: TextStyle(
                   decoration: completed ? TextDecoration.lineThrough : null,
+                  decorationThickness: 2.0,
                 ),
               ),
               titleTextStyle: kTitleTextStyle.copyWith(
@@ -174,6 +175,7 @@ class TaskTile extends StatelessWidget {
                         style: TextStyle(
                           decoration:
                               completed ? TextDecoration.lineThrough : null,
+                          decorationThickness: 3.0,
                         ),
                       ),
                       WidgetSpan(child: SizedBox(height: 20)),

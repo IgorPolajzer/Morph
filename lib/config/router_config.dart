@@ -133,7 +133,6 @@ final GoRouter router = GoRouter(
   ],
   initialLocation: '/',
   redirect: (context, state) {
-    //FirebaseAuth.instance.signOut();
     final isLoggedIn = FirebaseAuth.instance.currentUser != null;
 
     final isAuthPage =
@@ -156,7 +155,7 @@ final GoRouter router = GoRouter(
 
     if (isLoggedIn && isInitalLocation) {
       // Logged in coming from initial page
-      return ProfileScreen.id;
+      return YourDayScreen.id;
     }
 
     // Otherwise allow navigation

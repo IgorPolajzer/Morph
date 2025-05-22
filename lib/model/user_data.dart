@@ -16,8 +16,6 @@ class UserData extends ChangeNotifier {
   bool _isInitialized = false;
   bool _executableTasksLoaded = false;
 
-  late final String id;
-
   String? _email;
   String? _password;
   String? _username;
@@ -34,6 +32,28 @@ class UserData extends ChangeNotifier {
 
   // Constructors
   UserData() {
+    for (HabitType type in HabitType.values) {
+      _habits[type] = <Habit>[];
+      _tasks[type] = <Task>[];
+      _experience[type] = Experience();
+    }
+  }
+
+  void reset() {
+    loading = false;
+    _isInitialized = false;
+    _executableTasksLoaded = false;
+    _email = null;
+    _password = null;
+    _username = null;
+    _metaXp = 1;
+    _metaXp = 1;
+    _selectedHabits = {};
+    _experience = {};
+    _habits = {};
+    _tasks = {};
+    _executableTasks = <ExecutableTask>[];
+
     for (HabitType type in HabitType.values) {
       _habits[type] = <Habit>[];
       _tasks[type] = <Task>[];
@@ -70,9 +90,10 @@ class UserData extends ChangeNotifier {
     _email = email;
     _username = username;
     _password = password;
+    notifyListeners();
   }
 
-  List<Habit>? getHabitsFromType(HabitType type) {
+  List<Habit>? getHabitsFromType(HabitType? type) {
     switch (type) {
       case HabitType.PHYSICAL:
         return _habits[HabitType.PHYSICAL];
@@ -80,6 +101,10 @@ class UserData extends ChangeNotifier {
         return _habits[HabitType.GENERAL];
       case HabitType.MENTAL:
         return _habits[HabitType.MENTAL];
+      case null:
+        return _habits[HabitType.PHYSICAL]! +
+            _habits[HabitType.GENERAL]! +
+            _habits[HabitType.MENTAL]!;
     }
   }
 
@@ -240,6 +265,19 @@ class UserData extends ChangeNotifier {
   }
 
   // Habit operations
+  void addHabit(Habit habit) {
+    switch (habit.type) {
+      case HabitType.PHYSICAL:
+        _habits[HabitType.PHYSICAL]?.add(habit);
+      case HabitType.GENERAL:
+        _habits[HabitType.GENERAL]?.add(habit);
+      case HabitType.MENTAL:
+        _habits[HabitType.MENTAL]?.add(habit);
+    }
+
+    notifyListeners();
+  }
+
   void deleteHabit(Habit habit) {
     final habits = _habits[habit.type];
     if (habits == null) return;
@@ -314,11 +352,13 @@ class UserData extends ChangeNotifier {
       notifyListeners();
       return;
     }
-    id = currentUser.uid;
 
     // Get user document
     final docSnapshot =
-        await FirebaseFirestore.instance.collection('users').doc(id).get();
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(currentUser.uid)
+            .get();
     final data = docSnapshot.data();
     if (data == null) {
       loading = false;
@@ -350,13 +390,13 @@ class UserData extends ChangeNotifier {
     _experience[HabitType.MENTAL] = Experience.fromJson(experience['mental']);
 
     // Get habits
-    final habits = await Habit.pullFromFirebase(id);
+    final habits = await Habit.pullFromFirebase(currentUser.uid);
     for (Habit habit in habits) {
       _habits[habit.type]?.add(habit);
     }
 
     // Get tasks
-    final tasks = await Task.pullFromFirebase(id);
+    final tasks = await Task.pullFromFirebase(currentUser.uid);
     for (Task task in tasks) {
       _tasks[task.type]?.add(task);
     }
@@ -369,7 +409,7 @@ class UserData extends ChangeNotifier {
     notifyListeners();
   }
 
-  void pushToFirebase() async {
+  void initializeUser() async {
     try {
       final userDoc = FirebaseFirestore.instance
           .collection('users')
@@ -430,6 +470,12 @@ class UserData extends ChangeNotifier {
           await tasksRef.doc(task.id).set(task.toMap());
         }
       }
+
+      // Set tasks that are available for execution
+      setExecutableTasks(DateTime.now());
+
+      loading = false;
+      _isInitialized = true;
     } catch (e) {
       print(e);
       throw Exception("Error pushing user data to Firebase: $e");
@@ -452,7 +498,7 @@ class UserData extends ChangeNotifier {
       }, SetOptions(merge: true));
     } catch (e) {
       print(e);
-      throw Exception("Error pushing user data to Firebase: $e");
+      throw Exception("Error pushing habits data to Firebase: $e");
     }
   }
 
@@ -476,7 +522,32 @@ class UserData extends ChangeNotifier {
       }
     } catch (e) {
       print(e);
-      throw Exception("Error pushing user data to Firebase: $e");
+      throw Exception("Error pushing tasks to Firebase: $e");
+    }
+  }
+
+  void pushHabitsToFirebase() async {
+    try {
+      final userDoc = FirebaseFirestore.instance
+          .collection('users')
+          .doc(getUserFirebaseId());
+
+      final habitsRef = userDoc.collection('habits');
+      final habitDocs = await habitsRef.get();
+      for (var doc in habitDocs.docs) {
+        await doc.reference.delete();
+      }
+
+      for (HabitType type in HabitType.values) {
+        final habits = _habits[type] ?? [];
+
+        for (final habit in habits) {
+          await habitsRef.doc(habit.id).set(habit.toMap());
+        }
+      }
+    } catch (e) {
+      print(e);
+      throw Exception("Error pushing habits to Firebase: $e");
     }
   }
 }

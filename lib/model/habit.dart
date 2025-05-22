@@ -7,15 +7,22 @@ class Habit {
   String title;
   String description;
   HabitType type;
+  bool notifications;
   String id = Uuid().v4();
 
-  Habit({required this.title, required this.description, required this.type});
+  Habit({
+    required this.title,
+    required this.description,
+    required this.type,
+    required this.notifications,
+  });
 
   factory Habit.fromJson(Map<String, dynamic> json) {
     var habit = Habit(
       title: json['title'] ?? '',
       description: json['description'] ?? '',
       type: HabitType.getTypeFromString(json['type'] ?? ''),
+      notifications: json['notifications'],
     );
     habit.id = json['id'];
 
@@ -42,6 +49,7 @@ class Habit {
       'title': title,
       'type': type.name.toLowerCase(),
       'description': description,
+      'notifications': notifications,
       'id': id,
     };
   }

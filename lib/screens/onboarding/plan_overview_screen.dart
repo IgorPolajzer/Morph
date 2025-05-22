@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:morphe/components/pop_ups/add_task_popup.dart';
 import 'package:morphe/components/buttons/arrow_button.dart';
 import 'package:morphe/screens/core/calendar_screen.dart';
+import 'package:morphe/screens/core/your_day_screen.dart';
 import 'package:morphe/utils/constants.dart';
 import 'package:provider/provider.dart';
 
@@ -38,21 +39,21 @@ class _PlanOverviewScreenState extends State<PlanOverviewScreen> {
         else if (selectedHabits[HabitType.MENTAL])
           context.go(PlanOverviewScreen.id_mental);
         else {
-          userData.pushToFirebase();
-          context.go(CalendarScreen.id);
+          userData.initializeUser();
+          context.go(YourDayScreen.id);
         }
         break;
       case HabitType.GENERAL:
         if (selectedHabits[HabitType.MENTAL])
           context.go(PlanOverviewScreen.id_mental);
         else {
-          userData.pushToFirebase();
-          context.go(CalendarScreen.id);
+          userData.initializeUser();
+          context.go(YourDayScreen.id);
         }
         break;
       case HabitType.MENTAL:
-        userData.pushToFirebase();
-        context.go(CalendarScreen.id);
+        userData.initializeUser();
+        context.go(YourDayScreen.id);
         break;
     }
   }
@@ -111,7 +112,7 @@ class _PlanOverviewScreenState extends State<PlanOverviewScreen> {
                           ),
                         ),
 
-                        HabitList(type: widget.type),
+                        HabitList(type: widget.type, modifiable: true),
                       ],
                     ),
                   ),

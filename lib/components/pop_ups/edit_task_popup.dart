@@ -71,7 +71,7 @@ class _EditTaskPopUpState extends State<EditTaskPopUp>
 
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<UserData>(context, listen: true);
+    final userData = Provider.of<UserData>(context, listen: true);
 
     return SlideTransition(
       position: _offsetAnimation,
@@ -178,7 +178,7 @@ class _EditTaskPopUpState extends State<EditTaskPopUp>
                     title: "Save changes",
                     onPressed: () {
                       try {
-                        user.updateTask(
+                        userData.updateTask(
                           widget.task.title,
                           widget.task.subtitle,
                           widget.task.description,

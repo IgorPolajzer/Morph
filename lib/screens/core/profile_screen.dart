@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:morphe/components/progress_bars/meta_progress_bar.dart';
@@ -9,6 +11,7 @@ import '../../model/user_data.dart';
 import '../../utils/constants.dart';
 import '../../utils/enums.dart';
 import '../edit/change_habits_screen.dart';
+import '../../main.dart';
 
 class ProfileScreen extends StatefulWidget {
   static String id = '/profile_screen';
@@ -70,26 +73,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           Padding(
             padding: EdgeInsets.symmetric(vertical: 8, horizontal: 50),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                Text(
-                  userData.username,
-                  style: kTitleTextStyle.copyWith(
-                    color: Theme.of(context).primaryColor,
-                    fontSize: 38,
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(left: 10),
-                  child: TextButton(
-                    onPressed: () {
-                      context.push(ChangeHabitsScreen.id);
-                    },
-                    child: Icon(Icons.settings, size: 38),
-                  ),
-                ),
-              ],
+            child: Text(
+              userData.username,
+              style: kTitleTextStyle.copyWith(
+                color: Theme.of(context).primaryColor,
+                fontSize: 38,
+              ),
             ),
           ),
           HabitProgressBar(
@@ -109,6 +98,59 @@ class _ProfileScreenState extends State<ProfileScreen> {
             level: _experience[HabitType.MENTAL]!.level,
             type: HabitType.MENTAL,
             enabled: _selectedHabits[HabitType.MENTAL],
+          ),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 25),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Padding(
+                  padding: EdgeInsets.only(left: 10),
+                  child: TextButton(
+                    onPressed: () {
+                      context.push(ChangeHabitsScreen.id);
+                    },
+                    child: Icon(Icons.settings_outlined, size: 38),
+                  ),
+                ),
+
+                Padding(
+                  padding: EdgeInsets.only(left: 10),
+                  child: TextButton(
+                    onPressed: () {
+                      showCupertinoDialog<void>(
+                        context: context,
+                        builder:
+                            (BuildContext context) => CupertinoAlertDialog(
+                              title: const Text('Log out'),
+                              content: const Text(
+                                "Are you sure you want to log out?",
+                              ),
+                              actions: <CupertinoDialogAction>[
+                                CupertinoDialogAction(
+                                  isDefaultAction: true,
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
+                                  child: const Text('Cancel'),
+                                ),
+                                CupertinoDialogAction(
+                                  isDestructiveAction: true,
+                                  onPressed: () {
+                                    FirebaseAuth.instance.signOut();
+                                    userData.reset();
+                                  },
+                                  child: const Text('Log out'),
+                                ),
+                              ],
+                            ),
+                      );
+                    },
+                    child: Icon(Icons.login_outlined, size: 38),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),

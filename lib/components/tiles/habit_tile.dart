@@ -9,11 +9,13 @@ class HabitTile extends StatelessWidget {
   Habit habit;
   final GestureTapCallback? onLongPress;
   final GestureTapCallback? onTapReadMore;
+  final modifiable;
 
   HabitTile({
     required this.habit,
     required this.onLongPress,
     required this.onTapReadMore,
+    this.modifiable = false,
     super.key,
   });
 
@@ -24,10 +26,10 @@ class HabitTile extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(left: 18, right: 18),
       child: GestureDetector(
-        onLongPress: onLongPress,
+        onLongPress: modifiable ? onLongPress : null,
         child: Card(
           shape: StadiumBorder(
-            side: BorderSide(color: Theme.of(context).primaryColor, width: 2.0),
+            side: BorderSide(color: habit.type.getColor(), width: 2.0),
           ),
           color: Theme.of(context).cardColor,
           child: Padding(
