@@ -1,101 +1,122 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_popup_card/flutter_popup_card.dart';
 import 'package:go_router/go_router.dart';
-import 'package:morphe/components/buttons/arrow_button.dart';
-import 'package:morphe/components/buttons/goal_radio_button.dart';
+import 'package:morphe/model/executable_task.dart';
 import 'package:provider/provider.dart';
 
+import '../../components/buttons/arrow_button.dart';
+import '../../components/lists/daily_task_list.dart';
+import '../../components/lists/habit_list.dart';
+import '../../components/lists/task_list.dart';
+import '../../components/pop_ups/add_task_popup.dart';
 import '../../components/text/screen_title.dart';
+import '../../components/text/subtitle.dart';
+import '../../model/task.dart';
 import '../../model/user_data.dart';
 import '../../utils/constants.dart';
 import '../../utils/enums.dart';
-import '../core/profile_screen.dart';
 
 class EditPlanScreen extends StatefulWidget {
-  static String id = '/edit_plan_screen';
+  static String id_physical = '/edit_physical_plan_screen';
+  static String id_general = '/edit_general_plan_screen';
+  static String id_mental = '/edit_mental_plan_screen';
 
-  const EditPlanScreen({super.key});
+  final HabitType type;
+
+  const EditPlanScreen({required this.type, super.key});
 
   @override
   State<EditPlanScreen> createState() => _EditPlanScreenState();
 }
 
 class _EditPlanScreenState extends State<EditPlanScreen> {
-  late bool physical;
-  late bool general;
-  late bool mental;
+  ValueNotifier<List<Task>> _scheduledTasks = ValueNotifier([]);
+  ValueNotifier<List<ExecutableTask>> _executableTasks = ValueNotifier([]);
 
   @override
-  void initState() {
-    super.initState();
-    final userData = Provider.of<UserData>(context, listen: false);
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final userData = Provider.of<UserData>(context, listen: true);
 
-    physical = userData.selectedHabits[HabitType.PHYSICAL];
-    general = userData.selectedHabits[HabitType.GENERAL];
-    mental = userData.selectedHabits[HabitType.MENTAL];
+    DateTime date = DateTime.now();
+    _scheduledTasks.value = userData.getTasks(date);
+    _executableTasks.value = userData.getExecutableTasks(date);
   }
 
   @override
   Widget build(BuildContext context) {
-    final userData = Provider.of<UserData>(context, listen: false);
+    final userData = Provider.of<UserData>(context, listen: true);
 
     return Scaffold(
-      appBar: ScreenTitle(title: "EDIT PLAN"),
-      body: SingleChildScrollView(
-        // Make the entire body scrollable
-        child: Column(
-          children: [
-            Padding(
-              padding: EdgeInsets.only(bottom: 20),
-              child: Text(
-                "Change your selected habits",
-                style: kTitleTextStyle.copyWith(
-                  color: Theme.of(context).secondaryHeaderColor,
-                  fontSize: 22,
+      appBar: ScreenTitle(title: "${widget.type.name} PLAN"),
+      body: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Subtitle(
+                  title: widget.type.name,
+                  subtitle:
+                      widget.type == HabitType.PHYSICAL
+                          ? "Workout plan"
+                          : "Recommended habits",
+                  color: widget.type.getColor(),
                 ),
-              ),
+                Flexible(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        TasksList(type: widget.type),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 20.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "Recommended habits",
+                                style: kTitleTextStyle.copyWith(
+                                  color: widget.type.getColor(),
+                                  fontSize: 20,
+                                ),
+                              ),
+                              Text(
+                                "Long click to delete a habit",
+                                style: kPlaceHolderTextStyle.copyWith(
+                                  color: Theme.of(context).secondaryHeaderColor,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        HabitList(type: widget.type),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
-            GoalRadioButton(
-              editable: true,
-              isChecked: physical,
-              checkboxCallback: (checkboxState) {
-                setState(() {
-                  physical = checkboxState;
-                });
+          ),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: widget.type.getColor(),
+        foregroundColor: Theme.of(context).primaryColor,
+        onPressed:
+            () => showPopupCard(
+              context: context,
+              builder: (context) {
+                return AddTaskPopUp(type: widget.type);
               },
-              backgroundColor: kPhysicalColor,
-              title: "PHYSICAL GOALS",
-              description:
-                  "Improve your physical health by getting a personalised plan tailored to your physical goals including workout plans and general tips and recommendations which will help you transform your body.",
+              alignment: Alignment.bottomCenter,
+              useSafeArea: true,
+              dimBackground: true,
             ),
-            GoalRadioButton(
-              editable: true,
-              isChecked: general,
-              checkboxCallback: (checkboxState) {
-                setState(() {
-                  general = checkboxState;
-                });
-              },
-              backgroundColor: kGeneralColor,
-              title: "GENERAL HABITS",
-              description:
-                  "Get better at adhering to your habits by getting reminders to complete everyday chores",
-            ),
-            GoalRadioButton(
-              editable: true,
-              isChecked: mental,
-              checkboxCallback: (checkboxState) {
-                setState(() {
-                  mental = checkboxState;
-                });
-              },
-              backgroundColor: kMentalColor,
-              title: "MENTAL GOALS",
-              description:
-                  "Improve your mental health and clarity by getting a plan tailored to your unique circumstances and goals.",
-            ),
-            SizedBox(height: 20), // Optional spacing before the bottom bar
-          ],
-        ),
+        child: const Icon(Icons.add, size: 20),
       ),
       bottomNavigationBar: BottomAppBar(
         elevation: 8,
@@ -103,9 +124,8 @@ class _EditPlanScreenState extends State<EditPlanScreen> {
         child: ArrowButton(
           title: "CONFIRM",
           onPressed: () {
-            userData.setSelectedHabits(physical, general, mental);
-            userData.pushSelectedHabitsToFirebase();
-            context.pushReplacement(ProfileScreen.id);
+            userData.pushTasksToFireBase();
+            context.pop();
           },
         ),
       ),

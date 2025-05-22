@@ -3,12 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:morphe/screens/core/calendar_screen.dart';
 import 'package:morphe/screens/core/your_day_screen.dart';
+import 'package:morphe/screens/edit/edit_plan_screen.dart';
 import 'package:morphe/screens/onboarding/login_screen.dart';
 import 'package:morphe/utils/enums.dart';
 
 import '../components/special/navbar.dart';
 import '../screens/core/profile_screen.dart';
-import '../screens/edit/edit_plan_screen.dart';
+import '../screens/edit/change_habits_screen.dart';
 import '../screens/onboarding/choose_goals_screen.dart';
 import '../screens/onboarding/describe_your_goals.dart';
 import '../screens/onboarding/plan_overview_screen.dart';
@@ -53,8 +54,24 @@ final GoRouter router = GoRouter(
           builder: (context, state) => const ProfileScreen(),
         ),
         GoRoute(
-          path: EditPlanScreen.id,
-          builder: (context, state) => const EditPlanScreen(),
+          path: ChangeHabitsScreen.id,
+          builder: (context, state) => const ChangeHabitsScreen(),
+        ),
+        GoRoute(
+          path: EditPlanScreen.id_physical,
+          builder:
+              (context, state) =>
+                  const EditPlanScreen(type: HabitType.PHYSICAL),
+        ),
+        GoRoute(
+          path: EditPlanScreen.id_general,
+          builder:
+              (context, state) => const EditPlanScreen(type: HabitType.GENERAL),
+        ),
+        GoRoute(
+          path: EditPlanScreen.id_mental,
+          builder:
+              (context, state) => const EditPlanScreen(type: HabitType.MENTAL),
         ),
       ],
     ),
@@ -139,7 +156,7 @@ final GoRouter router = GoRouter(
 
     if (isLoggedIn && isInitalLocation) {
       // Logged in coming from initial page
-      return YourDayScreen.id;
+      return ProfileScreen.id;
     }
 
     // Otherwise allow navigation

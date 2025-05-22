@@ -40,7 +40,7 @@ class TaskTile extends StatelessWidget {
 
     Widget? getTrailing() {
       if (modifiable) {
-        MenuAnchor(
+        return MenuAnchor(
           builder: (
             BuildContext context,
             MenuController controller,

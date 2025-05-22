@@ -8,6 +8,7 @@ class GoalRadioButton extends StatelessWidget {
   final bool isChecked;
   final ValueChanged checkboxCallback;
 
+  final GestureTapCallback? editOnTap;
   final bool editable;
 
   const GoalRadioButton({
@@ -17,6 +18,7 @@ class GoalRadioButton extends StatelessWidget {
     required this.title,
     required this.description,
     this.editable = false,
+    this.editOnTap,
     super.key,
   });
 
@@ -35,19 +37,26 @@ class GoalRadioButton extends StatelessWidget {
               height: 44,
               width: double.infinity,
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 21),
-                    child: Text(
-                      title,
-                      style: kGoalTitleTextStyle.copyWith(
-                        color: Theme.of(context).primaryColor,
-                      ),
-                      textAlign: TextAlign.center,
+                  SizedBox(width: 10),
+                  Text(
+                    title,
+                    style: kGoalTitleTextStyle.copyWith(
+                      color: Theme.of(context).primaryColor,
                     ),
+                    textAlign: TextAlign.center,
                   ),
                   Checkbox(value: isChecked, onChanged: checkboxCallback),
+                  if (editable)
+                    GestureDetector(
+                      child: Icon(
+                        Icons.more_horiz,
+                        color: Theme.of(context).primaryColor,
+                      ),
+                      onTap: editOnTap,
+                    ),
+                  if (editable) SizedBox(width: 10),
                 ],
               ),
             ),

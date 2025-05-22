@@ -437,17 +437,46 @@ class UserData extends ChangeNotifier {
   }
 
   void pushSelectedHabitsToFirebase() async {
-    final userDoc = FirebaseFirestore.instance
-        .collection('users')
-        .doc(getUserFirebaseId());
+    try {
+      final userDoc = FirebaseFirestore.instance
+          .collection('users')
+          .doc(getUserFirebaseId());
 
-    // Store selected habits
-    await userDoc.set({
-      'selectedHabits': {
-        'physical': _selectedHabits[HabitType.PHYSICAL] ?? false,
-        'general': _selectedHabits[HabitType.GENERAL] ?? false,
-        'mental': _selectedHabits[HabitType.MENTAL] ?? false,
-      },
-    }, SetOptions(merge: true));
+      // Store selected habits
+      await userDoc.set({
+        'selectedHabits': {
+          'physical': _selectedHabits[HabitType.PHYSICAL] ?? false,
+          'general': _selectedHabits[HabitType.GENERAL] ?? false,
+          'mental': _selectedHabits[HabitType.MENTAL] ?? false,
+        },
+      }, SetOptions(merge: true));
+    } catch (e) {
+      print(e);
+      throw Exception("Error pushing user data to Firebase: $e");
+    }
+  }
+
+  void pushTasksToFireBase() async {
+    try {
+      final userDoc = FirebaseFirestore.instance
+          .collection('users')
+          .doc(getUserFirebaseId());
+
+      final tasksRef = userDoc.collection('tasks');
+      final taskDocs = await tasksRef.get();
+      for (var doc in taskDocs.docs) {
+        await doc.reference.delete();
+      }
+
+      for (HabitType type in HabitType.values) {
+        final tasks = _tasks[type] ?? [];
+        for (final task in tasks) {
+          await tasksRef.doc(task.id).set(task.toMap());
+        }
+      }
+    } catch (e) {
+      print(e);
+      throw Exception("Error pushing user data to Firebase: $e");
+    }
   }
 }

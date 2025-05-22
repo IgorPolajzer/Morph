@@ -8,7 +8,7 @@ import '../../components/progress_bars/habit_progress_bar.dart';
 import '../../model/user_data.dart';
 import '../../utils/constants.dart';
 import '../../utils/enums.dart';
-import '../edit/edit_plan_screen.dart';
+import '../edit/change_habits_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   static String id = '/profile_screen';
@@ -84,7 +84,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   padding: EdgeInsets.only(left: 10),
                   child: TextButton(
                     onPressed: () {
-                      context.push(EditPlanScreen.id);
+                      context.push(ChangeHabitsScreen.id);
                     },
                     child: Icon(Icons.settings, size: 38),
                   ),
