@@ -8,12 +8,15 @@ class GoalRadioButton extends StatelessWidget {
   final bool isChecked;
   final ValueChanged checkboxCallback;
 
+  final bool editable;
+
   const GoalRadioButton({
     required this.isChecked,
     required this.checkboxCallback,
     required this.backgroundColor,
     required this.title,
     required this.description,
+    this.editable = false,
     super.key,
   });
 
@@ -22,28 +25,31 @@ class GoalRadioButton extends StatelessWidget {
     return Center(
       child: Column(
         children: [
-          Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-              color: backgroundColor,
-            ),
-            height: 44,
-            width: 289,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(left: 21),
-                  child: Text(
-                    title,
-                    style: kGoalTitleTextStyle.copyWith(
-                      color: Theme.of(context).primaryColor,
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 60),
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15),
+                color: backgroundColor,
+              ),
+              height: 44,
+              width: double.infinity,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 21),
+                    child: Text(
+                      title,
+                      style: kGoalTitleTextStyle.copyWith(
+                        color: Theme.of(context).primaryColor,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
-                    textAlign: TextAlign.center,
                   ),
-                ),
-                Checkbox(value: isChecked, onChanged: checkboxCallback),
-              ],
+                  Checkbox(value: isChecked, onChanged: checkboxCallback),
+                ],
+              ),
             ),
           ),
           Padding(

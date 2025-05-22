@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:morphe/screens/onboarding/registration_screen.dart';
 import 'package:morphe/utils/constants.dart';
-import 'package:morphe/screens/login_screen.dart';
-import 'package:morphe/screens/registration_screen.dart';
+import 'package:morphe/screens/onboarding/login_screen.dart';
 
-import '../components/buttons/gradient_button.dart';
+import '../../components/buttons/gradient_button.dart';
 
 class WelcomeScreen extends StatefulWidget {
   static String id = '/welcome_screen';

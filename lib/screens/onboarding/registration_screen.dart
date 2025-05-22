@@ -1,46 +1,33 @@
-import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:morphe/components/buttons/gradient_button.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
-import 'package:morphe/screens/your_day_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:toastification/toastification.dart';
 
-import '../model/user_data.dart';
-import '../utils/constants.dart';
+import '../../model/user_data.dart';
+import '../../utils/constants.dart';
+import 'choose_goals_screen.dart';
 
-class LoginScreen extends StatefulWidget {
-  static String id = '/login_screen';
+class RegistrationScreen extends StatefulWidget {
+  static String id = '/registration_screen';
 
-  const LoginScreen({super.key});
+  const RegistrationScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<RegistrationScreen> createState() => _RegistrationScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
-  late final FirebaseApp _app;
-  late final _auth;
+class _RegistrationScreenState extends State<RegistrationScreen> {
+  late String username;
   late String email;
   late String password;
   bool showSpinner = false;
 
-  void setUpAuth() async {
-    _app = await Firebase.initializeApp();
-    _auth = FirebaseAuth.instanceFor(app: _app);
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    setUpAuth();
-  }
-
   @override
   Widget build(BuildContext context) {
-    final userData = Provider.of<UserData>(context, listen: true);
+    final userData = Provider.of<UserData>(context, listen: false);
 
     late OutlineInputBorder enabledOutlineInputBorder;
     late OutlineInputBorder focusedOutlineInputBorder;
@@ -117,10 +104,29 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                     textAlign: TextAlign.center,
                     onChanged: (value) {
+                      username = value;
+                    },
+                    decoration: kTextFieldDecoration.copyWith(
+                      hintText: 'Create your username',
+                      hintStyle: kInputPlaceHolderText.copyWith(
+                        color: Theme.of(context).secondaryHeaderColor,
+                      ),
+                      enabledBorder: enabledOutlineInputBorder,
+                      focusedBorder: focusedOutlineInputBorder,
+                    ),
+                  ),
+                  SizedBox(height: 24),
+                  TextField(
+                    keyboardType: TextInputType.emailAddress,
+                    style: kInputPlaceHolderText.copyWith(
+                      color: Theme.of(context).primaryColor,
+                    ),
+                    textAlign: TextAlign.center,
+                    onChanged: (value) {
                       email = value;
                     },
                     decoration: kTextFieldDecoration.copyWith(
-                      hintText: 'Enter your email',
+                      hintText: 'Create your email',
                       hintStyle: kInputPlaceHolderText.copyWith(
                         color: Theme.of(context).secondaryHeaderColor,
                       ),
@@ -139,7 +145,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       password = value;
                     },
                     decoration: kTextFieldDecoration.copyWith(
-                      hintText: 'Enter your password',
+                      hintText: 'Create your password',
                       hintStyle: kInputPlaceHolderText.copyWith(
                         color: Theme.of(context).secondaryHeaderColor,
                       ),
@@ -153,24 +159,39 @@ class _LoginScreenState extends State<LoginScreen> {
                 myGradient: LinearGradient(
                   colors: [kPhysicalColor, kGeneralColor, kMentalColor],
                 ),
-                title: "Login",
+                title: "Register",
                 onPressed: () async {
                   try {
                     setState(() {
                       showSpinner = true;
                     });
-                    final user = await _auth.signInWithEmailAndPassword(
-                      email: email,
-                      password: password,
-                    );
-                    if (user != null) {
-                      if (!userData.loading && !userData.isInitialized) {
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          userData.pullFromFireBase();
-                        });
-                      }
-                      context.go(YourDayScreen.id);
+                    // Check if email is in use
+                    QuerySnapshot emailQuery =
+                        await FirebaseFirestore.instance
+                            .collection('users')
+                            .where("email", isEqualTo: email)
+                            .get();
+
+                    QuerySnapshot usernameQuery =
+                        await FirebaseFirestore.instance
+                            .collection('users')
+                            .where("username", isEqualTo: username)
+                            .get();
+
+                    if (emailQuery.docs.isNotEmpty ||
+                        usernameQuery.docs.isNotEmpty) {
+                      toastification.show(
+                        context: context,
+                        title: Text('Email or username already in use'),
+                        description: Text('Try a different email or username'),
+                        type: ToastificationType.error,
+                        autoCloseDuration: Duration(seconds: 3),
+                      );
+                    } else {
+                      userData.setCredentials(email, username, password);
+                      context.go(ChooseGoalsScreen.id);
                     }
+
                     setState(() {
                       showSpinner = false;
                     });

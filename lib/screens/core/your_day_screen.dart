@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:morphe/model/executable_task.dart';
 import 'package:provider/provider.dart';
 
-import '../components/lists/daily_task_list.dart';
-import '../components/text/screen_title.dart';
-import '../model/task.dart';
-import '../model/user_data.dart';
+import '../../components/lists/daily_task_list.dart';
+import '../../components/text/screen_title.dart';
+import '../../model/task.dart';
+import '../../model/user_data.dart';
 
 class YourDayScreen extends StatefulWidget {
   static String id = '/your_day_screen';

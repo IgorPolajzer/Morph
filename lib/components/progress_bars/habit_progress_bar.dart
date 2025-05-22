@@ -62,11 +62,13 @@ class HabitProgressBar extends StatelessWidget {
                 width: MediaQuery.of(context).size.width - 80,
                 lineHeight: 16.0,
                 percent: xp / 100,
-                backgroundColor: Theme.of(context).secondaryHeaderColor,
+                backgroundColor: Theme.of(
+                  context,
+                ).secondaryHeaderColor.withAlpha(100),
                 progressColor:
                     enabled
                         ? type.getColor()
-                        : Theme.of(context).secondaryHeaderColor,
+                        : Theme.of(context).secondaryHeaderColor.withAlpha(100),
                 barRadius: Radius.circular(10),
                 animation: true,
               ),

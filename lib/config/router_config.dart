@@ -1,18 +1,19 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:morphe/screens/calendar_screen.dart';
-import 'package:morphe/screens/profile_screen.dart';
-import 'package:morphe/screens/your_day_screen.dart';
-import 'package:morphe/screens/choose_goals_screen.dart';
-import 'package:morphe/screens/describe_your_goals.dart';
-import 'package:morphe/screens/login_screen.dart';
-import 'package:morphe/screens/plan_overview_screen.dart';
-import 'package:morphe/screens/registration_screen.dart';
-import 'package:morphe/screens/welcome_screen.dart';
+import 'package:morphe/screens/core/calendar_screen.dart';
+import 'package:morphe/screens/core/your_day_screen.dart';
+import 'package:morphe/screens/onboarding/login_screen.dart';
 import 'package:morphe/utils/enums.dart';
 
 import '../components/special/navbar.dart';
+import '../screens/core/profile_screen.dart';
+import '../screens/edit/edit_plan_screen.dart';
+import '../screens/onboarding/choose_goals_screen.dart';
+import '../screens/onboarding/describe_your_goals.dart';
+import '../screens/onboarding/plan_overview_screen.dart';
+import '../screens/onboarding/registration_screen.dart';
+import '../screens/onboarding/welcome_screen.dart';
 
 class AuthNotifier extends ChangeNotifier {
   AuthNotifier() {
@@ -50,6 +51,10 @@ final GoRouter router = GoRouter(
         GoRoute(
           path: ProfileScreen.id,
           builder: (context, state) => const ProfileScreen(),
+        ),
+        GoRoute(
+          path: EditPlanScreen.id,
+          builder: (context, state) => const EditPlanScreen(),
         ),
       ],
     ),

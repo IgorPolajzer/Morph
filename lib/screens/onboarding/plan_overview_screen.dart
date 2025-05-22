@@ -3,16 +3,16 @@ import 'package:flutter_popup_card/flutter_popup_card.dart';
 import 'package:go_router/go_router.dart';
 import 'package:morphe/components/pop_ups/add_task_popup.dart';
 import 'package:morphe/components/buttons/arrow_button.dart';
-import 'package:morphe/screens/calendar_screen.dart';
+import 'package:morphe/screens/core/calendar_screen.dart';
 import 'package:morphe/utils/constants.dart';
 import 'package:provider/provider.dart';
 
-import '../components/lists/habit_list.dart';
-import '../components/text/screen_title.dart';
-import '../components/text/subtitle.dart';
-import '../components/lists/task_list.dart';
-import '../utils/enums.dart';
-import '../model/user_data.dart';
+import '../../components/lists/habit_list.dart';
+import '../../components/lists/task_list.dart';
+import '../../components/text/screen_title.dart';
+import '../../components/text/subtitle.dart';
+import '../../model/user_data.dart';
+import '../../utils/enums.dart';
 
 class PlanOverviewScreen extends StatefulWidget {
   static String id_physical = '/physical_plan_overview_screen';

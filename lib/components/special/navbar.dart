@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:morphe/screens/profile_screen.dart';
-import 'package:morphe/screens/your_day_screen.dart';
+import 'package:morphe/screens/core/your_day_screen.dart';
 import 'package:morphe/utils/constants.dart';
 
-import '../../screens/calendar_screen.dart';
+import '../../screens/core/calendar_screen.dart';
+import '../../screens/core/profile_screen.dart';
 
 class Navbar extends StatefulWidget {
   const Navbar({super.key});

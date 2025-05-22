@@ -5,9 +5,9 @@ import 'package:morphe/components/buttons/goal_radio_button.dart';
 import 'package:provider/provider.dart';
 import 'package:toastification/toastification.dart';
 
-import '../components/text/screen_title.dart';
-import '../model/user_data.dart';
-import '../utils/constants.dart';
+import '../../components/text/screen_title.dart';
+import '../../model/user_data.dart';
+import '../../utils/constants.dart';
 import 'describe_your_goals.dart';
 
 class ChooseGoalsScreen extends StatefulWidget {
@@ -26,7 +26,7 @@ class _ChooseGoalsScreenState extends State<ChooseGoalsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<UserData>(context, listen: false);
+    final userData = Provider.of<UserData>(context, listen: false);
 
     return Scaffold(
       appBar: ScreenTitle(title: "CHOOSE YOUR GOALS"),
@@ -90,7 +90,7 @@ class _ChooseGoalsScreenState extends State<ChooseGoalsScreen> {
                 autoCloseDuration: Duration(seconds: 3),
               );
             } else {
-              user.setSelectedHabits(physical, general, mental);
+              userData.setSelectedHabits(physical, general, mental);
               context.go(DescribeYourGoalsScreen.id);
             }
           },

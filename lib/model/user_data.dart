@@ -157,24 +157,24 @@ class UserData extends ChangeNotifier {
 
           final taskStartDate = stripTime(taskStartDateTime);
           final currentDate = stripTime(currentDateTime);
+          final diff = currentDate.difference(taskStartDate).inDays;
+          //print("$currentDate $taskStartDate $diff");
 
           final isSameWeekday =
               currentDateTime.weekday == task.scheduledDay.index + 1;
-          final isBeforeOrToday =
-              task.startDateTime.isBefore(currentDate) ||
+          final isAfterOrToday =
+              currentDate.isAfter(task.startDateTime) ||
               task.startDateTime.day == currentDate.day;
 
           switch (task.scheduledFrequency) {
             case Frequency.DAILY:
-              if (isBeforeOrToday) allTasks.add(task);
+              if (isAfterOrToday) allTasks.add(task);
               break;
             case Frequency.WEEKLY:
-              if (isBeforeOrToday && isSameWeekday) allTasks.add(task);
+              if (isAfterOrToday && isSameWeekday) allTasks.add(task);
               break;
             case Frequency.BYWEEKLY:
-              final diff = currentDate.difference(taskStartDate).inDays;
-
-              if (isBeforeOrToday && isSameWeekday) {
+              if (isAfterOrToday && isSameWeekday) {
                 if (diff >= 0 && diff % 14 == 0) {
                   allTasks.add(task);
                 }
@@ -182,7 +182,7 @@ class UserData extends ChangeNotifier {
               break;
             case Frequency.MONTHLY:
               if (currentDateTime.day == taskStartDateTime.day &&
-                  isBeforeOrToday) {
+                  isAfterOrToday) {
                 allTasks.add(task);
               }
               break;
@@ -434,5 +434,20 @@ class UserData extends ChangeNotifier {
       print(e);
       throw Exception("Error pushing user data to Firebase: $e");
     }
+  }
+
+  void pushSelectedHabitsToFirebase() async {
+    final userDoc = FirebaseFirestore.instance
+        .collection('users')
+        .doc(getUserFirebaseId());
+
+    // Store selected habits
+    await userDoc.set({
+      'selectedHabits': {
+        'physical': _selectedHabits[HabitType.PHYSICAL] ?? false,
+        'general': _selectedHabits[HabitType.GENERAL] ?? false,
+        'mental': _selectedHabits[HabitType.MENTAL] ?? false,
+      },
+    }, SetOptions(merge: true));
   }
 }

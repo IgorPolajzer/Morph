@@ -3,15 +3,15 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:morphe/components/buttons/arrow_button.dart';
-import 'package:morphe/screens/plan_overview_screen.dart';
-import 'package:morphe/screens/registration_screen.dart';
+import 'package:morphe/screens/onboarding/plan_overview_screen.dart';
+import 'package:morphe/screens/onboarding/registration_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:toastification/toastification.dart';
 
-import '../components/text_fields/describe_goal_text_field.dart';
-import '../components/text/screen_title.dart';
-import '../model/user_data.dart';
-import '../utils/enums.dart';
+import '../../components/text/screen_title.dart';
+import '../../components/text_fields/describe_goal_text_field.dart';
+import '../../model/user_data.dart';
+import '../../utils/enums.dart';
 
 class DescribeYourGoalsScreen extends StatefulWidget {
   static String id = '/describe_your_goals_screen';
@@ -132,7 +132,8 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
                   password: userData.password,
                 );
                 if (newUser != null) {
-                  userData.pushToFirebase();
+                  userData
+                      .pushToFirebase(); //TODO consider removing this pushToFirebase call, test with new user registration
                   toPlanOverview(userData);
                 } else
                   throw Exception("newUser is null");

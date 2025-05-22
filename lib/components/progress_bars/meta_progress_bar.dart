@@ -40,7 +40,9 @@ class MetaProgressBar extends StatelessWidget {
           startAngle: 90,
           corners: StrokeCap.round,
           foregroundColor: kMetaLevelColor,
-          backgroundColor: Theme.of(context).secondaryHeaderColor,
+          backgroundColor: Theme.of(
+            context,
+          ).secondaryHeaderColor.withAlpha(100),
           foregroundStrokeWidth: 32,
           backgroundStrokeWidth: 32,
           animation: true,

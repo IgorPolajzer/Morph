@@ -82,7 +82,7 @@ var kDarkTheme = ThemeData(
 
 // Colors
 const kScaffoldColorDark = Color(0xFF232323);
-const kScaffoldColorLight = Colors.white;
+const kScaffoldColorLight = Color(0xFFF4F9F6);
 
 const kNavBarColorDark = Color(0xFF1A1A1A);
 const kNavBarColorLight = Color(0xFFE0E0E0);
