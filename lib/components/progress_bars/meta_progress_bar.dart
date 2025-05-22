@@ -18,6 +18,14 @@ class MetaProgressBar extends StatelessWidget {
     super.key,
   });
 
+  String getTreeAsset() {
+    if (level > 9) {
+      return "drevo_9_level.png";
+    } else {
+      return "drevo_${level}_level.png";
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -37,8 +45,8 @@ class MetaProgressBar extends StatelessWidget {
           backgroundStrokeWidth: 32,
           animation: true,
           child: Padding(
-            padding: const EdgeInsets.all(32.0),
-            child: Image.asset("assets/images/placeholder_profile_image.png"),
+            padding: const EdgeInsets.all(50.0),
+            child: Image.asset("assets/images/tree/${getTreeAsset()}"),
           ),
         ),
         Positioned(

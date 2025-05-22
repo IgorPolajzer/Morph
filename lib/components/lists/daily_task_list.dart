@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_popup_card/flutter_popup_card.dart';
 import 'package:morphe/components/tiles/task_tile.dart';
 import 'package:provider/provider.dart';
+import 'package:toastification/toastification.dart';
 
 import '../../model/executable_task.dart';
 import '../../model/task.dart';
@@ -62,10 +63,20 @@ class _DailyTasksListState extends State<DailyTasksList> {
                           isDestructiveAction: true,
                           onPressed: () {
                             setState(() {
+                              // Complete task
                               widget.executableTasks[index].complete();
                               // Add xp to user
                               userData.incrementExperience(
                                 widget.executableTasks[index].task.type,
+                              );
+                              toastification.show(
+                                context: context,
+                                title: Text(
+                                  '${widget.executableTasks[index].task.type.format()} task completed!',
+                                ),
+                                description: Text('20+ Physical xp'),
+                                type: ToastificationType.success,
+                                autoCloseDuration: Duration(seconds: 3),
                               );
                             });
                             Navigator.pop(context);

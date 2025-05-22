@@ -66,7 +66,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ),
             Text(
-              '${userData.metaXp}/300xp',
+              '${userData.metaXp}/${maxMetaXp}xp',
               style: kTitleTextStyle.copyWith(
                 color: kMetaLevelColor,
                 fontSize: 16,
