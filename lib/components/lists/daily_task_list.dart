@@ -13,10 +13,12 @@ import '../pop_ups/show_more_popup.dart';
 class DailyTasksList extends StatefulWidget {
   final List<Task> tasks;
   final List<ExecutableTask> executableTasks;
+  final DateTime scheduledDay;
 
   const DailyTasksList({
     required this.tasks,
     required this.executableTasks,
+    required this.scheduledDay,
     super.key,
   });
 
@@ -28,6 +30,7 @@ class _DailyTasksListState extends State<DailyTasksList> {
   @override
   Widget build(BuildContext context) {
     final userData = Provider.of<UserData>(context, listen: true);
+    ValueNotifier<int> experience = ValueNotifier(20);
 
     var executableTaskIds = [];
     for (ExecutableTask executableTask in widget.executableTasks) {
@@ -68,13 +71,17 @@ class _DailyTasksListState extends State<DailyTasksList> {
                               // Add xp to user
                               userData.incrementExperience(
                                 widget.executableTasks[index].task.type,
+                                widget.scheduledDay,
+                                experience,
                               );
                               toastification.show(
                                 context: context,
                                 title: Text(
                                   '${widget.executableTasks[index].task.type.format()} task completed!',
                                 ),
-                                description: Text('20+ Physical xp'),
+                                description: Text(
+                                  '${experience.value}+ Physical xp',
+                                ),
                                 type: ToastificationType.success,
                                 autoCloseDuration: Duration(seconds: 3),
                               );

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 
 import '../utils/enums.dart';
 import '../utils/functions.dart';
@@ -55,12 +56,18 @@ class Experience {
     return maxXp;
   }
 
-  void increment() {
-    if ((points + _increment) >= maxXp) {
-      points = 0;
+  void increment(DateTime scheduledDate, ValueNotifier<int> experience) {
+    experience.value = 10;
+    experience.value =
+        isToday(scheduledDate) != scheduledDate.isBefore(DateTime.now())
+            ? (_increment / 2).round()
+            : _increment;
+
+    if ((points + experience.value) >= maxXp) {
+      points = (points + experience.value) % maxXp;
       level++;
     } else {
-      points += _increment;
+      points += experience.value;
     }
   }
 

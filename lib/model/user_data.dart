@@ -183,13 +183,12 @@ class UserData extends ChangeNotifier {
           final taskStartDate = stripTime(taskStartDateTime);
           final currentDate = stripTime(currentDateTime);
           final diff = currentDate.difference(taskStartDate).inDays;
-          //print("$currentDate $taskStartDate $diff");
 
           final isSameWeekday =
               currentDateTime.weekday == task.scheduledDay.index + 1;
           final isAfterOrToday =
               currentDate.isAfter(task.startDateTime) ||
-              task.startDateTime.day == currentDate.day;
+              isSameDay(currentDate, task.startDateTime);
 
           switch (task.scheduledFrequency) {
             case Frequency.DAILY:
@@ -254,8 +253,12 @@ class UserData extends ChangeNotifier {
     _metaXp = remainingXp;
   }
 
-  void incrementExperience(HabitType type) {
-    _experience[type]?.increment();
+  void incrementExperience(
+    HabitType type,
+    DateTime scheduledDate,
+    ValueNotifier<int> experience,
+  ) {
+    _experience[type]?.increment(scheduledDate, experience);
     _experience[type]?.pushToFirebase(type);
     updateMetaLevel(
       Experience.getMetaXp(_experience),

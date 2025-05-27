@@ -54,6 +54,7 @@ class _YourDayScreenState extends State<YourDayScreen> {
                     child: DailyTasksList(
                       tasks: value,
                       executableTasks: _executableTasks.value,
+                      scheduledDay: DateTime.now(),
                     ),
                   ),
                   Padding(

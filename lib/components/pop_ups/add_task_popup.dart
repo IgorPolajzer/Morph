@@ -245,6 +245,7 @@ class _AddTaskPopUpState extends State<AddTaskPopUp>
                               type: widget.type,
                             );
 
+                            userData.setExecutableTasks(DateTime.now());
                             userData.addTask(newTask);
                             Navigator.of(context).pop();
                           } catch (e) {
