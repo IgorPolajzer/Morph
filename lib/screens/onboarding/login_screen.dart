@@ -84,23 +84,34 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                       Hero(
                         tag: 'title',
-                        child: Text(
-                          "Morph",
-                          style: kMorphTitleStyle.copyWith(
-                            color: Theme.of(context).primaryColor,
-                            fontSize: 32,
+                        child: Material(
+                          color: Colors.transparent,
+                          child: AnimatedDefaultTextStyle(
+                            duration: Duration(milliseconds: 300),
+                            style: kMorphTitleStyle.copyWith(
+                              color: Theme.of(context).primaryColor,
+                              fontSize: 32, // Final font size
+                            ),
+                            child: Text("Morph"),
                           ),
                         ),
                       ),
+
                       Hero(
                         tag: 'subtext',
-                        child: Text(
-                          "Small Habits. Big Change.",
-                          style: kMorphPhraseStyle.copyWith(
-                            color: Theme.of(context).secondaryHeaderColor,
-                            fontSize: 12,
+                        child: Material(
+                          color: Colors.transparent,
+                          child: AnimatedDefaultTextStyle(
+                            duration: Duration(milliseconds: 300),
+                            style: kMorphPhraseStyle.copyWith(
+                              color: Theme.of(context).secondaryHeaderColor,
+                              fontSize: 12, // Final font size
+                            ),
+                            child: Text(
+                              "Small Habits. Big Change.",
+                              textAlign: TextAlign.center,
+                            ),
                           ),
-                          textAlign: TextAlign.center,
                         ),
                       ),
                     ],

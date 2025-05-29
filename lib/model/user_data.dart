@@ -132,6 +132,7 @@ class UserData extends ChangeNotifier {
     // Executable tasks are tasks which are scheduled for TASK_RANGE number of days behind
     while (today.difference(from).inDays >= 0) {
       List<Task> tasks = getTasks(from);
+      _executableTasks = <ExecutableTask>[];
 
       for (Task task in tasks) {
         final scheduledDateTime = DateTime(from.year, from.month, from.day);

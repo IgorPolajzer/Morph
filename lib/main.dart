@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:morphe/utils/constants.dart';
+import 'package:morphe/utils/plan_generator.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
@@ -27,15 +28,13 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void initState() {
-    //FirebaseAuth.instance.signOut();
-
     // User is logged in
     if (FirebaseAuth.instance.currentUser != null) {
       if (!userData.loading && !userData.isInitialized) {
         userData.pullFromFireBase();
       }
     }
-    // TODO handle if network isnt available
+    // TODO handle if network isn't available
 
     super.initState();
   }

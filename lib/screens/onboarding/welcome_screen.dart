@@ -50,10 +50,14 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                 ),
                 Hero(
                   tag: 'title',
-                  child: Text(
-                    "Morph",
-                    style: kMorphTitleStyle.copyWith(
-                      color: Theme.of(context).primaryColor,
+                  child: Material(
+                    color: Colors.transparent,
+                    child: AnimatedDefaultTextStyle(
+                      duration: Duration(milliseconds: 300),
+                      style: kMorphTitleStyle.copyWith(
+                        color: Theme.of(context).primaryColor,
+                      ),
+                      child: Text("Morph"),
                     ),
                   ),
                 ),
@@ -65,12 +69,18 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                 ),
                 Hero(
                   tag: 'subtext',
-                  child: Text(
-                    "Small Habits. Big Change.",
-                    style: kMorphPhraseStyle.copyWith(
-                      color: Theme.of(context).secondaryHeaderColor,
+                  child: Material(
+                    color: Colors.transparent,
+                    child: AnimatedDefaultTextStyle(
+                      duration: Duration(milliseconds: 300),
+                      style: kMorphPhraseStyle.copyWith(
+                        color: Theme.of(context).secondaryHeaderColor,
+                      ),
+                      child: Text(
+                        "Small Habits. Big Change.",
+                        textAlign: TextAlign.center,
+                      ),
                     ),
-                    textAlign: TextAlign.center,
                   ),
                 ),
               ],
@@ -85,7 +95,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                 ),
                 title: 'Register',
                 onPressed: () {
-                  context.go(RegistrationScreen.id);
+                  context.push(RegistrationScreen.id);
                 },
               ),
               GradientButton(
@@ -94,7 +104,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                 ),
                 title: 'Login',
                 onPressed: () {
-                  context.go(LoginScreen.id);
+                  context.push(LoginScreen.id);
                 },
               ),
             ],

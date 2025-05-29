@@ -137,7 +137,8 @@ final GoRouter router = GoRouter(
 
     final isAuthPage =
         state.fullPath == LoginScreen.id ||
-        state.fullPath == RegistrationScreen.id;
+        state.fullPath == RegistrationScreen.id ||
+        state.fullPath == WelcomeScreen.id;
 
     final isInitalLocation = state.fullPath == '/';
 
@@ -155,7 +156,7 @@ final GoRouter router = GoRouter(
 
     if (isLoggedIn && isInitalLocation) {
       // Logged in coming from initial page
-      return YourDayScreen.id;
+      return ChooseGoalsScreen.id;
     }
 
     // Otherwise allow navigation
