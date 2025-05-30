@@ -62,7 +62,6 @@ Future<void> _generateAndParseSingleCategory(
           'API returned status ${response.statusCode}: ${response.body}',
         );
       }
-      print("Api call completed");
       planJson = jsonDecode(jsonDecode(response.body)['choices'][0]['text']);
     } catch (e) {
       print('Attempt $attempts failed: $e');
@@ -85,7 +84,7 @@ Future<void> _generateAndParseSingleCategory(
 }
 
 String getBody(String systemPrompt, String userPrompt) {
-  String model = "Meta-Llama-3.1-70B-Instruct"; // "Meta-Llama-3.1-70B-Instruct"
+  String model = "Meta-Llama-3.1-70B-Instruct";
   return jsonEncode({
     "model": model,
     "prompt":

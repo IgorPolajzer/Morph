@@ -37,11 +37,13 @@ class HabitTile extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  habit.title,
-                  style: kTitleTextStyle.copyWith(
-                    color: Theme.of(context).primaryColor,
-                    fontSize: 24,
+                Flexible(
+                  child: Text(
+                    habit.title,
+                    style: kTitleTextStyle.copyWith(
+                      color: Theme.of(context).primaryColor,
+                      fontSize: 20,
+                    ),
                   ),
                 ),
                 GestureDetector(

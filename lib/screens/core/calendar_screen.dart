@@ -74,7 +74,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
             });
           },
           eventLoader: (day) {
-            return userData.getTasks(day);
+            return userData.getTaskTypes(day);
           },
           calendarBuilders: CalendarBuilders(
             markerBuilder: (context, date, events) {

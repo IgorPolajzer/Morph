@@ -168,6 +168,21 @@ class UserData extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Get task types
+  List<Task> getTaskTypes(DateTime day) {
+    final List<Task> taskTypes = [];
+    var allTasks = getTasks(day);
+
+    for (Task task in allTasks) {
+      bool typeExists = taskTypes.any((t) => t.type == task.type);
+      if (!typeExists) {
+        taskTypes.add(task);
+      }
+    }
+
+    return taskTypes;
+  }
+
   // Gets all tasks scheduled on provided date
   List<Task> getTasks(DateTime currentDateTime) {
     final List<Task> allTasks = [];

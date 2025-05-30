@@ -34,6 +34,10 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
   late final _auth;
   bool showSpinner = false;
 
+  String physicalGoals = "";
+  String generalGoals = "";
+  String mentalGoals = "";
+
   void setUpAuth() async {
     _app = await Firebase.initializeApp();
     _auth = FirebaseAuth.instanceFor(app: _app);
@@ -62,9 +66,6 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
   @override
   Widget build(BuildContext context) {
     final userData = Provider.of<UserData>(context, listen: true);
-    String physicalGoals = "";
-    String generalGoals = "";
-    String mentalGoals = "";
 
     return Scaffold(
       appBar: ScreenTitle(title: "DESCRIBE YOUR GOALS"),
