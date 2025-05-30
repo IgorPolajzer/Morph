@@ -269,6 +269,12 @@ class UserData extends ChangeNotifier {
   }
 
   // Habit operations
+  void addHabits(List<Habit> habits) {
+    for (Habit habit in habits) {
+      addHabit(habit);
+    }
+  }
+
   void addHabit(Habit habit) {
     switch (habit.type) {
       case HabitType.PHYSICAL:
@@ -288,6 +294,12 @@ class UserData extends ChangeNotifier {
 
     habits.removeWhere((habitEntry) => habit.id == habitEntry.id);
     notifyListeners();
+  }
+
+  void addTasks(List<Task> tasks) {
+    for (Task task in tasks) {
+      addTask(task);
+    }
   }
 
   // Task operations

@@ -60,6 +60,18 @@ enum Day {
         return Day.SATURDAY;
       case "sunday":
         return Day.SUNDAY;
+      case "":
+        final weekday =
+            [
+              'monday',
+              'tuesday',
+              'wednesday',
+              'thursday',
+              'friday',
+              'saturday',
+              'sunday',
+            ][DateTime.now().weekday - 1];
+        return getDayFromString(weekday);
       default:
         throw Exception('Invalid day type provided');
     }

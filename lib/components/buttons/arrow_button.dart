@@ -4,14 +4,20 @@ import 'package:morphe/utils/constants.dart';
 class ArrowButton extends StatelessWidget {
   final String title;
   final VoidCallback? onPressed;
+  bool enabled;
 
-  const ArrowButton({required this.title, required this.onPressed, super.key});
+  ArrowButton({
+    required this.title,
+    required this.onPressed,
+    this.enabled = true,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: TextButton(
-        onPressed: onPressed,
+        onPressed: enabled ? onPressed : () {},
         child: Row(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,

@@ -26,6 +26,9 @@ dependencies:
   go_router: ^15.1.2
   dashed_circular_progress_bar: ^0.0.6
   percent_indicator: ^4.2.5
+  http: ^1.4.0
+  pair: ^0.1.2
+  flutter_dotenv: ^5.2.1
 
 dev_dependencies:
   flutter_test:
@@ -52,3 +55,4 @@ flutter:
     - assets/images/
     - assets/images/tree/
     - assets/fonts/
+    - .env
