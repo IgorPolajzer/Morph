@@ -23,12 +23,27 @@ class Task {
     required this.description,
     required this.scheduledFrequency,
     required this.scheduledDay,
-    required this.startDateTime,
-    required this.endDateTime,
+    required DateTime startDateTime,
+    required DateTime endDateTime,
     required this.type,
     required this.notifications,
     this.isDone = false,
-  });
+  }) : startDateTime = DateTime(
+         DateTime.now().year,
+         DateTime.now().month,
+         DateTime.now().day,
+         startDateTime.hour,
+         startDateTime.minute,
+         startDateTime.second,
+       ),
+       endDateTime = DateTime(
+         DateTime.now().year,
+         DateTime.now().month,
+         DateTime.now().day,
+         endDateTime.hour,
+         endDateTime.minute,
+         endDateTime.second,
+       );
 
   factory Task.clone(Task t) {
     Task task = Task(

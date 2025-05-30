@@ -17,7 +17,12 @@ class ArrowButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: TextButton(
-        onPressed: enabled ? onPressed : () {},
+        onPressed:
+            enabled
+                ? onPressed
+                : () {
+                  print("disabled");
+                },
         child: Row(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,

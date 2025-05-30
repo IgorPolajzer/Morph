@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:morphe/model/generation_exception.dart';
 
 import '../model/habit.dart';
 import '../model/task.dart';
@@ -18,53 +19,32 @@ final uri = Uri.parse('https://api.awanllm.com/v1/completions');
 
 Future<Pair<List<Task>, List<Habit>>> generateAndParse(
   Map<HabitType, String> prompts,
+  Map<HabitType, bool> selectedHabits,
 ) async {
   var tasks = <Task>[];
   var habits = <Habit>[];
 
   for (HabitType type in HabitType.values) {
-    var userPrompt =
-        "Category: ${type.name.toLowerCase()}\nUser Input: ${prompts[type]}";
-    final body = getBody(kSystemPrompt, userPrompt);
-    dynamic taskJson;
-
-    //Make API call
-    while (taskJson == null) {
-      try {
-        final response = await http.post(uri, headers: headers, body: body);
-        taskJson = jsonDecode(jsonDecode(response.body)['choices'][0]['text']);
-      } catch (e) {
-        print(e);
-      }
-    }
-
-    if (taskJson['valid'] == false || taskJson['error'] != null) {
-      // TODO Handle properly
-      throw Exception("Something went wrong when processing prompt");
-    } else {
-      var subprompts = taskJson['subprompts'];
-      String planGenerationPrompt =
-          "Write JSON plans for the following activities:";
-      String planSystemPrompt = switch (type) {
-        HabitType.PHYSICAL => kPhysicalPrompt,
-        HabitType.GENERAL => kGeneralPrompt,
-        HabitType.MENTAL => kMentalPrompt,
-      };
-
-      for (String subprompt in subprompts) {
-        planGenerationPrompt += "\n- $subprompt";
-      }
-
-      final body = getBody(planSystemPrompt, planGenerationPrompt);
+    if (selectedHabits[type] == true) {
+      var userPrompt =
+          "Category: ${type.name.toLowerCase()}\nUser Input: ${prompts[type]}";
+      final body = getBody(kMetaSystemPrompt, userPrompt);
       dynamic planJson;
 
+      //Make API call
       while (planJson == null) {
         try {
-          final plan = await http.post(uri, headers: headers, body: body);
-          planJson = jsonDecode(jsonDecode(plan.body)['choices'][0]['text']);
+          final response = await http.post(uri, headers: headers, body: body);
+          planJson = jsonDecode(
+            jsonDecode(response.body)['choices'][0]['text'],
+          );
         } catch (e) {
           print(e);
         }
+      }
+
+      if (planJson['valid'] == false || planJson['error'] != null) {
+        throw GenerationException(planJson['error']);
       }
 
       tasks.addAll(parseTasks(planJson["tasks"]));

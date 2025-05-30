@@ -23,7 +23,7 @@ Map<HabitType, String> prompts = {
 void main() async {
   //print("${Uuid().v4()}, ${Uuid().v4()}, ${Uuid().v4()}, ${Uuid().v4()}");
   await dotenv.load(fileName: ".env");
-  generateAndParse(prompts);
+  //await generateAndParse(prompts);
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(const MyApp());

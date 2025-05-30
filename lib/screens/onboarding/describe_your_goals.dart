@@ -12,6 +12,7 @@ import 'package:toastification/toastification.dart';
 
 import '../../components/text/screen_title.dart';
 import '../../components/text_fields/describe_goal_text_field.dart';
+import '../../model/generation_exception.dart';
 import '../../model/habit.dart';
 import '../../model/task.dart';
 import '../../model/user_data.dart';
@@ -134,19 +135,29 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
                     generalGoals.isNotEmpty &&
                 userData.selectedHabits[HabitType.MENTAL] ==
                     mentalGoals.isNotEmpty) {
-              print("$physicalGoals $generalGoals $mentalGoals");
               try {
                 setState(() {
                   showSpinner = true;
                 });
                 // Generate plans
-                Map<HabitType, String> prompts = {
-                  HabitType.PHYSICAL: physicalGoals,
-                  HabitType.GENERAL: generalGoals,
-                  HabitType.MENTAL: mentalGoals,
-                };
+                Map<HabitType, String> prompts = {};
+
+                if (userData.selectedHabits[HabitType.PHYSICAL] == true &&
+                    physicalGoals.isNotEmpty) {
+                  prompts[HabitType.PHYSICAL] = physicalGoals;
+                }
+                if (userData.selectedHabits[HabitType.GENERAL] == true &&
+                    generalGoals.isNotEmpty) {
+                  prompts[HabitType.GENERAL] = generalGoals;
+                }
+                if (userData.selectedHabits[HabitType.MENTAL] == true &&
+                    mentalGoals.isNotEmpty) {
+                  prompts[HabitType.MENTAL] = mentalGoals;
+                }
+
                 Pair<List<Task>, List<Habit>> plan = await generateAndParse(
                   prompts,
+                  userData.selectedHabits,
                 );
                 userData.addTasks(plan.key);
                 userData.addHabits(plan.value);
@@ -157,11 +168,20 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
                   password: userData.password,
                 );
 
-                setState(() {
-                  showSpinner = false;
-                });
                 toPlanOverview(userData);
+              } on GenerationException {
+                toastification.show(
+                  context: context,
+                  title: Text('Try again'),
+                  description: Text(
+                    'Prompt was insufficient. Tap the ? symbol for instructions',
+                  ),
+                  type: ToastificationType.error,
+                  autoCloseDuration: Duration(seconds: 3),
+                );
+                context.go(DescribeYourGoalsScreen.id);
               } catch (e) {
+                print(e);
                 toastification.show(
                   context: context,
                   title: Text('Try again'),
@@ -172,6 +192,10 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
                   autoCloseDuration: Duration(seconds: 3),
                 );
                 context.go(RegistrationScreen.id);
+              } finally {
+                setState(() {
+                  showSpinner = false;
+                });
               }
             } else {
               toastification.show(

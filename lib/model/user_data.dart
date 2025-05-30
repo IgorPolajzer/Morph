@@ -438,7 +438,7 @@ class UserData extends ChangeNotifier {
       }, SetOptions(merge: true));
 
       // Store completedTasks
-      await userDoc.set({'completedTasks': []});
+      await userDoc.set({'completedTasks': []}, SetOptions(merge: true));
 
       // Store experience
       await userDoc.set({
