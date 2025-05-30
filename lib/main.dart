@@ -4,9 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:morphe/utils/constants.dart';
 import 'package:morphe/utils/enums.dart';
-import 'package:morphe/utils/plan_generator.dart';
 import 'package:provider/provider.dart';
-import 'package:uuid/uuid.dart';
 
 import 'config/router_config.dart';
 import 'model/user_data.dart';
