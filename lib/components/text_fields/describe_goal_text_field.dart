@@ -5,7 +5,7 @@ import 'package:morphe/utils/constants.dart';
 import '../../utils/enums.dart';
 import '../pop_ups/show_more_popup.dart';
 
-class DescribeGoalField extends StatelessWidget {
+class DescribeGoalField extends StatefulWidget {
   final HabitType type;
   final String title;
   final String description;
@@ -24,6 +24,28 @@ class DescribeGoalField extends StatelessWidget {
   });
 
   @override
+  State<DescribeGoalField> createState() => _DescribeGoalFieldState();
+}
+
+class _DescribeGoalFieldState extends State<DescribeGoalField> {
+  late TextEditingController _controller;
+  int _currentLength = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = TextEditingController();
+    _controller.addListener(() {
+      setState(() {
+        _currentLength = _controller.text.length;
+      });
+      if (widget.onChanged != null) {
+        widget.onChanged!(_controller.text);
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     var disabledColor = Theme.of(context).secondaryHeaderColor;
 
@@ -40,8 +62,8 @@ class DescribeGoalField extends StatelessWidget {
                   topRight: Radius.circular(15),
                 ),
                 color:
-                    enabled
-                        ? type.getColor()
+                    widget.enabled
+                        ? widget.type.getColor()
                         : Theme.of(context).secondaryHeaderColor,
               ),
               child: Padding(
@@ -55,7 +77,7 @@ class DescribeGoalField extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      title,
+                      widget.title,
                       style: kGoalTitleTextStyle.copyWith(
                         color: Theme.of(context).primaryColor,
                       ),
@@ -68,7 +90,7 @@ class DescribeGoalField extends StatelessWidget {
                             builder: (context) {
                               return ShowMorePopUp(
                                 title: "Tips on your prompt",
-                                description: hint,
+                                description: widget.hint,
                               );
                             },
                           ),
@@ -91,57 +113,80 @@ class DescribeGoalField extends StatelessWidget {
                     bottomLeft: Radius.circular(17),
                     bottomRight: Radius.circular(17),
                   ),
-                  color: enabled ? type.getColor() : disabledColor,
+                  color:
+                      widget.enabled ? widget.type.getColor() : disabledColor,
                 ),
-                child: TextField(
-                  enabled: enabled,
-                  expands: true,
-                  maxLines: null,
-                  style: kInputPlaceHolderText.copyWith(
-                    color: Theme.of(context).primaryColor,
-                    fontSize: 14,
-                  ),
-                  textAlignVertical: TextAlignVertical.top, // Align text to top
-                  decoration: InputDecoration(
-                    filled: true,
-                    fillColor: Theme.of(context).scaffoldBackgroundColor,
-                    contentPadding: EdgeInsets.only(
-                      top: 5,
-                      left: 10,
-                    ), // Top padding to push text down a bit
-                    hintText: description,
-                    hintStyle: kPlaceHolderTextStyle.copyWith(
-                      color: Theme.of(context).secondaryHeaderColor,
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    border: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: type.getColor(),
-                        width: 4.0,
+                child: Stack(
+                  children: [
+                    TextField(
+                      controller: _controller,
+                      enabled: widget.enabled,
+                      expands: true,
+                      maxLines: null,
+                      maxLength: 300,
+                      style: kInputPlaceHolderText.copyWith(
+                        color: Theme.of(context).primaryColor,
+                        fontSize: 14,
                       ),
-                      borderRadius: BorderRadius.all(Radius.circular(17)),
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: type.getColor(),
-                        width: 4.0,
+                      textAlignVertical: TextAlignVertical.top,
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Theme.of(context).scaffoldBackgroundColor,
+                        contentPadding: const EdgeInsets.only(
+                          top: 5,
+                          left: 10,
+                          right: 10,
+                        ),
+                        hintText: widget.description,
+                        hintStyle: kPlaceHolderTextStyle.copyWith(
+                          color: Theme.of(context).secondaryHeaderColor,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        border: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: widget.type.getColor(),
+                            width: 4.0,
+                          ),
+                          borderRadius: BorderRadius.all(Radius.circular(17)),
+                        ),
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: widget.type.getColor(),
+                            width: 4.0,
+                          ),
+                          borderRadius: BorderRadius.all(Radius.circular(17)),
+                        ),
+                        disabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: disabledColor,
+                            width: 4.0,
+                          ),
+                          borderRadius: BorderRadius.all(Radius.circular(17)),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                            color: widget.type.getColor(),
+                            width: 6.0,
+                          ),
+                          borderRadius: BorderRadius.all(Radius.circular(17)),
+                        ),
+                        counterText: '', // Hide default counter
                       ),
-                      borderRadius: BorderRadius.all(Radius.circular(17)),
+                      onChanged: widget.onChanged,
                     ),
-                    disabledBorder: OutlineInputBorder(
-                      borderSide: BorderSide(color: disabledColor, width: 4.0),
-                      borderRadius: BorderRadius.all(Radius.circular(17)),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                        color: type.getColor(),
-                        width: 6.0,
+                    Positioned(
+                      bottom: 10, // Adjust vertically
+                      right: 15, // Adjust horizontally
+                      child: Text(
+                        '${_currentLength}/300',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Theme.of(context).secondaryHeaderColor,
+                        ),
                       ),
-                      borderRadius: BorderRadius.all(Radius.circular(17)),
                     ),
-                  ),
-                  onChanged: onChanged,
+                  ],
                 ),
               ),
             ),
@@ -149,5 +194,11 @@ class DescribeGoalField extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 }

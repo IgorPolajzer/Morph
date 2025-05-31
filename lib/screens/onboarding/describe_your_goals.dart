@@ -175,7 +175,7 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
                   context: context,
                   title: Text('Try again'),
                   description: Text(
-                    'Prompt was insufficient. Tap the ? symbol for instructions',
+                    'Prompts were insufficient. Tap the ? symbols for instructions',
                   ),
                   type: ToastificationType.error,
                   autoCloseDuration: Duration(seconds: 3),

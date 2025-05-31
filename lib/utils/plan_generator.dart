@@ -24,23 +24,54 @@ Future<Pair<List<Task>, List<Habit>>> generateAndParse(
   final tasks = <Task>[];
   final habits = <Habit>[];
 
-  // Create a list of futures for parallel execution
-  final futures = <Future<void>>[];
+  String userPrompt = "";
 
   for (HabitType type in HabitType.values) {
     if (selectedHabits[type] == true) {
-      futures.add(
-        _generateAndParseSingleCategory(type, prompts[type]!, tasks, habits),
-      );
+      userPrompt +=
+          "Category: ${type.name.toLowerCase()}\nUser Input: ${prompts[type]}\n";
     }
   }
 
-  await Future.wait(futures);
+  final body = getBody(kMetaSystemPrompt, userPrompt);
+  dynamic planJson;
+
+  int attempts = 0;
+  const int maxAttempts = 3;
+
+  while (planJson == null && attempts < maxAttempts) {
+    attempts++;
+    try {
+      final response = await http.post(uri, headers: headers, body: body);
+      if (response.statusCode != 200) {
+        throw GenerationException(
+          'API returned status ${response.statusCode}: ${response.body}',
+        );
+      }
+      planJson = jsonDecode(jsonDecode(response.body)['choices'][0]['text']);
+    } catch (e) {
+      print('Attempt $attempts failed: $e');
+      await Future.delayed(Duration(seconds: 2));
+    }
+  }
+
+  if (planJson == null) {
+    throw GenerationException(
+      "Failed to get valid response from API after $maxAttempts attempts",
+    );
+  }
+
+  if (planJson['valid'] == false || planJson['error'] != null) {
+    throw GenerationException(planJson['error']);
+  }
+
+  tasks.addAll(parseTasks(planJson["tasks"]));
+  habits.addAll(parseHabits(planJson["habits"]));
 
   return Pair<List<Task>, List<Habit>>(tasks, habits);
 }
 
-Future<void> _generateAndParseSingleCategory(
+/*Future<void> _generateAndParseSingleCategory(
   HabitType type,
   String prompt,
   List<Task> tasks,
@@ -81,7 +112,7 @@ Future<void> _generateAndParseSingleCategory(
 
   tasks.addAll(parseTasks(planJson["tasks"]));
   habits.addAll(parseHabits(planJson["habits"]));
-}
+}*/
 
 String getBody(String systemPrompt, String userPrompt) {
   String model = "Meta-Llama-3.1-70B-Instruct";
@@ -93,7 +124,7 @@ String getBody(String systemPrompt, String userPrompt) {
     "top_p": 0.7,
     "top_k": 20,
     "repetition_penalty": 1.1,
-    "max_tokens": 1024,
+    "max_tokens": 1500,
     "stream": false,
   });
 }
