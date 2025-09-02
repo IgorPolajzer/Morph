@@ -80,7 +80,7 @@ class _DailyTasksListState extends State<DailyTasksList> {
                                   '${widget.executableTasks[index].task.type.format()} task completed!',
                                 ),
                                 description: Text(
-                                  '${experience.value}+ Physical xp',
+                                  '${experience.value}+ ${widget.executableTasks[index].task.type.format()} xp',
                                 ),
                                 type: ToastificationType.success,
                                 autoCloseDuration: Duration(seconds: 3),

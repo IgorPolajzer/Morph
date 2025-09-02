@@ -15,7 +15,6 @@ class Task {
   DateTime endDateTime;
   final HabitType type;
   bool notifications;
-  bool isDone;
 
   Task({
     required this.title,
@@ -27,7 +26,6 @@ class Task {
     required DateTime endDateTime,
     required this.type,
     required this.notifications,
-    this.isDone = false,
   }) : startDateTime = DateTime(
          DateTime.now().year,
          DateTime.now().month,
@@ -56,15 +54,10 @@ class Task {
       endDateTime: t.endDateTime,
       type: t.type,
       notifications: t.notifications,
-      isDone: t.isDone,
     );
     task.id = t.id;
 
     return task;
-  }
-
-  void toggleDone() {
-    isDone = !isDone;
   }
 
   factory Task.fromJson(Map<String, dynamic> json) {

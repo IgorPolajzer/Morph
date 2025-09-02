@@ -4,11 +4,12 @@ import 'package:uuid/uuid.dart';
 import '../utils/enums.dart';
 
 class Habit {
+  String id = Uuid().v4();
+
   String title;
   String description;
   HabitType type;
   bool notifications;
-  String id = Uuid().v4();
 
   Habit({
     required this.title,

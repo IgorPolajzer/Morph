@@ -78,10 +78,7 @@ class _PlanOverviewScreenState extends State<PlanOverviewScreen> {
               children: [
                 Subtitle(
                   title: widget.type.name,
-                  subtitle:
-                      widget.type == HabitType.PHYSICAL
-                          ? "Workout plan"
-                          : "Recommended habits",
+                  subtitle: "Recommended tasks",
                   color: widget.type.getColor(),
                 ),
                 Flexible(

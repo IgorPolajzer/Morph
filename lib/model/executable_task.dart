@@ -1,8 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:morphe/model/task.dart';
-import 'package:morphe/model/user_data.dart';
-import 'package:provider/provider.dart';
 
 import '../utils/functions.dart';
 

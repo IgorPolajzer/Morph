@@ -58,10 +58,7 @@ class _EditPlanScreenState extends State<EditPlanScreen> {
               children: [
                 Subtitle(
                   title: widget.type.name,
-                  subtitle:
-                      widget.type == HabitType.PHYSICAL
-                          ? "Workout plan"
-                          : "Recommended habits",
+                  subtitle: "Recommended tasks",
                   color: widget.type.getColor(),
                 ),
                 Flexible(
