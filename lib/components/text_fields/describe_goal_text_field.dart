@@ -5,45 +5,27 @@ import 'package:morphe/utils/constants.dart';
 import '../../utils/enums.dart';
 import '../pop_ups/show_more_popup.dart';
 
-class DescribeGoalField extends StatefulWidget {
+class DescribeGoalField extends StatelessWidget {
   final HabitType type;
   final String title;
   final String description;
   final String hint;
   final bool enabled;
+  final TextEditingController controller;
   final ValueChanged<String>? onChanged;
+  final int maxCharacters;
 
-  DescribeGoalField({
+  const DescribeGoalField({
     required this.type,
     required this.title,
     required this.description,
     required this.hint,
+    required this.controller,
     required this.onChanged,
+    required this.maxCharacters,
     this.enabled = true,
     super.key,
   });
-
-  @override
-  State<DescribeGoalField> createState() => _DescribeGoalFieldState();
-}
-
-class _DescribeGoalFieldState extends State<DescribeGoalField> {
-  late TextEditingController _controller;
-  int _currentLength = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = TextEditingController();
-    _controller.addListener(() {
-      setState(() {
-        _currentLength = _controller.text.length;
-      });
-      if (widget.onChanged != null) {
-        widget.onChanged!(_controller.text);
-      }
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,8 +44,8 @@ class _DescribeGoalFieldState extends State<DescribeGoalField> {
                   topRight: Radius.circular(15),
                 ),
                 color:
-                    widget.enabled
-                        ? widget.type.getColor()
+                    enabled
+                        ? type.getColor()
                         : Theme.of(context).secondaryHeaderColor,
               ),
               child: Padding(
@@ -77,7 +59,7 @@ class _DescribeGoalFieldState extends State<DescribeGoalField> {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
-                      widget.title,
+                      title,
                       style: kGoalTitleTextStyle.copyWith(
                         color: Theme.of(context).primaryColor,
                       ),
@@ -90,7 +72,7 @@ class _DescribeGoalFieldState extends State<DescribeGoalField> {
                             builder: (context) {
                               return ShowMorePopUp(
                                 title: "Tips on your prompt",
-                                description: widget.hint,
+                                description: hint,
                               );
                             },
                           ),
@@ -113,17 +95,16 @@ class _DescribeGoalFieldState extends State<DescribeGoalField> {
                     bottomLeft: Radius.circular(17),
                     bottomRight: Radius.circular(17),
                   ),
-                  color:
-                      widget.enabled ? widget.type.getColor() : disabledColor,
+                  color: enabled ? type.getColor() : disabledColor,
                 ),
                 child: Stack(
                   children: [
                     TextField(
-                      controller: _controller,
-                      enabled: widget.enabled,
+                      controller: controller,
+                      enabled: enabled,
                       expands: true,
                       maxLines: null,
-                      maxLength: 300,
+                      maxLength: maxCharacters,
                       style: kInputPlaceHolderText.copyWith(
                         color: Theme.of(context).primaryColor,
                         fontSize: 14,
@@ -137,7 +118,7 @@ class _DescribeGoalFieldState extends State<DescribeGoalField> {
                           left: 10,
                           right: 10,
                         ),
-                        hintText: widget.description,
+                        hintText: description,
                         hintStyle: kPlaceHolderTextStyle.copyWith(
                           color: Theme.of(context).secondaryHeaderColor,
                           fontSize: 12,
@@ -145,14 +126,14 @@ class _DescribeGoalFieldState extends State<DescribeGoalField> {
                         ),
                         border: OutlineInputBorder(
                           borderSide: BorderSide(
-                            color: widget.type.getColor(),
+                            color: type.getColor(),
                             width: 4.0,
                           ),
                           borderRadius: BorderRadius.all(Radius.circular(17)),
                         ),
                         enabledBorder: OutlineInputBorder(
                           borderSide: BorderSide(
-                            color: widget.type.getColor(),
+                            color: type.getColor(),
                             width: 4.0,
                           ),
                           borderRadius: BorderRadius.all(Radius.circular(17)),
@@ -166,24 +147,29 @@ class _DescribeGoalFieldState extends State<DescribeGoalField> {
                         ),
                         focusedBorder: OutlineInputBorder(
                           borderSide: BorderSide(
-                            color: widget.type.getColor(),
+                            color: type.getColor(),
                             width: 6.0,
                           ),
                           borderRadius: BorderRadius.all(Radius.circular(17)),
                         ),
                         counterText: '', // Hide default counter
                       ),
-                      onChanged: widget.onChanged,
+                      onChanged: onChanged,
                     ),
                     Positioned(
                       bottom: 10, // Adjust vertically
                       right: 15, // Adjust horizontally
-                      child: Text(
-                        '${_currentLength}/300',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Theme.of(context).secondaryHeaderColor,
-                        ),
+                      child: ValueListenableBuilder<TextEditingValue>(
+                        valueListenable: controller,
+                        builder: (context, value, _) {
+                          return Text(
+                            '${value.text.length}/${maxCharacters}',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Theme.of(context).secondaryHeaderColor,
+                            ),
+                          );
+                        },
                       ),
                     ),
                   ],
@@ -194,11 +180,5 @@ class _DescribeGoalFieldState extends State<DescribeGoalField> {
         ),
       ),
     );
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
   }
 }

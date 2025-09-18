@@ -1,9 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:morphe/components/buttons/arrow_button.dart';
+import 'package:morphe/model/request_exception.dart';
 import 'package:morphe/screens/onboarding/plan_overview_screen.dart';
 import 'package:morphe/screens/onboarding/registration_screen.dart';
 import 'package:pair/pair.dart';
@@ -30,37 +29,35 @@ class DescribeYourGoalsScreen extends StatefulWidget {
 }
 
 class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
-  late final FirebaseApp _app;
-  late final _auth;
+  late final TextEditingController physicalController;
+  late final TextEditingController generalController;
+  late final TextEditingController mentalController;
+
+  final int maxCharacters = 250;
+
   bool showSpinner = false;
 
   String physicalGoals = "";
   String generalGoals = "";
   String mentalGoals = "";
 
-  void setUpAuth() async {
-    _app = await Firebase.initializeApp();
-    _auth = FirebaseAuth.instanceFor(app: _app);
-  }
-
-  void toPlanOverview(UserData userData) {
-    // Navigate to first selected habit type
-    var selectedHabits = userData.selectedHabits;
-
-    if (selectedHabits[HabitType.PHYSICAL])
-      context.go(PlanOverviewScreen.id_physical);
-    else if (selectedHabits[HabitType.GENERAL])
-      context.go(PlanOverviewScreen.id_general);
-    else if (selectedHabits[HabitType.MENTAL])
-      context.go(PlanOverviewScreen.id_mental);
-    else
-      throw Exception("No habits choosen");
-  }
-
   @override
   void initState() {
     super.initState();
-    setUpAuth();
+
+    physicalController = TextEditingController();
+    generalController = TextEditingController();
+    mentalController = TextEditingController();
+
+    physicalController.addListener(() {
+      physicalGoals = physicalController.text;
+    });
+    generalController.addListener(() {
+      generalGoals = generalController.text;
+    });
+    mentalController.addListener(() {
+      mentalGoals = mentalController.text;
+    });
   }
 
   @override
@@ -91,6 +88,8 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
                       onChanged: (value) {
                         physicalGoals = value;
                       },
+                      controller: physicalController,
+                      maxCharacters: maxCharacters,
                     ),
                     DescribeGoalField(
                       type: HabitType.GENERAL,
@@ -103,6 +102,8 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
                       onChanged: (value) {
                         generalGoals = value;
                       },
+                      controller: generalController,
+                      maxCharacters: maxCharacters,
                     ),
                     DescribeGoalField(
                       type: HabitType.MENTAL,
@@ -115,6 +116,8 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
                       onChanged: (value) {
                         mentalGoals = value;
                       },
+                      controller: mentalController,
+                      maxCharacters: maxCharacters,
                     ),
                   ],
                 ),
@@ -160,14 +163,8 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
                   prompts,
                   userData.selectedHabits,
                 );
-                userData.addTasks(plan.key);
-                userData.addHabits(plan.value);
-
-                // Create user
-                await _auth.createUserWithEmailAndPassword(
-                  email: userData.email,
-                  password: userData.password,
-                );
+                userData.setTasks(plan.key);
+                userData.setHabits(plan.value);
 
                 toPlanOverview(userData);
               } on GenerationException {
@@ -176,6 +173,17 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
                   title: Text('Try again'),
                   description: Text(
                     'Prompts were insufficient. Tap the ? symbols for instructions',
+                  ),
+                  type: ToastificationType.error,
+                  autoCloseDuration: Duration(seconds: 3),
+                );
+                context.go(DescribeYourGoalsScreen.id);
+              } on RequestException {
+                toastification.show(
+                  context: context,
+                  title: Text('Try again'),
+                  description: Text(
+                    'The prompt exceeded max token count. Try a shorter version.',
                   ),
                   type: ToastificationType.error,
                   autoCloseDuration: Duration(seconds: 3),
@@ -194,6 +202,9 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
                 );
                 context.go(RegistrationScreen.id);
               } finally {
+                physicalController.clear();
+                generalController.clear();
+                mentalController.clear();
                 setState(() {
                   showSpinner = false;
                 });
@@ -213,5 +224,27 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    physicalController.dispose();
+    generalController.dispose();
+    mentalController.dispose();
+    super.dispose();
+  }
+
+  void toPlanOverview(UserData userData) {
+    // Navigate to first selected habit type
+    var selectedHabits = userData.selectedHabits;
+
+    if (selectedHabits[HabitType.PHYSICAL])
+      context.go(PlanOverviewScreen.id_physical);
+    else if (selectedHabits[HabitType.GENERAL])
+      context.go(PlanOverviewScreen.id_general);
+    else if (selectedHabits[HabitType.MENTAL])
+      context.go(PlanOverviewScreen.id_mental);
+    else
+      throw Exception("No habits choosen");
   }
 }

@@ -165,129 +165,12 @@ const kGoalTitleTextStyle = TextStyle(
 );
 
 /// LLM System prompt
-/*const String kMetaSystemPrompt =
-    '''You are a self-improvement planning assistant used in a mobile app. Based on a user's goal description and selected category, generate a structured JSON object containing:
 
-- A list of `tasks` (scheduled activities or events)
-- A list of `habits` (daily or repeating routines)
+const kMaxInputTokens =
+    250; // 1 token == 3 characters => 3 x 300 + bolierplate = cca. 1000 => 1000/$ => 250
+const kMaxOutputTokens = 6000;
 
-Your output must strictly match the user's selected category and use **only the specified formats**. Use the field definitions below.
-
----
-
-CATEGORY DEFINITIONS:
-
-- physical: goals related to health, fitness, weight loss, muscle gain, sports, or physical endurance
-- mental: goals focused on mindfulness, creativity, focus, motivation, learning, or discipline
-- general: goals related to everyday life improvements like cleanliness, organization, hydration, routines, pets, or chores
-
-If the user's input is vague or doesn’t align with the selected category, return **only** a single valid JSON object **no explanation or extra notes**  like this:
-{ "valid": false, "error": "Prompt was insufficient" }
-
----
-
-TASK OBJECT DEFINITION:
-
-Each Task must include:
-
-- title (string): Short task title
-- subtitle (string): Brief secondary label
-- description (string): Detailed instructions. For gym workouts, format exercises like:
-  - "Bench Press 3 x 8-12\n"
-  - "Pull ups 4 x AMRAP\n"
-- scheduledFrequency (string): One of "daily", "weekly", "biweekly", "monthly"
-- scheduledDay (string): One of: "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"
-- startDateTime (string): ISO 8601 format (e.g., "2025-06-01T08:00:00")
-- endDateTime (string): ISO 8601 format (e.g., "2025-06-01T09:00:00")
-- type (string): Must match the selected category
-- notifications (boolean): true or false
-
----
-
-HABIT OBJECT DEFINITION:
-
-Each Habit must include:
-
-- title (string): Short name of the habit
-- description (string): How to perform the habit
-- type (string): Must match the selected category
-- notifications (boolean): true or false
-
----
-
-OUTPUT FORMAT:
-
-Return **only** a single valid JSON object like this:
-
-{
-  "category": "physical",
-  "valid": true,
-  "tasks": [
-    {
-      "title": "...",
-      "subtitle": "...",
-      "description": "...",
-      "scheduledFrequency": "...",
-      "scheduledDay": "...",
-      "startDateTime": "...",
-      "endDateTime": "...",
-      "type": "physical",
-      "notifications": true
-    },
-    ...
-  ],
-  "habits": [
-    {
-      "title": "...",
-      "description": "...",
-      "type": "physical",
-      "notifications": false
-    },
-    ...
-  ]
-}
-
-If no valid goals are given, return **only** a single valid JSON object **no explanation or extra notes** like this:
-
-{ "valid": false, "error": "Prompt was insufficient" }
-
----
-
-RULES:
-
-- Return only valid JSON (no extra text or explanation).
-- Always include **2 to 4 tasks** and **2 to 3 habits**.
-- Always match field names exactly.
-- For physical tasks, include structured strength training or cardio descriptions (e.g. "3 x 10-12 reps\n" or "30 minutes swimming\n").
-- For mental tasks, include focused activities like reading, mindfulness, or creative practice with durations.
-- For general tasks, include everyday actions like cleaning, errands, hydration, or pet care.
-- If the user’s input lacks a clear goal or is off-topic, return **only** a single valid JSON object with **no explanation or extra notes** like this: { "valid": false, "error": "Prompt was insufficient" }.
-
----
-
-EXAMPLES:
-
-**User Input (physical)**:
-"I want to lose body fat and build muscle. I’m not sure how, but I enjoy swimming and want to feel more athletic overall."
-
-**Expected Output**:
-{
-  "category": "physical",
-  "valid": true,
-  "tasks": [
-    ...
-  ],
-  "habits": [
-    ...
-  ]
-}
-
----
-
-BEGIN!
-''';*/
-
-const String kMetaSystemPrompt = '''
+const String kSystemPrompt = '''
 You are a self-improvement planning assistant used in a mobile app. The user will provide you with a prompt containing 1 to 3 sub-prompts from the following list of categories:
 
 - Category: physical
@@ -322,9 +205,12 @@ IMPORTANT:
 - Allow minor spelling and grammar errors.
 - Accept prompts reflecting the user’s personality or tone.
 - When a prompt is vague but category-aligned, infer reasonable goals and generate tasks/habits accordingly.
+- When evaluating category alignment, allow some leeway: for example, "reading" could be mental or general, "walking" could be physical or general wellness, "journaling" could be mental or general, "stretching" could be physical or mental relaxation, "gardening" could be general or physical.
 - Reject a sub-prompt **only if** it clearly does not belong to the declared category or is completely incomprehensible.
 - If any sub-prompt is rejected, return only the error JSON:
   { "valid": false, "error": "Prompt was insufficient" }
+
+- Ensure that the total output **never surpasses ${kMaxOutputTokens} tokens**. If the user's prompt would generate more than ${kMaxOutputTokens} tokens, intelligently **combine or merge tasks and habits** into fewer items while preserving the intent of the user.
 
 Examples of acceptable vague prompts:
 
@@ -394,6 +280,13 @@ RULES:
 - For mental tasks, include focused activities like reading, mindfulness, or creative practice with durations.
 - For general tasks, include everyday actions like cleaning, errands, hydration, or pet care.
 - If any sub-prompt is too vague to understand or off-topic, return **only** the error JSON.
+- **Do not exceed ${kMaxOutputTokens} tokens in total output. Combine tasks or habits if necessary to stay under this limit.**
+
+---
+
+YOUR NUMBER ONE PRIORITY IS TO GENERATE A VALID TRANSLATABLE JSON FORMAT WHICH CAN BE DECODED IN DART!!!
+BEFORE STOPPING THE GENERATING PROCESS CHECK IF THE OUTPUT JSON IS A VALID JSON.
+IF YOU NEED TO SACRIFICE THE NUMBER OF TASKS AND HABITS TO CREATE A VALID JSON BASED ON YOUR maxOutputTokens parameter DO SO! 
 
 ---
 

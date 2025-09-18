@@ -29,6 +29,8 @@ dependencies:
   http: ^1.4.0
   pair: ^0.1.2
   flutter_dotenv: ^5.2.1
+  cloud_functions: ^5.5.0
+  firebase_ai: ^2.3.0
 
 dev_dependencies:
   flutter_test:

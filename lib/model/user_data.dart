@@ -284,7 +284,11 @@ class UserData extends ChangeNotifier {
   }
 
   // Habit operations
-  void addHabits(List<Habit> habits) {
+  void setHabits(List<Habit> habits) {
+    // Clear tasks
+    for (var habit in HabitType.values) {
+      _habits[habit] = [];
+    }
     for (Habit habit in habits) {
       addHabit(habit);
     }
@@ -311,7 +315,12 @@ class UserData extends ChangeNotifier {
     notifyListeners();
   }
 
-  void addTasks(List<Task> tasks) {
+  void setTasks(List<Task> tasks) {
+    // Clear tasks
+    for (var habit in HabitType.values) {
+      _tasks[habit] = [];
+    }
+
     for (Task task in tasks) {
       addTask(task);
     }
@@ -510,6 +519,58 @@ class UserData extends ChangeNotifier {
     } catch (e) {
       print(e);
       throw Exception("Error pushing user data to Firebase: $e");
+    }
+  }
+
+  void patchUserPlan() async {
+    try {
+      final userDoc = FirebaseFirestore.instance
+          .collection('users')
+          .doc(getUserFirebaseId());
+
+      // Store selected habits
+      await userDoc.set({
+        'selectedHabits': {
+          'physical': _selectedHabits[HabitType.PHYSICAL] ?? false,
+          'general': _selectedHabits[HabitType.GENERAL] ?? false,
+          'mental': _selectedHabits[HabitType.MENTAL] ?? false,
+        },
+      }, SetOptions(merge: true));
+
+      // Clear and re-upload habits
+      final habitsRef = userDoc.collection('habits');
+      final habitDocs = await habitsRef.get();
+      for (var doc in habitDocs.docs) {
+        await doc.reference.delete();
+      }
+
+      for (HabitType type in HabitType.values) {
+        final habits = _habits[type] ?? [];
+
+        for (final habit in habits) {
+          await habitsRef.doc(habit.id).set(habit.toMap());
+        }
+      }
+
+      // Clear and re-upload tasks
+      final tasksRef = userDoc.collection('tasks');
+      final taskDocs = await tasksRef.get();
+      for (var doc in taskDocs.docs) {
+        await doc.reference.delete();
+      }
+
+      for (HabitType type in HabitType.values) {
+        final tasks = _tasks[type] ?? [];
+        for (final task in tasks) {
+          await tasksRef.doc(task.id).set(task.toMap());
+        }
+      }
+
+      // Set tasks that are available for execution
+      setExecutableTasks(DateTime.now());
+    } catch (e) {
+      print(e);
+      throw Exception("Error patching user plan in Firebase: $e");
     }
   }
 

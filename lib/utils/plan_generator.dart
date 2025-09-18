@@ -1,8 +1,8 @@
 import 'dart:convert';
 
-import 'package:http/http.dart' as http;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:firebase_ai/firebase_ai.dart';
 import 'package:morphe/model/generation_exception.dart';
+import 'package:morphe/model/request_exception.dart';
 
 import '../model/habit.dart';
 import '../model/task.dart';
@@ -10,27 +10,12 @@ import 'constants.dart';
 import 'enums.dart';
 import 'package:pair/pair.dart';
 
-/// API configuration
-final headers = {
-  'Content-Type': 'application/json',
-  'Authorization': 'Bearer ${dotenv.env['AWAN_LLM_API_KEY']}',
-};
-
-String getBody(String systemPrompt, String userPrompt) {
-  return jsonEncode({
-    "model": "Awanllm-Llama-3-8B-Dolfin",
-    "prompt":
-        "<|begin_of_text|><|start_header_id|>system<|end_header_id|>${systemPrompt}<|eot_id|><|start_header_id|>user<|end_header_id|>$userPrompt<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n",
-    "temperature": 0.2,
-    "top_p": 0.7,
-    "top_k": 20,
-    "repetition_penalty": 1.1,
-    "max_tokens": 1500,
-    "stream": false,
-  });
-}
-
-final uri = Uri.parse('https://api.awanllm.com/v1/completions');
+// Firebase AI Logic SDK Configuration
+final model = FirebaseAI.googleAI().generativeModel(
+  model: 'gemini-2.5-flash',
+  systemInstruction: Content.system(kSystemPrompt),
+  generationConfig: GenerationConfig(maxOutputTokens: kMaxOutputTokens),
+);
 
 Future<Pair<List<Task>, List<Habit>>> generateAndParse(
   Map<HabitType, String> prompts,
@@ -41,6 +26,7 @@ Future<Pair<List<Task>, List<Habit>>> generateAndParse(
 
   String userPrompt = "";
 
+  // Structure user prompt.
   for (HabitType type in HabitType.values) {
     if (selectedHabits[type] == true) {
       userPrompt +=
@@ -48,7 +34,6 @@ Future<Pair<List<Task>, List<Habit>>> generateAndParse(
     }
   }
 
-  final body = getBody(kMetaSystemPrompt, userPrompt);
   dynamic planJson;
 
   int attempts = 0;
@@ -57,13 +42,20 @@ Future<Pair<List<Task>, List<Habit>>> generateAndParse(
   while (planJson == null && attempts < maxAttempts) {
     attempts++;
     try {
-      final response = await http.post(uri, headers: headers, body: body);
-      if (response.statusCode != 200) {
-        throw GenerationException(
-          'API returned status ${response.statusCode}: ${response.body}',
-        );
+      // Check token count.
+      var tokenCount = await model.countTokens([Content.text(userPrompt)]);
+
+      if (tokenCount.totalTokens <= kMaxInputTokens) {
+        // Generate plans.
+        var response = await model.generateContent([Content.text(userPrompt)]);
+        var rawOutput =
+            (response.candidates.first.content.parts.first as TextPart).text;
+
+        var jsonString = cleanModelOutput(rawOutput);
+        planJson = jsonDecode(jsonString);
+      } else {
+        throw RequestException("User prompt exceeds set max token count.");
       }
-      planJson = jsonDecode(jsonDecode(response.body)['choices'][0]['text']);
     } catch (e) {
       print('Attempt $attempts failed: $e');
       await Future.delayed(Duration(seconds: 2));
@@ -86,6 +78,21 @@ Future<Pair<List<Task>, List<Habit>>> generateAndParse(
   return Pair<List<Task>, List<Habit>>(tasks, habits);
 }
 
+// TODO unit tests
+String cleanModelOutput(String raw) {
+  var cleaned = raw.trim();
+  if (cleaned.startsWith("```json")) {
+    cleaned = cleaned.substring(7).trim(); // remove ```json
+  } else if (cleaned.startsWith("```")) {
+    cleaned = cleaned.substring(3).trim(); // remove ```
+  }
+  if (cleaned.endsWith("```")) {
+    cleaned = cleaned.substring(0, cleaned.length - 3).trim();
+  }
+  return cleaned;
+}
+
+// TODO unit tests
 List<Task> parseTasks(List<dynamic> list) {
   final tasks = <Task>[];
 
@@ -116,6 +123,7 @@ List<Task> parseTasks(List<dynamic> list) {
   return tasks;
 }
 
+// TODO unit tests
 List<Habit> parseHabits(List<dynamic> list) {
   final habits = <Habit>[];
 

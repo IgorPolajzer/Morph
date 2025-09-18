@@ -81,6 +81,7 @@ class _ChooseGoalsScreenState extends State<ChooseGoalsScreen> {
         child: ArrowButton(
           title: "CONFIRM",
           onPressed: () {
+            // Minimum one goal.
             if (!general && !physical && !mental) {
               toastification.show(
                 context: context,

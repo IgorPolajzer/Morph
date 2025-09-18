@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:morphe/components/buttons/arrow_button.dart';
 import 'package:morphe/components/buttons/goal_radio_button.dart';
 import 'package:morphe/screens/edit/edit_plan_screen.dart';
+import 'package:morphe/screens/onboarding/choose_goals_screen.dart';
 import 'package:provider/provider.dart';
 
 import '../../components/text/screen_title.dart';
@@ -103,7 +104,32 @@ class _ChangeHabitsScreenState extends State<ChangeHabitsScreen> {
               description:
                   "Improve your mental health and clarity by getting a plan tailored to your unique circumstances and goals.",
             ),
-            SizedBox(height: 20), // Optional spacing before the bottom bar
+            GestureDetector(
+              onTap: () {
+                context.pushReplacement(ChooseGoalsScreen.id);
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(
+                    Icons.replay,
+                    size: 30,
+                    color: Theme.of(context).secondaryHeaderColor,
+                  ),
+                  Padding(
+                    padding: EdgeInsets.only(left: 15),
+                    child: Text(
+                      "Generate again.",
+                      style: kPlaceHolderTextStyle.copyWith(
+                        color: Theme.of(context).secondaryHeaderColor,
+                        fontSize: 25,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 20),
           ],
         ),
       ),

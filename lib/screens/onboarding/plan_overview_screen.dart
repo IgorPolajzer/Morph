@@ -1,3 +1,5 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_popup_card/flutter_popup_card.dart';
 import 'package:go_router/go_router.dart';
@@ -28,33 +30,13 @@ class PlanOverviewScreen extends StatefulWidget {
 }
 
 class _PlanOverviewScreenState extends State<PlanOverviewScreen> {
-  void toNextPlanOverview(UserData userData) {
-    var selectedHabits = userData.selectedHabits;
+  late final FirebaseApp _app;
+  late final _auth;
 
-    switch (widget.type) {
-      case HabitType.PHYSICAL:
-        if (selectedHabits[HabitType.GENERAL])
-          context.go(PlanOverviewScreen.id_general);
-        else if (selectedHabits[HabitType.MENTAL])
-          context.go(PlanOverviewScreen.id_mental);
-        else {
-          userData.initializeUser();
-          context.go(YourDayScreen.id);
-        }
-        break;
-      case HabitType.GENERAL:
-        if (selectedHabits[HabitType.MENTAL])
-          context.go(PlanOverviewScreen.id_mental);
-        else {
-          userData.initializeUser();
-          context.go(YourDayScreen.id);
-        }
-        break;
-      case HabitType.MENTAL:
-        userData.initializeUser();
-        context.go(YourDayScreen.id);
-        break;
-    }
+  @override
+  void initState() {
+    super.initState();
+    setUpAuth();
   }
 
   @override
@@ -144,5 +126,56 @@ class _PlanOverviewScreenState extends State<PlanOverviewScreen> {
         ),
       ),
     );
+  }
+
+  void setUpAuth() async {
+    _app = await Firebase.initializeApp();
+    _auth = FirebaseAuth.instanceFor(app: _app);
+  }
+
+  Future<void> toNextPlanOverview(UserData userData) async {
+    var selectedHabits = userData.selectedHabits;
+    final router = GoRouter.of(
+      context,
+    ); // using router to navigate to avoid issues with unmounted widget on async.
+
+    switch (widget.type) {
+      case HabitType.PHYSICAL:
+        if (selectedHabits[HabitType.GENERAL]) {
+          router.go(PlanOverviewScreen.id_general);
+        } else if (selectedHabits[HabitType.MENTAL]) {
+          router.go(PlanOverviewScreen.id_mental);
+        } else {
+          await handleUser(userData);
+          router.go(YourDayScreen.id);
+        }
+        break;
+      case HabitType.GENERAL:
+        if (selectedHabits[HabitType.MENTAL]) {
+          router.go(PlanOverviewScreen.id_mental);
+        } else {
+          await handleUser(userData);
+          router.go(YourDayScreen.id);
+        }
+        break;
+      case HabitType.MENTAL:
+        await handleUser(userData);
+        router.go(YourDayScreen.id);
+        break;
+    }
+  }
+
+  Future<void> handleUser(UserData userData) async {
+    // Create user and initialise in firebase.
+    if (FirebaseAuth.instance.currentUser == null) {
+      await _auth.createUserWithEmailAndPassword(
+        email: userData.email,
+        password: userData.password,
+      );
+      userData.initializeUser();
+      // Patch user plan.
+    } else {
+      userData.patchUserPlan();
+    }
   }
 }
