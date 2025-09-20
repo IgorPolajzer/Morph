@@ -9,7 +9,7 @@ import 'package:morphe/utils/enums.dart';
 
 import '../components/special/navbar.dart';
 import '../screens/core/profile_screen.dart';
-import '../screens/edit/change_habits_screen.dart';
+import '../screens/edit/change_goals_screen.dart';
 import '../screens/onboarding/choose_goals_screen.dart';
 import '../screens/onboarding/describe_your_goals_screen.dart';
 import '../screens/onboarding/plan_overview_screen.dart';
@@ -54,8 +54,8 @@ final GoRouter router = GoRouter(
           builder: (context, state) => const ProfileScreen(),
         ),
         GoRoute(
-          path: ChangeHabitsScreen.id,
-          builder: (context, state) => const ChangeHabitsScreen(),
+          path: ChangeGoalsScreen.id,
+          builder: (context, state) => const ChangeGoalsScreen(),
         ),
         GoRoute(
           path: EditPlanScreen.id_physical,

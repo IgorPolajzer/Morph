@@ -113,16 +113,13 @@ class DescribeGoalField extends StatelessWidget {
                       decoration: InputDecoration(
                         filled: true,
                         fillColor: Theme.of(context).scaffoldBackgroundColor,
-                        contentPadding: const EdgeInsets.only(
-                          top: 5,
-                          left: 10,
-                          right: 10,
-                        ),
+                        contentPadding: const EdgeInsets.all(10),
                         hintText: description,
                         hintStyle: kPlaceHolderTextStyle.copyWith(
                           color: Theme.of(context).secondaryHeaderColor,
                           fontSize: 12,
                           fontWeight: FontWeight.bold,
+                          overflow: TextOverflow.clip,
                         ),
                         border: OutlineInputBorder(
                           borderSide: BorderSide(

@@ -166,6 +166,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 title: "Login",
                 onPressed: () async {
+                  final router = GoRouter.of(context);
+
                   try {
                     setState(() {
                       showSpinner = true;
@@ -180,7 +182,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           userData.pullFromFireBase();
                         });
                       }
-                      context.go(YourDayScreen.id);
+                      router.push(YourDayScreen.id);
                     }
                     setState(() {
                       showSpinner = false;

@@ -1,5 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_popup_card/flutter_popup_card.dart';
 import 'package:go_router/go_router.dart';
@@ -30,13 +28,9 @@ class PlanOverviewScreen extends StatefulWidget {
 }
 
 class _PlanOverviewScreenState extends State<PlanOverviewScreen> {
-  late final FirebaseApp _app;
-  late final _auth;
-
   @override
   void initState() {
     super.initState();
-    setUpAuth();
   }
 
   @override
@@ -47,90 +41,89 @@ class _PlanOverviewScreenState extends State<PlanOverviewScreen> {
       return Center(child: CircularProgressIndicator());
     }
 
-    return Scaffold(
-      appBar: ScreenTitle(title: "PLAN OVERVIEW"),
-      body: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Subtitle(
-                  title: widget.type.name,
-                  subtitle: "Recommended tasks",
-                  color: widget.type.getColor(),
-                ),
-                Flexible(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        TasksList(type: widget.type),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 20.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Recommended habits",
-                                style: kTitleTextStyle.copyWith(
-                                  color: widget.type.getColor(),
-                                  fontSize: 20,
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        appBar: ScreenTitle(title: "PLAN OVERVIEW"),
+        body: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Subtitle(
+                    title: widget.type.name,
+                    subtitle: "Recommended tasks",
+                    color: widget.type.getColor(),
+                  ),
+                  Flexible(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          TasksList(type: widget.type),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 20.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Recommended habits",
+                                  style: kTitleTextStyle.copyWith(
+                                    color: widget.type.getColor(),
+                                    fontSize: 20,
+                                  ),
                                 ),
-                              ),
-                              Text(
-                                "Long click to delete a habit",
-                                style: kPlaceHolderTextStyle.copyWith(
-                                  color: Theme.of(context).secondaryHeaderColor,
-                                  fontSize: 12,
+                                Text(
+                                  "Long click to delete a habit",
+                                  style: kPlaceHolderTextStyle.copyWith(
+                                    color:
+                                        Theme.of(context).secondaryHeaderColor,
+                                    fontSize: 12,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
 
-                        HabitList(type: widget.type, modifiable: true),
-                      ],
+                          HabitList(type: widget.type, modifiable: true),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
+          ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: widget.type.getColor(),
+          foregroundColor: Theme.of(context).primaryColor,
+          onPressed:
+              () => showPopupCard(
+                context: context,
+                builder: (context) {
+                  return AddTaskPopUp(type: widget.type);
+                },
+                alignment: Alignment.bottomCenter,
+                useSafeArea: true,
+                dimBackground: true,
+              ),
+          child: const Icon(Icons.add, size: 20),
+        ),
+        bottomNavigationBar: BottomAppBar(
+          elevation: 8,
+          color: Theme.of(context).scaffoldBackgroundColor,
+          child: ArrowButton(
+            title: "CONFIRM",
+            onPressed: () {
+              toNextPlanOverview(userData);
+            },
           ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: widget.type.getColor(),
-        foregroundColor: Theme.of(context).primaryColor,
-        onPressed:
-            () => showPopupCard(
-              context: context,
-              builder: (context) {
-                return AddTaskPopUp(type: widget.type);
-              },
-              alignment: Alignment.bottomCenter,
-              useSafeArea: true,
-              dimBackground: true,
-            ),
-        child: const Icon(Icons.add, size: 20),
-      ),
-      bottomNavigationBar: BottomAppBar(
-        elevation: 8,
-        color: Theme.of(context).scaffoldBackgroundColor,
-        child: ArrowButton(
-          title: "CONFIRM",
-          onPressed: () {
-            toNextPlanOverview(userData);
-          },
         ),
       ),
     );
-  }
-
-  void setUpAuth() async {
-    _app = await Firebase.initializeApp();
-    _auth = FirebaseAuth.instanceFor(app: _app);
   }
 
   Future<void> toNextPlanOverview(UserData userData) async {
@@ -146,7 +139,6 @@ class _PlanOverviewScreenState extends State<PlanOverviewScreen> {
         } else if (selectedHabits[HabitType.MENTAL]) {
           router.go(PlanOverviewScreen.id_mental);
         } else {
-          await handleUser(userData);
           router.go(YourDayScreen.id);
         }
         break;
@@ -154,28 +146,12 @@ class _PlanOverviewScreenState extends State<PlanOverviewScreen> {
         if (selectedHabits[HabitType.MENTAL]) {
           router.go(PlanOverviewScreen.id_mental);
         } else {
-          await handleUser(userData);
           router.go(YourDayScreen.id);
         }
         break;
       case HabitType.MENTAL:
-        await handleUser(userData);
         router.go(YourDayScreen.id);
         break;
-    }
-  }
-
-  Future<void> handleUser(UserData userData) async {
-    // Create user and initialise in firebase.
-    if (FirebaseAuth.instance.currentUser == null) {
-      await _auth.createUserWithEmailAndPassword(
-        email: userData.email,
-        password: userData.password,
-      );
-      userData.initializeUser();
-      // Patch user plan.
-    } else {
-      userData.patchUserPlan();
     }
   }
 }

@@ -28,8 +28,10 @@ class MetaProgressBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+
     return Stack(
-      alignment: AlignmentDirectional.centerEnd,
+      alignment: AlignmentDirectional.center,
       clipBehavior: Clip.none,
       children: [
         DashedCircularProgressBar.aspectRatio(
@@ -52,7 +54,7 @@ class MetaProgressBar extends StatelessWidget {
           ),
         ),
         Positioned(
-          left: 210,
+          left: screenWidth / 2.25,
           child: Padding(
             padding: const EdgeInsets.only(left: 20.0),
             child: Container(

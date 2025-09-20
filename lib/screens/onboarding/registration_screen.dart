@@ -172,54 +172,69 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
                 ),
                 title: "Register",
                 onPressed: () async {
-                  try {
-                    setState(() {
-                      showSpinner = true;
-                    });
-                    // Check if email is in use
-                    QuerySnapshot emailQuery =
-                        await FirebaseFirestore.instance
-                            .collection('users')
-                            .where("email", isEqualTo: email)
-                            .get();
+                  final router = GoRouter.of(context);
 
-                    QuerySnapshot usernameQuery =
-                        await FirebaseFirestore.instance
-                            .collection('users')
-                            .where("username", isEqualTo: username)
-                            .get();
-
-                    if (emailQuery.docs.isNotEmpty ||
-                        usernameQuery.docs.isNotEmpty) {
-                      toastification.show(
-                        context: context,
-                        title: Text('Email or username already in use'),
-                        description: Text('Try a different email or username'),
-                        type: ToastificationType.error,
-                        autoCloseDuration: Duration(seconds: 3),
-                      );
-                    } else {
-                      userData.setCredentials(email, username, password);
-                      context.go(ChooseGoalsScreen.id);
-                    }
-
-                    setState(() {
-                      showSpinner = false;
-                    });
-                  } catch (e) {
-                    print(e);
-
+                  if (!isValidEmail(email)) {
                     toastification.show(
                       context: context,
-                      title: Text('Try again'),
-                      description: Text('Something went wrong'),
+                      title: Text("Email isn't valid."),
+                      description: Text('Enter a valid email.'),
                       type: ToastificationType.error,
                       autoCloseDuration: Duration(seconds: 3),
                     );
+                  } else {
+                    try {
+                      setState(() {
+                        showSpinner = true;
+                      });
 
-                    setState(() {
-                      showSpinner = false;
-                    });
+                      // Check if email is in use
+                      var emailQuery =
+                          await FirebaseFirestore.instance
+                              .collection('users')
+                              .where("email", isEqualTo: email)
+                              .get();
+
+                      var usernameQuery =
+                          await FirebaseFirestore.instance
+                              .collection('users')
+                              .where("username", isEqualTo: username)
+                              .get();
+
+                      if (emailQuery.docs.isNotEmpty ||
+                          usernameQuery.docs.isNotEmpty) {
+                        toastification.show(
+                          context: context,
+                          title: Text('Email or username already in use'),
+                          description: Text(
+                            'Try a different email or username',
+                          ),
+                          type: ToastificationType.error,
+                          autoCloseDuration: Duration(seconds: 3),
+                        );
+                      } else {
+                        userData.setCredentials(email, username, password);
+                        router.push(ChooseGoalsScreen.id);
+                      }
+
+                      setState(() {
+                        showSpinner = false;
+                      });
+                    } catch (e) {
+                      print(e);
+
+                      toastification.show(
+                        context: context,
+                        title: Text('Try again'),
+                        description: Text('Something went wrong'),
+                        type: ToastificationType.error,
+                        autoCloseDuration: Duration(seconds: 3),
+                      );
+
+                      setState(() {
+                        showSpinner = false;
+                      });
+                    }
                   }
                 },
               ),
@@ -228,5 +243,13 @@ class _RegistrationScreenState extends State<RegistrationScreen> {
         ),
       ),
     );
+  }
+
+  bool isValidEmail(String email) {
+    // Basic RFC 5322 compliant regex for most cases
+    final emailRegex = RegExp(
+      r"^([A-Za-z0-9!#$%&'*+/=?^_`{|}~.-]{1,64})@([A-Za-z0-9.-]+\.[A-Za-z]{2,})$",
+    );
+    return emailRegex.hasMatch(email);
   }
 }

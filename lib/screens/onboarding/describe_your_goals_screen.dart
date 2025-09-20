@@ -9,6 +9,9 @@ import 'package:morphe/screens/onboarding/registration_screen.dart';
 import 'package:pair/pair.dart';
 import 'package:provider/provider.dart';
 import 'package:toastification/toastification.dart';
+import 'package:morphe/utils/plan_generator.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../components/text/screen_title.dart';
 import '../../components/text_fields/describe_goal_text_field.dart';
@@ -17,7 +20,6 @@ import '../../model/habit.dart';
 import '../../model/task.dart';
 import '../../model/user_data.dart';
 import '../../utils/enums.dart';
-import 'package:morphe/utils/plan_generator.dart';
 
 class DescribeYourGoalsScreen extends StatefulWidget {
   static String id = '/describe_your_goals_screen';
@@ -30,6 +32,10 @@ class DescribeYourGoalsScreen extends StatefulWidget {
 }
 
 class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
+  // Authentication
+  late final FirebaseApp _app;
+  late final _auth;
+
   // Add config
   late InterstitialAd _interstitialAd;
   bool isInterstitialAdReady = false;
@@ -51,6 +57,7 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
   @override
   void initState() {
     super.initState();
+    _setUpAuth();
 
     // Add setup
     InterstitialAd.load(
@@ -103,7 +110,6 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
                   mainAxisSize: MainAxisSize.max,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    SizedBox(height: 10),
                     DescribeGoalField(
                       type: HabitType.PHYSICAL,
                       title: "PHYSICAL",
@@ -160,6 +166,8 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
           enabled: !showSpinner,
           title: "GENERATE",
           onPressed: () async {
+            final router = GoRouter.of(context);
+
             if (userData.selectedHabits[HabitType.PHYSICAL] ==
                     physicalGoals.isNotEmpty &&
                 userData.selectedHabits[HabitType.GENERAL] ==
@@ -186,14 +194,7 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
                   prompts[HabitType.MENTAL] = mentalGoals;
                 }
 
-                _showInterstitialAd();
-                Pair<List<Task>, List<Habit>> plan = await generateAndParse(
-                  prompts,
-                  userData.selectedHabits,
-                );
-                userData.setTasks(plan.key);
-                userData.setHabits(plan.value);
-
+                await _handleUser(userData, prompts);
                 _toPlanOverview(userData);
               } on GenerationException {
                 toastification.show(
@@ -205,7 +206,7 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
                   type: ToastificationType.error,
                   autoCloseDuration: Duration(seconds: 3),
                 );
-                context.go(DescribeYourGoalsScreen.id);
+                router.push(DescribeYourGoalsScreen.id);
               } on RequestException {
                 toastification.show(
                   context: context,
@@ -216,7 +217,7 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
                   type: ToastificationType.error,
                   autoCloseDuration: Duration(seconds: 3),
                 );
-                context.go(DescribeYourGoalsScreen.id);
+                router.push(DescribeYourGoalsScreen.id);
               } catch (e) {
                 print(e);
                 toastification.show(
@@ -228,7 +229,7 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
                   type: ToastificationType.error,
                   autoCloseDuration: Duration(seconds: 3),
                 );
-                context.go(RegistrationScreen.id);
+                router.push(RegistrationScreen.id);
               } finally {
                 physicalController.clear();
                 generalController.clear();
@@ -242,7 +243,7 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
                 context: context,
                 title: Text('Empty input boxes'),
                 description: Text(
-                  'All the goals you chose have to have a description',
+                  'All the goals you chose have to have be described',
                 ),
                 type: ToastificationType.info,
                 autoCloseDuration: Duration(seconds: 3),
@@ -265,56 +266,94 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
     super.dispose();
   }
 
-  void _showInterstitialAd() {
-    if (isInterstitialAdReady) {
-      _interstitialAd.show();
-      _interstitialAd.fullScreenContentCallback = FullScreenContentCallback(
-        onAdDismissedFullScreenContent: (ad) {
-          ad.dispose();
-          setState(() {
-            isInterstitialAdReady = false;
-          });
+  Future<void> _handleUser(
+    UserData userData,
+    Map<HabitType, String> prompts,
+  ) async {
+    // Show add
+    _showInterstitialAd();
 
-          // load new ad
-          InterstitialAd.load(
-            adUnitId: "ca-app-pub-4498572432922231/7920604342",
-            request: AdRequest(),
-            adLoadCallback: InterstitialAdLoadCallback(
-              onAdLoaded: (ad) {
-                setState(() {
-                  _interstitialAd = ad;
-                  isInterstitialAdReady = true;
-                });
-              },
-              onAdFailedToLoad: (error) {
-                setState(() {
-                  isInterstitialAdReady = false;
-                });
-              },
-            ),
-          );
-        },
-        onAdFailedToShowFullScreenContent: (ad, error) {
-          ad.dispose();
-          setState(() {
-            isInterstitialAdReady = false;
-          });
-        },
+    // Generate plan
+    Pair<List<Task>, List<Habit>> plan = await generateAndParse(
+      prompts,
+      userData.selectedHabits,
+    );
+
+    // Save plan
+    userData.setTasks(plan.key);
+    userData.setHabits(plan.value);
+
+    // Create user and initialise in firebase.
+    if (FirebaseAuth.instance.currentUser == null) {
+      await _auth.createUserWithEmailAndPassword(
+        email: userData.email,
+        password: userData.password,
       );
+      userData.initializeUser();
+      // Patch user plan.
+    } else {
+      userData.patchUserPlan();
     }
+  }
+
+  void _showInterstitialAd() {
+    void showNextAd() {
+      if (isInterstitialAdReady) {
+        _interstitialAd.fullScreenContentCallback = FullScreenContentCallback(
+          onAdDismissedFullScreenContent: (ad) {
+            ad.dispose();
+            setState(() {
+              isInterstitialAdReady = false;
+            });
+
+            if (showSpinner) {
+              // Load next ad, then show it
+              InterstitialAd.load(
+                adUnitId: "ca-app-pub-4498572432922231/7920604342",
+                request: AdRequest(),
+                adLoadCallback: InterstitialAdLoadCallback(
+                  onAdLoaded: (ad) {
+                    setState(() {
+                      _interstitialAd = ad;
+                      isInterstitialAdReady = true;
+                    });
+
+                    showNextAd();
+                  },
+                  onAdFailedToLoad: (error) {
+                    debugPrint("Failed to load next ad: $error");
+                  },
+                ),
+              );
+            }
+          },
+        );
+
+        _interstitialAd.show();
+      }
+    }
+
+    showNextAd();
   }
 
   void _toPlanOverview(UserData userData) {
     // Navigate to first selected habit type
     var selectedHabits = userData.selectedHabits;
 
+    // TODO commit functioning version and try to implement with stack
+
     if (selectedHabits[HabitType.PHYSICAL])
-      context.go(PlanOverviewScreen.id_physical);
+      context.push(PlanOverviewScreen.id_physical);
     else if (selectedHabits[HabitType.GENERAL])
-      context.go(PlanOverviewScreen.id_general);
+      context.push(PlanOverviewScreen.id_general);
     else if (selectedHabits[HabitType.MENTAL])
-      context.go(PlanOverviewScreen.id_mental);
+      context.push(PlanOverviewScreen.id_mental);
     else
       throw Exception("No habits choosen");
+  }
+
+  void _setUpAuth() async {
+    _app = await Firebase.initializeApp();
+    _auth = FirebaseAuth.instanceFor(app: _app);
   }
 }

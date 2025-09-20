@@ -35,6 +35,7 @@ class _YourDayScreenState extends State<YourDayScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
     final userData = Provider.of<UserData>(context, listen: true);
 
     return PopScope(
@@ -69,10 +70,10 @@ class _YourDayScreenState extends State<YourDayScreen> {
                           ),
                         ),
                         Divider(
-                          thickness: 2.5,
+                          thickness: 1.5,
                           color: Theme.of(context).primaryColor,
-                          indent: 30,
-                          endIndent: 30,
+                          indent: screenWidth / 12,
+                          endIndent: screenWidth / 12,
                         ),
                       ],
                     ),

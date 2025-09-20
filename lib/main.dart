@@ -63,11 +63,20 @@ class _MyAppState extends State<MyApp> {
     return ChangeNotifierProvider<UserData>(
       create: (context) => userData,
       child: SafeArea(
-        child: MaterialApp.router(
-          routerConfig: router,
-          title: 'Morph',
-          theme: kLightTheme,
-          darkTheme: kDarkTheme,
+        child: Builder(
+          builder: (context) {
+            return MediaQuery(
+              data: MediaQuery.of(context).copyWith(
+                textScaler: TextScaler.linear(1.0),
+              ), // Lock text scale for all devices
+              child: MaterialApp.router(
+                routerConfig: router,
+                title: 'Morph',
+                theme: kLightTheme,
+                darkTheme: kDarkTheme,
+              ),
+            );
+          },
         ),
       ),
     );

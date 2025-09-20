@@ -12,7 +12,7 @@ var kLightTheme = ThemeData(
   cardColor: kTaskTileColorLight,
   canvasColor: kNavBarColorLight,
   checkboxTheme: CheckboxThemeData(
-    fillColor: WidgetStatePropertyAll<Color>(kPrimaryHeaderColorDark),
+    fillColor: WidgetStatePropertyAll<Color>(kSecondaryTextColorDark),
     checkColor: WidgetStatePropertyAll<Color>(kScaffoldColorDark),
     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(50)),
     side: BorderSide.none,
@@ -136,7 +136,7 @@ const kMorphPhraseStyle = TextStyle(
   letterSpacing: 5,
 );
 
-const kTitleTextStyle = TextStyle(fontSize: 32, letterSpacing: 1);
+const kTitleTextStyle = TextStyle(fontSize: 30, letterSpacing: 1);
 
 const kGradientButtonTextSyle = TextStyle(
   color: kPrimaryHeaderColorLight,
