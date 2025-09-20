@@ -8,7 +8,7 @@ import 'package:toastification/toastification.dart';
 import '../../components/text/screen_title.dart';
 import '../../model/user_data.dart';
 import '../../utils/constants.dart';
-import 'describe_your_goals.dart';
+import 'describe_your_goals_screen.dart';
 
 class ChooseGoalsScreen extends StatefulWidget {
   static String id = '/choose_goals_screen';
@@ -55,7 +55,7 @@ class _ChooseGoalsScreenState extends State<ChooseGoalsScreen> {
                 });
               },
               backgroundColor: kGeneralColor,
-              title: "GENERAL HABITS",
+              title: "GENERAL GOALS",
               description:
                   "Get better at adhering to your habits by getting reminders to complete everyday chores",
             ),

@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:morphe/utils/constants.dart';
 import 'package:morphe/utils/enums.dart';
 import 'package:provider/provider.dart';
@@ -19,10 +20,17 @@ Map<HabitType, String> prompts = {
 };
 
 void main() async {
-  //print("${Uuid().v4()}, ${Uuid().v4()}, ${Uuid().v4()}, ${Uuid().v4()}");
   await dotenv.load(fileName: ".env");
   //await generateAndParse(prompts);
   WidgetsFlutterBinding.ensureInitialized();
+  MobileAds.instance.initialize();
+  RequestConfiguration requestConfiguration = RequestConfiguration(
+    testDeviceIds: [
+      'd68e3860-8865-46f9-8339-8ca0d3b248e0',
+      '5da57a97-f5d7-4da7-be5c-23f2b71bd3bd',
+    ],
+  );
+  MobileAds.instance.updateRequestConfiguration(requestConfiguration);
   await Firebase.initializeApp();
   runApp(const MyApp());
 }

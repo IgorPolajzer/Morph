@@ -24,59 +24,61 @@ class GoalRadioButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 60),
-            child: Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(15),
-                color: backgroundColor,
-              ),
-              height: 44,
-              width: double.infinity,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  SizedBox(width: 10),
-                  Text(
-                    title,
-                    style: kGoalTitleTextStyle.copyWith(
-                      color: Theme.of(context).primaryColor,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  Checkbox(value: isChecked, onChanged: checkboxCallback),
-                  if (editable)
-                    GestureDetector(
-                      child: Icon(
-                        Icons.more_horiz,
-                        color: Theme.of(context).primaryColor,
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final maxWidth = constraints.maxWidth;
+        final horizontalPadding = maxWidth * 0.08;
+
+        return Padding(
+          padding: EdgeInsets.symmetric(
+            horizontal: horizontalPadding.clamp(8, 32),
+            vertical: 12,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(15),
+                  color: backgroundColor,
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        title,
+                        style: kGoalTitleTextStyle.copyWith(
+                          color: Theme.of(context).primaryColor,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                        maxLines: 1,
                       ),
-                      onTap: isChecked ? editOnTap : () {},
                     ),
-                  if (editable) SizedBox(width: 10),
-                ],
+                    Checkbox(value: isChecked, onChanged: checkboxCallback),
+                    if (editable)
+                      GestureDetector(
+                        child: Icon(
+                          Icons.more_horiz,
+                          color: Theme.of(context).primaryColor,
+                        ),
+                        onTap: isChecked ? editOnTap : null,
+                      ),
+                  ],
+                ),
               ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.only(
-              top: 10,
-              left: 60,
-              right: 60,
-              bottom: 50,
-            ),
-            child: Text(
-              description,
-              style: kPlaceHolderTextStyle.copyWith(
-                color: Theme.of(context).secondaryHeaderColor,
+              const SizedBox(height: 10),
+              Text(
+                description,
+                style: kPlaceHolderTextStyle.copyWith(
+                  color: Theme.of(context).secondaryHeaderColor,
+                ),
+                textAlign: TextAlign.center,
               ),
-            ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 }

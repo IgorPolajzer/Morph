@@ -11,7 +11,7 @@ import '../components/special/navbar.dart';
 import '../screens/core/profile_screen.dart';
 import '../screens/edit/change_habits_screen.dart';
 import '../screens/onboarding/choose_goals_screen.dart';
-import '../screens/onboarding/describe_your_goals.dart';
+import '../screens/onboarding/describe_your_goals_screen.dart';
 import '../screens/onboarding/plan_overview_screen.dart';
 import '../screens/onboarding/registration_screen.dart';
 import '../screens/onboarding/welcome_screen.dart';

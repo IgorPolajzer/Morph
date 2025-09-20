@@ -57,7 +57,6 @@ class Experience {
   }
 
   void increment(DateTime scheduledDate, ValueNotifier<int> experience) {
-    experience.value = 10;
     experience.value =
         isToday(scheduledDate) != scheduledDate.isBefore(DateTime.now())
             ? (_increment / 2).round()

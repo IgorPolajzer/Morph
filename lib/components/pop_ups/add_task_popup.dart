@@ -120,251 +120,275 @@ class _AddTaskPopUpState extends State<AddTaskPopUp>
                 });
               },
               children: [
-                SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: List.generate(2, (index) {
-                            return AnimatedContainer(
-                              duration: Duration(milliseconds: 300),
-                              margin: EdgeInsets.symmetric(horizontal: 4.0),
-                              height: 6.0,
-                              width: _currentPage == index ? 20.0 : 6.0,
-                              decoration: BoxDecoration(
-                                color:
-                                    _currentPage == index
-                                        ? Theme.of(context).primaryColor
-                                        : Colors.grey[400],
-                                borderRadius: BorderRadius.circular(3.0),
-                              ),
-                            );
-                          }),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 15.0, bottom: 5.0),
-                        child: Text(
-                          "Add new task",
-                          style: kTitleTextStyle.copyWith(
-                            color: Theme.of(context).primaryColor,
-                            fontSize: 25,
-                          ),
-                        ),
-                      ),
-                      TaskPropertyField(
-                        hint: "Task name*",
-                        controller: taskTitleController,
-                        onChanged: (newTaskName) {
-                          setState(() {
-                            taskTitle = newTaskName;
-                          });
-                        },
-                      ),
-                      TaskPropertyField(
-                        hint: "Task subtitle*",
-                        controller: taskSubtitleController,
-                        height: 100,
-                        onChanged: (newTaskSubtitle) {
-                          setState(() {
-                            taskSubtitle = newTaskSubtitle;
-                          });
-                        },
-                      ),
-                      TaskPropertyField(
-                        hint: "Type description here*",
-                        controller: taskDescriptionController,
-                        height: 150,
-                        onChanged: (newTaskDescription) {
-                          setState(() {
-                            taskDescription = newTaskDescription;
-                          });
-                        },
-                      ),
-                      Text(
-                        "*Day is irrelevant if frequency is daily or monthly",
-                        style: kPlaceHolderTextStyle,
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 5),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                Column(
+                  children: [
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Expanded(child: frequencyPicker),
-                            Expanded(child: dayPicker),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 8.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: List.generate(2, (index) {
+                                  return AnimatedContainer(
+                                    duration: Duration(milliseconds: 300),
+                                    margin: EdgeInsets.symmetric(
+                                      horizontal: 4.0,
+                                    ),
+                                    height: 6.0,
+                                    width: _currentPage == index ? 20.0 : 6.0,
+                                    decoration: BoxDecoration(
+                                      color:
+                                          _currentPage == index
+                                              ? Theme.of(context).primaryColor
+                                              : Colors.grey[400],
+                                      borderRadius: BorderRadius.circular(3.0),
+                                    ),
+                                  );
+                                }),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                top: 15.0,
+                                bottom: 5.0,
+                              ),
+                              child: Text(
+                                "Add new task",
+                                style: kTitleTextStyle.copyWith(
+                                  color: Theme.of(context).primaryColor,
+                                  fontSize: 25,
+                                ),
+                              ),
+                            ),
+                            TaskPropertyField(
+                              hint: "Task name*",
+                              controller: taskTitleController,
+                              onChanged: (newTaskName) {
+                                setState(() {
+                                  taskTitle = newTaskName;
+                                });
+                              },
+                            ),
+                            TaskPropertyField(
+                              hint: "Task subtitle*",
+                              controller: taskSubtitleController,
+                              height: 100,
+                              onChanged: (newTaskSubtitle) {
+                                setState(() {
+                                  taskSubtitle = newTaskSubtitle;
+                                });
+                              },
+                            ),
+                            TaskPropertyField(
+                              hint: "Type description here*",
+                              controller: taskDescriptionController,
+                              height: 150,
+                              onChanged: (newTaskDescription) {
+                                setState(() {
+                                  taskDescription = newTaskDescription;
+                                });
+                              },
+                            ),
+                            Text(
+                              "*Day is irrelevant if frequency is daily or monthly",
+                              style: kPlaceHolderTextStyle,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 5,
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Expanded(child: frequencyPicker),
+                                  Expanded(child: dayPicker),
+                                ],
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 5,
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Expanded(child: startTimePicker),
+                                  Expanded(child: endTimePicker),
+                                ],
+                              ),
+                            ),
+                            ListTile(
+                              leading: Text(
+                                "Reminds me",
+                                style: kTitleTextStyle.copyWith(
+                                  color: Theme.of(context).primaryColor,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              trailing: CupertinoSwitch(
+                                value: taskNotifications,
+                                onChanged: (bool value) {
+                                  setState(() {
+                                    taskNotifications = value;
+                                  });
+                                },
+                                activeTrackColor: CupertinoColors.activeGreen,
+                              ),
+                            ),
                           ],
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 5),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Expanded(child: startTimePicker),
-                            Expanded(child: endTimePicker),
-                          ],
-                        ),
-                      ),
-                      ListTile(
-                        leading: Text(
-                          "Reminds me",
-                          style: kTitleTextStyle.copyWith(
-                            color: Theme.of(context).primaryColor,
-                            fontSize: 16,
-                          ),
-                        ),
-                        trailing: CupertinoSwitch(
-                          value: taskNotifications,
-                          onChanged: (bool value) {
-                            setState(() {
-                              taskNotifications = value;
-                            });
-                          },
-                          activeTrackColor: CupertinoColors.activeGreen,
-                        ),
-                      ),
-                      SquareButton(
-                        color: widget.type.getColor(),
-                        title: "Add Task",
-                        onPressed: () {
-                          try {
-                            Task newTask = Task(
-                              title: taskTitle,
-                              subtitle: taskSubtitle,
-                              description: taskDescription,
-                              scheduledFrequency: frequencyPicker.frequency,
-                              scheduledDay: dayPicker.day,
-                              startDateTime: toDateTime(
-                                startTimePicker.newTime,
-                              ),
-                              endDateTime: toDateTime(endTimePicker.newTime),
-                              notifications: taskNotifications,
-                              type: widget.type,
-                            );
+                    ),
+                    SquareButton(
+                      color: widget.type.getColor(),
+                      title: "Add Task",
+                      onPressed: () {
+                        try {
+                          Task newTask = Task(
+                            title: taskTitle,
+                            subtitle: taskSubtitle,
+                            description: taskDescription,
+                            scheduledFrequency: frequencyPicker.frequency,
+                            scheduledDay: dayPicker.day,
+                            startDateTime: toDateTime(startTimePicker.newTime),
+                            endDateTime: toDateTime(endTimePicker.newTime),
+                            notifications: taskNotifications,
+                            type: widget.type,
+                          );
 
-                            userData.addTask(newTask);
-                            userData.setExecutableTasks(DateTime.now());
-                            Navigator.of(context).pop();
-                          } catch (e) {
-                            toastification.show(
-                              context: context,
-                              title: Text('Try again'),
-                              description: Text(
-                                'Something went wrong while creating a task, make sure no field is empty',
-                              ),
-                              type: ToastificationType.info,
-                              autoCloseDuration: Duration(seconds: 3),
-                            );
-                          }
-                        },
-                      ),
-                    ],
-                  ),
+                          userData.addTask(newTask);
+                          userData.setExecutableTasks(DateTime.now());
+                          Navigator.of(context).pop();
+                        } catch (e) {
+                          toastification.show(
+                            context: context,
+                            title: Text('Try again'),
+                            description: Text(
+                              'Something went wrong while creating a task, make sure no field is empty',
+                            ),
+                            type: ToastificationType.info,
+                            autoCloseDuration: Duration(seconds: 3),
+                          );
+                        }
+                      },
+                    ),
+                  ],
                 ),
-                SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: List.generate(2, (index) {
-                            return AnimatedContainer(
-                              duration: Duration(milliseconds: 300),
-                              margin: EdgeInsets.symmetric(horizontal: 4.0),
-                              height: 6.0,
-                              width: _currentPage == index ? 20.0 : 6.0,
-                              decoration: BoxDecoration(
-                                color:
-                                    _currentPage == index
-                                        ? Theme.of(context).primaryColor
-                                        : Colors.grey[400],
-                                borderRadius: BorderRadius.circular(3.0),
+                Column(
+                  children: [
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(top: 8.0),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: List.generate(2, (index) {
+                                  return AnimatedContainer(
+                                    duration: Duration(milliseconds: 300),
+                                    margin: EdgeInsets.symmetric(
+                                      horizontal: 4.0,
+                                    ),
+                                    height: 6.0,
+                                    width: _currentPage == index ? 20.0 : 6.0,
+                                    decoration: BoxDecoration(
+                                      color:
+                                          _currentPage == index
+                                              ? Theme.of(context).primaryColor
+                                              : Colors.grey[400],
+                                      borderRadius: BorderRadius.circular(3.0),
+                                    ),
+                                  );
+                                }),
                               ),
-                            );
-                          }),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                top: 15.0,
+                                bottom: 5.0,
+                              ),
+                              child: Text(
+                                "Add new habit",
+                                style: kTitleTextStyle.copyWith(
+                                  color: Theme.of(context).primaryColor,
+                                  fontSize: 25,
+                                ),
+                              ),
+                            ),
+                            TaskPropertyField(
+                              hint: "Habit title*",
+                              controller: habitTitleController,
+                              onChanged: (newHabitName) {
+                                setState(() {
+                                  habitTitle = newHabitName;
+                                });
+                              },
+                            ),
+                            TaskPropertyField(
+                              hint: "Habit description*",
+                              controller: habitDescriptionController,
+                              height: 422,
+                              onChanged: (newHabitDescription) {
+                                setState(() {
+                                  habitDescription = newHabitDescription;
+                                });
+                              },
+                            ),
+                            ListTile(
+                              leading: Text(
+                                "Reminds me",
+                                style: kTitleTextStyle.copyWith(
+                                  color: Theme.of(context).primaryColor,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              trailing: CupertinoSwitch(
+                                value: habitNotifications,
+                                onChanged: (bool value) {
+                                  setState(() {
+                                    habitNotifications = value;
+                                  });
+                                },
+                                activeTrackColor: CupertinoColors.activeGreen,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 15.0, bottom: 5.0),
-                        child: Text(
-                          "Add new habit",
-                          style: kTitleTextStyle.copyWith(
-                            color: Theme.of(context).primaryColor,
-                            fontSize: 25,
-                          ),
-                        ),
-                      ),
-                      TaskPropertyField(
-                        hint: "Habit title*",
-                        controller: habitTitleController,
-                        onChanged: (newHabitName) {
-                          setState(() {
-                            habitTitle = newHabitName;
-                          });
-                        },
-                      ),
-                      TaskPropertyField(
-                        hint: "Habit description*",
-                        controller: habitDescriptionController,
-                        height: 422,
-                        onChanged: (newHabitDescription) {
-                          setState(() {
-                            habitDescription = newHabitDescription;
-                          });
-                        },
-                      ),
-                      ListTile(
-                        leading: Text(
-                          "Reminds me",
-                          style: kTitleTextStyle.copyWith(
-                            color: Theme.of(context).primaryColor,
-                            fontSize: 16,
-                          ),
-                        ),
-                        trailing: CupertinoSwitch(
-                          value: habitNotifications,
-                          onChanged: (bool value) {
-                            setState(() {
-                              habitNotifications = value;
-                            });
-                          },
-                          activeTrackColor: CupertinoColors.activeGreen,
-                        ),
-                      ),
-                      SquareButton(
-                        color: widget.type.getColor(),
-                        title: "Add Habit",
-                        onPressed: () {
-                          try {
-                            Habit newHabit = Habit(
-                              title: habitTitle,
-                              description: habitDescription,
-                              type: widget.type,
-                              notifications: habitNotifications,
-                            );
+                    ),
+                    SquareButton(
+                      color: widget.type.getColor(),
+                      title: "Add Habit",
+                      onPressed: () {
+                        try {
+                          Habit newHabit = Habit(
+                            title: habitTitle,
+                            description: habitDescription,
+                            type: widget.type,
+                            notifications: habitNotifications,
+                          );
 
-                            userData.addHabit(newHabit);
-                            Navigator.of(context).pop();
-                          } catch (e) {
-                            toastification.show(
-                              context: context,
-                              title: Text('Try again'),
-                              description: Text(
-                                'Something went wrong while creating a habit, make sure no field is empty',
-                              ),
-                              type: ToastificationType.info,
-                              autoCloseDuration: Duration(seconds: 3),
-                            );
-                          }
-                        },
-                      ),
-                    ],
-                  ),
+                          userData.addHabit(newHabit);
+                          Navigator.of(context).pop();
+                        } catch (e) {
+                          toastification.show(
+                            context: context,
+                            title: Text('Try again'),
+                            description: Text(
+                              'Something went wrong while creating a habit, make sure no field is empty',
+                            ),
+                            type: ToastificationType.info,
+                            autoCloseDuration: Duration(seconds: 3),
+                          );
+                        }
+                      },
+                    ),
+                  ],
                 ),
               ],
             ),

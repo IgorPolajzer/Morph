@@ -51,108 +51,117 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
 
     return Scaffold(
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 65.0, right: 65.0, bottom: 20),
-            child: MetaProgressBar(
-              valueNotifier: _valueNotifier,
-              xp: userData.metaXp.roundToDouble(),
-              maxXp: maxMetaXp.roundToDouble(),
-              level: userData.metaLevel,
-            ),
-          ),
-          Text(
-            '${userData.metaXp}/${maxMetaXp}xp',
-            style: kTitleTextStyle.copyWith(
-              color: kMetaLevelColor,
-              fontSize: 16,
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(vertical: 8, horizontal: 50),
-            child: Text(
-              userData.username,
-              style: kTitleTextStyle.copyWith(
-                color: Theme.of(context).primaryColor,
-                fontSize: 38,
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(
+                  left: 65.0,
+                  right: 65.0,
+                  bottom: 20,
+                ),
+                child: MetaProgressBar(
+                  valueNotifier: _valueNotifier,
+                  xp: userData.metaXp.roundToDouble(),
+                  maxXp: maxMetaXp.roundToDouble(),
+                  level: userData.metaLevel,
+                ),
               ),
-            ),
-          ),
-          HabitProgressBar(
-            xp: _experience[HabitType.PHYSICAL]!.points,
-            level: _experience[HabitType.PHYSICAL]!.level,
-            type: HabitType.PHYSICAL,
-            enabled: _selectedHabits[HabitType.PHYSICAL],
-          ),
-          HabitProgressBar(
-            xp: _experience[HabitType.GENERAL]!.points,
-            level: _experience[HabitType.GENERAL]!.level,
-            type: HabitType.GENERAL,
-            enabled: _selectedHabits[HabitType.GENERAL],
-          ),
-          HabitProgressBar(
-            xp: _experience[HabitType.MENTAL]!.points,
-            level: _experience[HabitType.MENTAL]!.level,
-            type: HabitType.MENTAL,
-            enabled: _selectedHabits[HabitType.MENTAL],
-          ),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 25),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(left: 10),
-                  child: TextButton(
-                    onPressed: () {
-                      context.push(ChangeHabitsScreen.id);
-                    },
-                    child: Icon(Icons.settings_outlined, size: 38),
+              Text(
+                '${userData.metaXp}/${maxMetaXp}xp',
+                style: kTitleTextStyle.copyWith(
+                  color: kMetaLevelColor,
+                  fontSize: 16,
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(vertical: 8, horizontal: 50),
+                child: Text(
+                  userData.username,
+                  style: kTitleTextStyle.copyWith(
+                    color: Theme.of(context).primaryColor,
+                    fontSize: 38,
                   ),
                 ),
+              ),
+              HabitProgressBar(
+                xp: _experience[HabitType.PHYSICAL]!.points,
+                level: _experience[HabitType.PHYSICAL]!.level,
+                type: HabitType.PHYSICAL,
+                enabled: _selectedHabits[HabitType.PHYSICAL],
+              ),
+              HabitProgressBar(
+                xp: _experience[HabitType.GENERAL]!.points,
+                level: _experience[HabitType.GENERAL]!.level,
+                type: HabitType.GENERAL,
+                enabled: _selectedHabits[HabitType.GENERAL],
+              ),
+              HabitProgressBar(
+                xp: _experience[HabitType.MENTAL]!.points,
+                level: _experience[HabitType.MENTAL]!.level,
+                type: HabitType.MENTAL,
+                enabled: _selectedHabits[HabitType.MENTAL],
+              ),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 25),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.only(left: 10),
+                      child: TextButton(
+                        onPressed: () {
+                          context.push(ChangeHabitsScreen.id);
+                        },
+                        child: Icon(Icons.settings_outlined, size: 38),
+                      ),
+                    ),
 
-                Padding(
-                  padding: EdgeInsets.only(left: 10),
-                  child: TextButton(
-                    onPressed: () {
-                      showCupertinoDialog<void>(
-                        context: context,
-                        builder:
-                            (BuildContext context) => CupertinoAlertDialog(
-                              title: const Text('Log out'),
-                              content: const Text(
-                                "Are you sure you want to log out?",
-                              ),
-                              actions: <CupertinoDialogAction>[
-                                CupertinoDialogAction(
-                                  isDefaultAction: true,
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                  child: const Text('Cancel'),
+                    Padding(
+                      padding: EdgeInsets.only(left: 10),
+                      child: TextButton(
+                        onPressed: () {
+                          showCupertinoDialog<void>(
+                            context: context,
+                            builder:
+                                (BuildContext context) => CupertinoAlertDialog(
+                                  title: const Text('Log out'),
+                                  content: const Text(
+                                    "Are you sure you want to log out?",
+                                  ),
+                                  actions: <CupertinoDialogAction>[
+                                    CupertinoDialogAction(
+                                      isDefaultAction: true,
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      child: const Text('Cancel'),
+                                    ),
+                                    CupertinoDialogAction(
+                                      isDestructiveAction: true,
+                                      onPressed: () {
+                                        FirebaseAuth.instance.signOut();
+                                        userData.reset();
+                                      },
+                                      child: const Text('Log out'),
+                                    ),
+                                  ],
                                 ),
-                                CupertinoDialogAction(
-                                  isDestructiveAction: true,
-                                  onPressed: () {
-                                    FirebaseAuth.instance.signOut();
-                                    userData.reset();
-                                  },
-                                  child: const Text('Log out'),
-                                ),
-                              ],
-                            ),
-                      );
-                    },
-                    child: Icon(Icons.login_outlined, size: 38),
-                  ),
+                          );
+                        },
+                        child: Icon(Icons.login_outlined, size: 38),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }

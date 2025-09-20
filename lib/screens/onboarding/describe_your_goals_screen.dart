@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:morphe/components/buttons/arrow_button.dart';
 import 'package:morphe/model/request_exception.dart';
@@ -29,11 +30,17 @@ class DescribeYourGoalsScreen extends StatefulWidget {
 }
 
 class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
+  // Add config
+  late InterstitialAd _interstitialAd;
+  bool isInterstitialAdReady = false;
+
+  // Text controllers.
   late final TextEditingController physicalController;
   late final TextEditingController generalController;
   late final TextEditingController mentalController;
 
-  final int maxCharacters = 250;
+  // Variables
+  final int MAX_CHARACTERS = 250;
 
   bool showSpinner = false;
 
@@ -45,6 +52,26 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
   void initState() {
     super.initState();
 
+    // Add setup
+    InterstitialAd.load(
+      adUnitId: "ca-app-pub-4498572432922231/7920604342",
+      request: AdRequest(),
+      adLoadCallback: InterstitialAdLoadCallback(
+        onAdLoaded: (ad) {
+          setState(() {
+            _interstitialAd = ad;
+            isInterstitialAdReady = true;
+          });
+        },
+        onAdFailedToLoad: (error) {
+          setState(() {
+            isInterstitialAdReady = false;
+          });
+        },
+      ),
+    );
+
+    // Controller setup
     physicalController = TextEditingController();
     generalController = TextEditingController();
     mentalController = TextEditingController();
@@ -89,7 +116,7 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
                         physicalGoals = value;
                       },
                       controller: physicalController,
-                      maxCharacters: maxCharacters,
+                      maxCharacters: MAX_CHARACTERS,
                     ),
                     DescribeGoalField(
                       type: HabitType.GENERAL,
@@ -103,7 +130,7 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
                         generalGoals = value;
                       },
                       controller: generalController,
-                      maxCharacters: maxCharacters,
+                      maxCharacters: MAX_CHARACTERS,
                     ),
                     DescribeGoalField(
                       type: HabitType.MENTAL,
@@ -117,7 +144,7 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
                         mentalGoals = value;
                       },
                       controller: mentalController,
-                      maxCharacters: maxCharacters,
+                      maxCharacters: MAX_CHARACTERS,
                     ),
                   ],
                 ),
@@ -159,6 +186,7 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
                   prompts[HabitType.MENTAL] = mentalGoals;
                 }
 
+                _showInterstitialAd();
                 Pair<List<Task>, List<Habit>> plan = await generateAndParse(
                   prompts,
                   userData.selectedHabits,
@@ -166,7 +194,7 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
                 userData.setTasks(plan.key);
                 userData.setHabits(plan.value);
 
-                toPlanOverview(userData);
+                _toPlanOverview(userData);
               } on GenerationException {
                 toastification.show(
                   context: context,
@@ -228,13 +256,55 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
 
   @override
   void dispose() {
+    _interstitialAd.dispose();
+
     physicalController.dispose();
     generalController.dispose();
     mentalController.dispose();
+
     super.dispose();
   }
 
-  void toPlanOverview(UserData userData) {
+  void _showInterstitialAd() {
+    if (isInterstitialAdReady) {
+      _interstitialAd.show();
+      _interstitialAd.fullScreenContentCallback = FullScreenContentCallback(
+        onAdDismissedFullScreenContent: (ad) {
+          ad.dispose();
+          setState(() {
+            isInterstitialAdReady = false;
+          });
+
+          // load new ad
+          InterstitialAd.load(
+            adUnitId: "ca-app-pub-4498572432922231/7920604342",
+            request: AdRequest(),
+            adLoadCallback: InterstitialAdLoadCallback(
+              onAdLoaded: (ad) {
+                setState(() {
+                  _interstitialAd = ad;
+                  isInterstitialAdReady = true;
+                });
+              },
+              onAdFailedToLoad: (error) {
+                setState(() {
+                  isInterstitialAdReady = false;
+                });
+              },
+            ),
+          );
+        },
+        onAdFailedToShowFullScreenContent: (ad, error) {
+          ad.dispose();
+          setState(() {
+            isInterstitialAdReady = false;
+          });
+        },
+      );
+    }
+  }
+
+  void _toPlanOverview(UserData userData) {
     // Navigate to first selected habit type
     var selectedHabits = userData.selectedHabits;
 
