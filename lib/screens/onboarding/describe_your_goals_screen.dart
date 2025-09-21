@@ -270,7 +270,7 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
     UserData userData,
     Map<HabitType, String> prompts,
   ) async {
-    // Show add
+    // Show ad
     _showInterstitialAd();
 
     // Generate plan
@@ -283,16 +283,77 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
     userData.setTasks(plan.key);
     userData.setHabits(plan.value);
 
-    // Create user and initialise in firebase.
-    if (FirebaseAuth.instance.currentUser == null) {
-      await _auth.createUserWithEmailAndPassword(
-        email: userData.email,
-        password: userData.password,
+    try {
+      // Create user and initialise in firebase if not logged in
+      if (FirebaseAuth.instance.currentUser == null) {
+        await _auth.createUserWithEmailAndPassword(
+          email: userData.email,
+          password: userData.password,
+        );
+        userData.initializeUser();
+      } else {
+        userData.patchUserPlan();
+      }
+    } on FirebaseAuthException catch (e) {
+      switch (e.code) {
+        case 'email-already-in-use':
+          toastification.show(
+            context: context,
+            title: Text('Email In Use'),
+            description: Text('This email is already registered.'),
+            type: ToastificationType.error,
+            autoCloseDuration: Duration(seconds: 3),
+          );
+          break;
+        case 'invalid-email':
+          toastification.show(
+            context: context,
+            title: Text('Invalid Email'),
+            description: Text('Please enter a valid email address.'),
+            type: ToastificationType.error,
+            autoCloseDuration: Duration(seconds: 3),
+          );
+          break;
+        case 'operation-not-allowed':
+          toastification.show(
+            context: context,
+            title: Text('Sign-Up Disabled'),
+            description: Text('This sign-up method is not allowed.'),
+            type: ToastificationType.error,
+            autoCloseDuration: Duration(seconds: 3),
+          );
+          break;
+        case 'weak-password':
+          toastification.show(
+            context: context,
+            title: Text('Weak Password'),
+            description: Text('Password must be at least 6 characters.'),
+            type: ToastificationType.error,
+            autoCloseDuration: Duration(seconds: 3),
+          );
+          break;
+        default:
+          toastification.show(
+            context: context,
+            title: Text('Registration Failed'),
+            description: Text('Something went wrong during registration.'),
+            type: ToastificationType.error,
+            autoCloseDuration: Duration(seconds: 3),
+          );
+      }
+
+      // Re-throw if needed for external handling
+      rethrow;
+    } catch (e) {
+      // Generic fallback
+      toastification.show(
+        context: context,
+        title: Text('Registration Failed'),
+        description: Text('Something went wrong during registration.'),
+        type: ToastificationType.error,
+        autoCloseDuration: Duration(seconds: 3),
       );
-      userData.initializeUser();
-      // Patch user plan.
-    } else {
-      userData.patchUserPlan();
+      rethrow;
     }
   }
 

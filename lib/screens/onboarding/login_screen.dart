@@ -172,10 +172,12 @@ class _LoginScreenState extends State<LoginScreen> {
                     setState(() {
                       showSpinner = true;
                     });
+
                     final user = await _auth.signInWithEmailAndPassword(
                       email: email,
                       password: password,
                     );
+
                     if (user != null) {
                       if (!userData.loading && !userData.isInitialized) {
                         WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -184,20 +186,83 @@ class _LoginScreenState extends State<LoginScreen> {
                       }
                       router.push(YourDayScreen.id);
                     }
-                    setState(() {
-                      showSpinner = false;
-                    });
+                  } on FirebaseAuthException catch (e) {
+                    print(e);
+
+                    switch (e.code) {
+                      case 'invalid-email':
+                        toastification.show(
+                          context: context,
+                          title: Text('Invalid Email'),
+                          description: Text(
+                            'Please enter a valid email address.',
+                          ),
+                          type: ToastificationType.error,
+                          autoCloseDuration: Duration(seconds: 3),
+                        );
+                        break;
+                      case 'user-disabled':
+                        toastification.show(
+                          context: context,
+                          title: Text('Account Disabled'),
+                          description: Text('This account has been disabled.'),
+                          type: ToastificationType.error,
+                          autoCloseDuration: Duration(seconds: 3),
+                        );
+                        break;
+                      case 'user-not-found':
+                        toastification.show(
+                          context: context,
+                          title: Text('User Not Found'),
+                          description: Text('No account found for this email.'),
+                          type: ToastificationType.error,
+                          autoCloseDuration: Duration(seconds: 3),
+                        );
+                        break;
+                      case 'wrong-password':
+                        toastification.show(
+                          context: context,
+                          title: Text('Wrong Password'),
+                          description: Text(
+                            'The password you entered is incorrect.',
+                          ),
+                          type: ToastificationType.error,
+                          autoCloseDuration: Duration(seconds: 3),
+                        );
+                        break;
+                      case 'too-many-requests':
+                        toastification.show(
+                          context: context,
+                          title: Text('Too Many Attempts'),
+                          description: Text('Please try again later.'),
+                          type: ToastificationType.error,
+                          autoCloseDuration: Duration(seconds: 3),
+                        );
+                        break;
+                      default:
+                        toastification.show(
+                          context: context,
+                          title: Text('Login Failed'),
+                          description: Text(
+                            'Something went wrong. Please try again.',
+                          ),
+                          type: ToastificationType.error,
+                          autoCloseDuration: Duration(seconds: 3),
+                        );
+                    }
                   } catch (e) {
                     print(e);
 
                     toastification.show(
                       context: context,
-                      title: Text('Try again'),
-                      description: Text('Something went wrong'),
+                      title: Text('Login Failed'),
+                      description: Text(
+                        'Something went wrong. Please try again.',
+                      ),
                       type: ToastificationType.error,
                       autoCloseDuration: Duration(seconds: 3),
                     );
-
+                  } finally {
                     setState(() {
                       showSpinner = false;
                     });
