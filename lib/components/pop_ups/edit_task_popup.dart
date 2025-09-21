@@ -88,123 +88,133 @@ class _EditTaskPopUpState extends State<EditTaskPopUp>
           child: SizedBox(
             width: MediaQuery.sizeOf(context).width - 50,
             height: MediaQuery.sizeOf(context).height - 200,
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(top: 15.0, bottom: 5.0),
-                    child: Text(
-                      "Edit task",
-                      style: kTitleTextStyle.copyWith(
-                        color: Theme.of(context).primaryColor,
-                        fontSize: 25,
-                      ),
-                    ),
-                  ),
-                  TaskPropertyField(
-                    hint: "Task name*",
-                    controller: taskTitleController,
-                    onChanged: (newTasktitle) {
-                      setState(() {
-                        widget.task.title = newTasktitle;
-                      });
-                    },
-                  ),
-                  TaskPropertyField(
-                    hint: "Task subtitle*",
-                    controller: taskSubtitleController,
-                    height: 100,
-                    onChanged: (newTaskSubtitle) {
-                      setState(() {
-                        widget.task.subtitle = newTaskSubtitle;
-                      });
-                    },
-                  ),
-                  TaskPropertyField(
-                    hint: "Type description here*",
-                    controller: taskDescriptionController,
-                    height: 150,
-                    onChanged: (newTaskDescription) {
-                      setState(() {
-                        widget.task.description = newTaskDescription;
-                      });
-                    },
-                  ),
-                  Text(
-                    "*Day is irrelevant if frequency is daily",
-                    style: kPlaceHolderTextStyle,
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 5),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+            child: Column(
+              children: [
+                Expanded(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Expanded(child: frequencyPicker),
-                        Expanded(child: dayPicker),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                            top: 15.0,
+                            bottom: 5.0,
+                          ),
+                          child: Text(
+                            "Edit task",
+                            style: kTitleTextStyle.copyWith(
+                              color: Theme.of(context).primaryColor,
+                              fontSize: 25,
+                            ),
+                          ),
+                        ),
+                        TaskPropertyField(
+                          hint: "Task name*",
+                          controller: taskTitleController,
+                          onChanged: (newTasktitle) {
+                            setState(() {
+                              widget.task.title = newTasktitle;
+                            });
+                          },
+                        ),
+                        TaskPropertyField(
+                          hint: "Task subtitle*",
+                          controller: taskSubtitleController,
+                          height: 100,
+                          onChanged: (newTaskSubtitle) {
+                            setState(() {
+                              widget.task.subtitle = newTaskSubtitle;
+                            });
+                          },
+                        ),
+                        TaskPropertyField(
+                          hint: "Type description here*",
+                          controller: taskDescriptionController,
+                          height: 150,
+                          onChanged: (newTaskDescription) {
+                            setState(() {
+                              widget.task.description = newTaskDescription;
+                            });
+                          },
+                        ),
+                        Text(
+                          "*Day is irrelevant if frequency is daily",
+                          style: kPlaceHolderTextStyle,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 5),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Expanded(child: frequencyPicker),
+                              Expanded(child: dayPicker),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 5),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Expanded(child: startTimePicker),
+                              Expanded(child: endTimePicker),
+                            ],
+                          ),
+                        ),
+                        ListTile(
+                          leading: Text(
+                            "Reminds me",
+                            style: kTitleTextStyle.copyWith(
+                              color: Theme.of(context).primaryColor,
+                              fontSize: 16,
+                            ),
+                          ),
+                          trailing: CupertinoSwitch(
+                            value: notifications,
+                            onChanged: (bool value) {
+                              setState(() {
+                                notifications = value;
+                              });
+                            },
+                            activeTrackColor: CupertinoColors.activeGreen,
+                          ),
+                        ),
                       ],
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 5),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Expanded(child: startTimePicker),
-                        Expanded(child: endTimePicker),
-                      ],
-                    ),
-                  ),
-                  ListTile(
-                    leading: Text(
-                      "Reminds me",
-                      style: kTitleTextStyle.copyWith(
-                        color: Theme.of(context).primaryColor,
-                        fontSize: 16,
-                      ),
-                    ),
-                    trailing: CupertinoSwitch(
-                      value: notifications,
-                      onChanged: (bool value) {
-                        setState(() {
-                          notifications = value;
-                        });
-                      },
-                      activeTrackColor: CupertinoColors.activeGreen,
-                    ),
-                  ),
-                  SquareButton(
-                    color: widget.task.type.getColor(),
-                    title: "Save changes",
-                    onPressed: () {
-                      try {
-                        userData.updateTask(
-                          widget.task.title,
-                          widget.task.subtitle,
-                          widget.task.description,
-                          frequencyPicker.frequency,
-                          dayPicker.day,
-                          toDateTime(startTimePicker.newTime),
-                          toDateTime(endTimePicker.newTime),
-                          notifications,
-                          widget.task.type,
-                          widget.task.id,
-                        );
+                ),
+                SquareButton(
+                  color: widget.task.type.getColor(),
+                  title: "Save changes",
+                  onPressed: () async {
+                    try {
+                      userData.updateTask(
+                        widget.task.title,
+                        widget.task.subtitle,
+                        widget.task.description,
+                        frequencyPicker.frequency,
+                        dayPicker.day,
+                        toDateTime(startTimePicker.newTime),
+                        toDateTime(endTimePicker.newTime),
+                        notifications,
+                        widget.task.type,
+                        widget.task.id,
+                      );
+                      await userData.pushTasksToFireBase();
 
-                        Navigator.of(context).pop();
-                      } catch (e) {
-                        toastification.show(
-                          context: context,
-                          title: Text('Try again'),
-                          description: Text('Something went wrong'),
-                          type: ToastificationType.error,
-                          autoCloseDuration: Duration(seconds: 3),
-                        );
-                      }
-                    },
-                  ),
-                ],
-              ),
+                      Navigator.of(context).pop();
+                    } catch (e) {
+                      toastification.show(
+                        context: context,
+                        title: Text('Try again'),
+                        description: Text('Something went wrong'),
+                        type: ToastificationType.error,
+                        autoCloseDuration: Duration(seconds: 3),
+                      );
+                    }
+                  },
+                ),
+              ],
             ),
           ),
         ),

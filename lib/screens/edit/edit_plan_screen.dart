@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_popup_card/flutter_popup_card.dart';
-import 'package:go_router/go_router.dart';
 import 'package:morphe/model/executable_task.dart';
 import 'package:provider/provider.dart';
 
-import '../../components/buttons/arrow_button.dart';
 import '../../components/lists/habit_list.dart';
 import '../../components/lists/task_list.dart';
 import '../../components/pop_ups/add_task_popup.dart';
@@ -46,84 +44,76 @@ class _EditPlanScreenState extends State<EditPlanScreen> {
   Widget build(BuildContext context) {
     final userData = Provider.of<UserData>(context, listen: true);
 
-    return Scaffold(
-      appBar: ScreenTitle(title: "${widget.type.name} PLAN"),
-      body: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Subtitle(
-                  title: widget.type.name,
-                  subtitle: "Recommended tasks",
-                  color: widget.type.getColor(),
-                ),
-                Flexible(
-                  child: SingleChildScrollView(
-                    child: Column(
-                      children: [
-                        TasksList(type: widget.type),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 20.0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Recommended habits",
-                                style: kTitleTextStyle.copyWith(
-                                  color: widget.type.getColor(),
-                                  fontSize: 20,
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        appBar: ScreenTitle(title: "${widget.type.name} PLAN"),
+        body: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Subtitle(
+                    title: widget.type.name,
+                    subtitle: "Recommended tasks",
+                    color: widget.type.getColor(),
+                  ),
+                  Flexible(
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          TasksList(type: widget.type),
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 20.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  "Recommended habits",
+                                  style: kTitleTextStyle.copyWith(
+                                    color: widget.type.getColor(),
+                                    fontSize: 20,
+                                  ),
                                 ),
-                              ),
-                              Text(
-                                "Long click to delete a habit",
-                                style: kPlaceHolderTextStyle.copyWith(
-                                  color: Theme.of(context).secondaryHeaderColor,
-                                  fontSize: 12,
+                                Text(
+                                  "Long click to delete a habit",
+                                  style: kPlaceHolderTextStyle.copyWith(
+                                    color:
+                                        Theme.of(context).secondaryHeaderColor,
+                                    fontSize: 12,
+                                  ),
                                 ),
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
 
-                        HabitList(type: widget.type, modifiable: true),
-                      ],
+                          HabitList(type: widget.type, modifiable: true),
+                        ],
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: widget.type.getColor(),
-        foregroundColor: Theme.of(context).primaryColor,
-        onPressed:
-            () => showPopupCard(
-              context: context,
-              builder: (context) {
-                return AddTaskPopUp(type: widget.type);
-              },
-              alignment: Alignment.bottomCenter,
-              useSafeArea: true,
-              dimBackground: true,
-            ),
-        child: const Icon(Icons.add, size: 20),
-      ),
-      bottomNavigationBar: BottomAppBar(
-        elevation: 8,
-        color: Theme.of(context).scaffoldBackgroundColor,
-        child: ArrowButton(
-          title: "CONFIRM",
-          onPressed: () {
-            userData.pushHabitsToFirebase();
-            userData.pushTasksToFireBase();
-            context.pop();
-          },
+          ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: widget.type.getColor(),
+          foregroundColor: Theme.of(context).primaryColor,
+          onPressed:
+              () => showPopupCard(
+                context: context,
+                builder: (context) {
+                  return AddTaskPopUp(type: widget.type);
+                },
+                alignment: Alignment.bottomCenter,
+                useSafeArea: true,
+                dimBackground: true,
+              ),
+          child: const Icon(Icons.add, size: 20),
         ),
       ),
     );

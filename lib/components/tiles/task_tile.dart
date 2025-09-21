@@ -36,7 +36,7 @@ class TaskTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<UserData>(context, listen: true);
+    final userData = Provider.of<UserData>(context, listen: true);
 
     Widget? getTrailing() {
       if (modifiable) {
@@ -94,8 +94,9 @@ class TaskTile extends StatelessWidget {
                             ),
                             CupertinoDialogAction(
                               isDestructiveAction: true,
-                              onPressed: () {
-                                user.deleteTask(task);
+                              onPressed: () async {
+                                userData.deleteTask(task);
+                                await userData.pushTasksToFireBase();
                                 Navigator.pop(context);
                               },
                               child: const Text('Delete'),

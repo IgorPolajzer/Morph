@@ -124,7 +124,10 @@ class UserData extends ChangeNotifier {
   }
 
   // Sets executable tasks that can be completed in provided day
-  Future<void> setExecutableTasks(DateTime today) async {
+  Future<void> _setExecutableTasks(DateTime today) async {
+    _executableTasksLoaded = false;
+    notifyListeners();
+
     var from = today.subtract(
       Duration(days: TASK_RANGE),
     ); // Tasks can be completed for TASK_RANGE number of days behind schedule
@@ -159,6 +162,7 @@ class UserData extends ChangeNotifier {
         }
 
         _executableTasks.add(executableTask);
+        //executableTask.scheduleNotification();
       }
 
       from = from.add(Duration(days: 1));
@@ -442,7 +446,7 @@ class UserData extends ChangeNotifier {
     }
 
     // Set tasks that are available for execution
-    setExecutableTasks(DateTime.now());
+    _setExecutableTasks(DateTime.now());
 
     _isInitialized = true;
     loading = false;
@@ -512,7 +516,7 @@ class UserData extends ChangeNotifier {
       }
 
       // Set tasks that are available for execution
-      setExecutableTasks(DateTime.now());
+      _setExecutableTasks(DateTime.now());
 
       loading = false;
       _isInitialized = true;
@@ -567,7 +571,7 @@ class UserData extends ChangeNotifier {
       }
 
       // Set tasks that are available for execution
-      setExecutableTasks(DateTime.now());
+      _setExecutableTasks(DateTime.now());
     } catch (e) {
       print(e);
       throw Exception("Error patching user plan in Firebase: $e");
@@ -594,7 +598,7 @@ class UserData extends ChangeNotifier {
     }
   }
 
-  void pushTasksToFireBase() async {
+  Future<void> pushTasksToFireBase() async {
     try {
       final userDoc = FirebaseFirestore.instance
           .collection('users')
@@ -612,13 +616,16 @@ class UserData extends ChangeNotifier {
           await tasksRef.doc(task.id).set(task.toMap());
         }
       }
+
+      // Set tasks that are available for execution
+      _setExecutableTasks(DateTime.now());
     } catch (e) {
       print(e);
       throw Exception("Error pushing tasks to Firebase: $e");
     }
   }
 
-  void pushHabitsToFirebase() async {
+  Future<void> pushHabitsToFirebase() async {
     try {
       final userDoc = FirebaseFirestore.instance
           .collection('users')

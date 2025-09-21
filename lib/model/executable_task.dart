@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:morphe/model/task.dart';
 
+import '../services/notification_service.dart';
 import '../utils/functions.dart';
 
 class ExecutableTask {
@@ -15,6 +16,13 @@ class ExecutableTask {
     required this.scheduledDateTime,
     required this.notifications,
   });
+
+  /*
+  // Prepared for notification support
+  void scheduleNotification() =>
+      NotificationService().scheduleNotification(this);
+  void cancelNotification() => NotificationService().cancelNotification(this);
+*/
 
   bool get isDone => _isDone;
 

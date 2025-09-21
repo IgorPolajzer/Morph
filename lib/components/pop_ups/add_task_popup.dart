@@ -245,7 +245,7 @@ class _AddTaskPopUpState extends State<AddTaskPopUp>
                     SquareButton(
                       color: widget.type.getColor(),
                       title: "Add Task",
-                      onPressed: () {
+                      onPressed: () async {
                         try {
                           Task newTask = Task(
                             title: taskTitle,
@@ -260,7 +260,8 @@ class _AddTaskPopUpState extends State<AddTaskPopUp>
                           );
 
                           userData.addTask(newTask);
-                          userData.setExecutableTasks(DateTime.now());
+                          await userData.pushTasksToFireBase();
+
                           Navigator.of(context).pop();
                         } catch (e) {
                           toastification.show(
@@ -364,7 +365,7 @@ class _AddTaskPopUpState extends State<AddTaskPopUp>
                     SquareButton(
                       color: widget.type.getColor(),
                       title: "Add Habit",
-                      onPressed: () {
+                      onPressed: () async {
                         try {
                           Habit newHabit = Habit(
                             title: habitTitle,
@@ -374,6 +375,7 @@ class _AddTaskPopUpState extends State<AddTaskPopUp>
                           );
 
                           userData.addHabit(newHabit);
+                          await userData.pushHabitsToFirebase();
                           Navigator.of(context).pop();
                         } catch (e) {
                           toastification.show(

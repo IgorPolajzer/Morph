@@ -124,7 +124,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   padding: EdgeInsets.only(left: 10),
                   child: TextButton(
                     onPressed: () {
-                      context.push(ChangeGoalsScreen.id);
+                      context.push(ChangeGoalsScreen.id).then((_) {
+                        // This callback runs when the screen is popped
+                        setState(() {
+                          _selectedHabits = userData.selectedHabits;
+                          _experience = userData.experience;
+                          maxMetaXp = Experience.getMetaMaxXp(_experience);
+                          userData.updateMetaLevel(
+                            Experience.getMetaXp(_experience),
+                            (level) => 300,
+                          );
+                        });
+                      });
                     },
                     child: Icon(Icons.settings_outlined, size: 38),
                   ),

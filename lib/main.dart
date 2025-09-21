@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:morphe/services/notification_service.dart';
 import 'package:morphe/utils/constants.dart';
 import 'package:morphe/utils/enums.dart';
 import 'package:provider/provider.dart';
@@ -23,6 +24,7 @@ void main() async {
   await dotenv.load(fileName: ".env");
   //await generateAndParse(prompts);
   WidgetsFlutterBinding.ensureInitialized();
+
   MobileAds.instance.initialize();
   RequestConfiguration requestConfiguration = RequestConfiguration(
     testDeviceIds: [
@@ -31,7 +33,10 @@ void main() async {
     ],
   );
   MobileAds.instance.updateRequestConfiguration(requestConfiguration);
+
+  //await NotificationService().init();
   await Firebase.initializeApp();
+
   runApp(const MyApp());
 }
 
