@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:firebase_ai/firebase_ai.dart';
-import 'package:morphe/model/generation_exception.dart';
-import 'package:morphe/model/request_exception.dart';
+import 'package:morphe/exceptions/generation_exception.dart';
+import 'package:morphe/exceptions/request_exception.dart';
 
 import '../model/habit.dart';
 import '../model/task.dart';

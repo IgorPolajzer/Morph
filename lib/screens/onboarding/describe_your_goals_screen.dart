@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:morphe/components/buttons/arrow_button.dart';
-import 'package:morphe/model/request_exception.dart';
+import 'package:morphe/exceptions/request_exception.dart';
 import 'package:morphe/screens/onboarding/plan_overview_screen.dart';
 import 'package:morphe/screens/onboarding/registration_screen.dart';
 import 'package:pair/pair.dart';
@@ -15,7 +15,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../components/text/screen_title.dart';
 import '../../components/text_fields/describe_goal_text_field.dart';
-import '../../model/generation_exception.dart';
+import '../../exceptions/generation_exception.dart';
 import '../../model/habit.dart';
 import '../../model/task.dart';
 import '../../model/user_data.dart';
