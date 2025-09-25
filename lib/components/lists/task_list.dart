@@ -3,7 +3,7 @@ import 'package:flutter_popup_card/flutter_popup_card.dart';
 import 'package:morphe/components/tiles/task_tile.dart';
 import 'package:provider/provider.dart';
 
-import '../../model/user_data.dart';
+import '../../state/user_data.dart';
 import '../../utils/enums.dart';
 import '../pop_ups/show_more_popup.dart';
 

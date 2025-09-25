@@ -4,19 +4,20 @@ import '../utils/enums.dart';
 import '../utils/functions.dart';
 
 class Task {
-  String id = Uuid().v4();
+  final String id;
 
-  String title;
-  String subtitle;
-  String description;
-  Frequency scheduledFrequency;
-  Day scheduledDay;
-  DateTime startDateTime;
-  DateTime endDateTime;
+  final String title;
+  final String subtitle;
+  final String description;
+  final Frequency scheduledFrequency;
+  final Day scheduledDay;
+  final DateTime startDateTime;
+  final DateTime endDateTime;
   final HabitType type;
-  bool notifications;
+  final bool notifications;
 
   Task({
+    String? id,
     required this.title,
     required this.subtitle,
     required this.description,
@@ -26,114 +27,65 @@ class Task {
     required DateTime endDateTime,
     required this.type,
     required this.notifications,
-  }) : startDateTime = DateTime(
-         DateTime.now().year,
-         DateTime.now().month,
-         DateTime.now().day,
-         startDateTime.hour,
-         startDateTime.minute,
-         startDateTime.second,
-       ),
-       endDateTime = DateTime(
-         DateTime.now().year,
-         DateTime.now().month,
-         DateTime.now().day,
-         endDateTime.hour,
-         endDateTime.minute,
-         endDateTime.second,
-       );
+    bool normalize = true, // Normalize DateTime timestamps to today.
+  }) : id = id ?? const Uuid().v4(),
+       startDateTime = normalize ? normalizeTime(startDateTime) : startDateTime,
+       endDateTime = normalize ? normalizeTime(endDateTime) : endDateTime;
 
-  factory Task.clone(Task t) {
-    Task task = Task(
-      title: t.title,
-      subtitle: t.subtitle,
-      description: t.description,
-      scheduledFrequency: t.scheduledFrequency,
-      scheduledDay: t.scheduledDay,
-      startDateTime: t.startDateTime,
-      endDateTime: t.endDateTime,
-      type: t.type,
-      notifications: t.notifications,
+  Task copyWith({
+    String? id,
+    String? title,
+    String? subtitle,
+    String? description,
+    Frequency? scheduledFrequency,
+    Day? scheduledDay,
+    DateTime? startDateTime,
+    DateTime? endDateTime,
+    HabitType? type,
+    bool? notifications,
+  }) {
+    return Task(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      subtitle: subtitle ?? this.subtitle,
+      description: description ?? this.description,
+      scheduledFrequency: scheduledFrequency ?? this.scheduledFrequency,
+      scheduledDay: scheduledDay ?? this.scheduledDay,
+      startDateTime: startDateTime ?? this.startDateTime,
+      endDateTime: endDateTime ?? this.endDateTime,
+      type: type ?? this.type,
+      notifications: notifications ?? this.notifications,
     );
-    task.id = t.id;
-
-    return task;
   }
 
-  factory Task.fromJson(Map<String, dynamic> json) {
-    var task = Task(
-      title: json['title'] ?? '',
-      subtitle: json['subtitle'] ?? '',
-      description: json['description'] ?? '',
-      scheduledFrequency: Frequency.getFrequencyFromString(
-        json['scheduledFrequency'],
-      ),
-      scheduledDay: Day.getDayFromString(json['scheduledDay']),
-      startDateTime: (json['startDateTime'] as Timestamp).toDate(),
-      endDateTime: (json['endDateTime'] as Timestamp).toDate(),
-      type: HabitType.getTypeFromString(json['type'] ?? ''),
-      notifications: json['notifications'],
-    );
-    task.id = json['id'];
+  factory Task.fromJson(Map<String, dynamic> json) => Task(
+    id: json['id'] ?? const Uuid().v4(),
+    title: json['title'] ?? '',
+    subtitle: json['subtitle'] ?? '',
+    description: json['description'] ?? '',
+    scheduledFrequency: Frequency.getFrequencyFromString(
+      json['scheduledFrequency'] ?? '',
+    ),
+    scheduledDay: Day.getDayFromString(json['scheduledDay'] ?? ''),
+    startDateTime:
+        (json['startDateTime'] as Timestamp?)?.toDate() ?? DateTime.now(),
+    endDateTime:
+        (json['endDateTime'] as Timestamp?)?.toDate() ?? DateTime.now(),
+    type: HabitType.getTypeFromString(json['type'] ?? ''),
+    notifications: json['notifications'] ?? false,
+    normalize: false,
+  );
 
-    return task;
-  }
-
-  static Future<List<Task>> pullFromFirebase(String id) async {
-    try {
-      final taskDocs =
-          await FirebaseFirestore.instance
-              .collection('users')
-              .doc(id)
-              .collection('tasks')
-              .get();
-
-      return taskDocs.docs.map((doc) => Task.fromJson(doc.data())).toList();
-    } catch (e) {
-      return [];
-    }
-  }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'title': title,
-      'subtitle': subtitle,
-      'description': description,
-      'scheduledFrequency': scheduledFrequency.name.toLowerCase(),
-      'scheduledDay': scheduledDay.name.toLowerCase(),
-      'startDateTime': Timestamp.fromDate(startDateTime),
-      'endDateTime': Timestamp.fromDate(endDateTime),
-      'type': type.name.toLowerCase(),
-      'notifications': notifications,
-      'id': id,
-    };
-  }
-
-  // Firebase interaction
-  Future<bool> pushToFirebase() async {
-    try {
-      final taskMap = {
-        'title': title,
-        'subtitle': subtitle,
-        'description': description,
-        'scheduledFrequency': scheduledFrequency.name.toLowerCase(),
-        'scheduledDay': scheduledDay.name.toLowerCase(),
-        'startDateTime': Timestamp.fromDate(startDateTime),
-        'endDateTime': Timestamp.fromDate(endDateTime),
-        'type': type.name.toLowerCase(),
-        'notifications': notifications,
-      };
-
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(getUserFirebaseId())
-          .collection('tasks')
-          .add(taskMap);
-
-      return true;
-    } catch (e) {
-      print('Failed to push task to Firebase: $e');
-      return false;
-    }
-  }
+  Map<String, dynamic> toMap() => <String, dynamic>{
+    'title': title,
+    'subtitle': subtitle,
+    'description': description,
+    'scheduledFrequency': scheduledFrequency.name.toLowerCase(),
+    'scheduledDay': scheduledDay.name.toLowerCase(),
+    'startDateTime': Timestamp.fromDate(startDateTime),
+    'endDateTime': Timestamp.fromDate(endDateTime),
+    'type': type.name.toLowerCase(),
+    'notifications': notifications,
+    'id': id,
+  };
 }

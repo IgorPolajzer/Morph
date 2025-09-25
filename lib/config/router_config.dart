@@ -13,7 +13,7 @@ import '../screens/edit/change_goals_screen.dart';
 import '../screens/onboarding/choose_goals_screen.dart';
 import '../screens/onboarding/describe_your_goals_screen.dart';
 import '../screens/onboarding/plan_overview_screen.dart';
-import '../screens/onboarding/registration_screen.dart';
+import '../screens/onboarding/register_screen.dart';
 import '../screens/onboarding/welcome_screen.dart';
 
 class AuthNotifier extends ChangeNotifier {
@@ -89,9 +89,9 @@ final GoRouter router = GoRouter(
       },
     ),
     GoRoute(
-      path: RegistrationScreen.id,
+      path: RegisterScreen.id,
       builder: (BuildContext context, GoRouterState state) {
-        return const RegistrationScreen();
+        return const RegisterScreen();
       },
     ),
     GoRoute(
@@ -137,7 +137,7 @@ final GoRouter router = GoRouter(
 
     final isAuthPage =
         state.fullPath == LoginScreen.id ||
-        state.fullPath == RegistrationScreen.id ||
+        state.fullPath == RegisterScreen.id ||
         state.fullPath == WelcomeScreen.id;
 
     final isInitalLocation = state.fullPath == '/';

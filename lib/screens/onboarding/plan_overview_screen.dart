@@ -11,7 +11,7 @@ import '../../components/lists/habit_list.dart';
 import '../../components/lists/task_list.dart';
 import '../../components/text/screen_title.dart';
 import '../../components/text/subtitle.dart';
-import '../../model/user_data.dart';
+import '../../state/user_data.dart';
 import '../../utils/enums.dart';
 
 class PlanOverviewScreen extends StatefulWidget {
@@ -126,31 +126,28 @@ class _PlanOverviewScreenState extends State<PlanOverviewScreen> {
     );
   }
 
-  Future<void> toNextPlanOverview(UserData userData) async {
-    var selectedHabits = userData.selectedHabits;
-    final router = GoRouter.of(
-      context,
-    ); // using router to navigate to avoid issues with unmounted widget on async.
+  void toNextPlanOverview(UserData userData) {
+    var selectedHabits = userData.user.selectedHabits;
 
     switch (widget.type) {
       case HabitType.PHYSICAL:
-        if (selectedHabits[HabitType.GENERAL]) {
-          router.go(PlanOverviewScreen.id_general);
-        } else if (selectedHabits[HabitType.MENTAL]) {
-          router.go(PlanOverviewScreen.id_mental);
+        if (selectedHabits[HabitType.GENERAL]!) {
+          context.go(PlanOverviewScreen.id_general);
+        } else if (selectedHabits[HabitType.MENTAL]!) {
+          context.go(PlanOverviewScreen.id_mental);
         } else {
-          router.go(YourDayScreen.id);
+          context.go(YourDayScreen.id);
         }
         break;
       case HabitType.GENERAL:
-        if (selectedHabits[HabitType.MENTAL]) {
-          router.go(PlanOverviewScreen.id_mental);
+        if (selectedHabits[HabitType.MENTAL]!) {
+          context.go(PlanOverviewScreen.id_mental);
         } else {
-          router.go(YourDayScreen.id);
+          context.go(YourDayScreen.id);
         }
         break;
       case HabitType.MENTAL:
-        router.go(YourDayScreen.id);
+        context.go(YourDayScreen.id);
         break;
     }
   }

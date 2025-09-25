@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:morphe/screens/onboarding/registration_screen.dart';
+import 'package:morphe/screens/onboarding/register_screen.dart';
 import 'package:morphe/utils/constants.dart';
 import 'package:morphe/screens/onboarding/login_screen.dart';
 
@@ -95,7 +95,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
                 ),
                 title: 'Register',
                 onPressed: () {
-                  context.push(RegistrationScreen.id);
+                  context.push(RegisterScreen.id);
                 },
               ),
               GradientButton(

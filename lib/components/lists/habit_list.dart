@@ -1,10 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_popup_card/flutter_popup_card.dart';
+import 'package:go_router/go_router.dart';
 import 'package:morphe/components/pop_ups/show_more_popup.dart';
+import 'package:morphe/repositories/impl/habit_repository.dart';
 import 'package:provider/provider.dart';
 
-import '../../model/user_data.dart';
+import '../../state/user_data.dart';
 import '../../utils/enums.dart';
 import '../tiles/habit_tile.dart';
 
@@ -12,17 +14,21 @@ class HabitList extends StatefulWidget {
   final HabitType? type;
   final modifiable;
 
-  HabitList({this.type, this.modifiable = false, super.key});
+  const HabitList({this.type, this.modifiable = false, super.key});
 
   @override
   State<HabitList> createState() => _HabitListState();
 }
 
 class _HabitListState extends State<HabitList> {
+  // Repostories.
+  final HabitRepository habitRepository = HabitRepository();
+
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<UserData>(context, listen: true);
-    var habits = user.getHabitsFromType(widget.type);
+    final userData = Provider.of<UserData>(context, listen: true);
+    final router = GoRouter.of(context);
+    var habits = userData.getHabitsFromType(widget.type);
 
     return ListView.builder(
       shrinkWrap: true, // Makes it take only the space it needs
@@ -53,9 +59,13 @@ class _HabitListState extends State<HabitList> {
                         ),
                         CupertinoDialogAction(
                           isDestructiveAction: true,
-                          onPressed: () {
-                            user.deleteHabit(habit);
-                            Navigator.pop(context);
+                          onPressed: () async {
+                            userData.deleteHabit(habit);
+                            await habitRepository.delete(
+                              userData.userId,
+                              habit.id,
+                            );
+                            router.pop();
                           },
                           child: const Text('Delete'),
                         ),

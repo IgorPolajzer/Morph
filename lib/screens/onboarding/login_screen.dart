@@ -8,7 +8,7 @@ import 'package:morphe/screens/core/your_day_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:toastification/toastification.dart';
 
-import '../../model/user_data.dart';
+import '../../state/user_data.dart';
 import '../../utils/constants.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -180,9 +180,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
                     if (user != null) {
                       if (!userData.loading && !userData.isInitialized) {
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          userData.pullFromFireBase();
-                        });
+                        userData.initialize(
+                          FirebaseAuth.instance.currentUser?.uid,
+                        );
                       }
                       router.push(YourDayScreen.id);
                     }

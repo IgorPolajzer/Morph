@@ -5,8 +5,9 @@ import 'package:provider/provider.dart';
 
 import '../../components/lists/daily_task_list.dart';
 import '../../components/text/screen_title.dart';
+import '../../model/habit.dart';
 import '../../model/task.dart';
-import '../../model/user_data.dart';
+import '../../state/user_data.dart';
 import '../../utils/constants.dart';
 import '../../utils/enums.dart';
 
@@ -22,15 +23,17 @@ class YourDayScreen extends StatefulWidget {
 class _YourDayScreenState extends State<YourDayScreen> {
   ValueNotifier<List<Task>> _scheduledTasks = ValueNotifier([]);
   ValueNotifier<List<ExecutableTask>> _executableTasks = ValueNotifier([]);
+  ValueNotifier<List<Habit>> _habits = ValueNotifier([]);
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     final userData = Provider.of<UserData>(context, listen: true);
 
-    DateTime date = DateTime.now();
-    _scheduledTasks.value = userData.getTasks(date);
-    _executableTasks.value = userData.getExecutableTasks(date);
+    var date = DateTime.now();
+    _scheduledTasks.value = userData.getTasksFromDate(date);
+    _executableTasks.value = userData.getExecutableTasksFromDate(date);
+    _habits.value = userData.getHabitsFromType(null);
   }
 
   @override

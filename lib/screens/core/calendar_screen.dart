@@ -5,7 +5,7 @@ import 'package:table_calendar/table_calendar.dart';
 import '../../components/lists/daily_task_list.dart';
 import '../../model/executable_task.dart';
 import '../../model/task.dart';
-import '../../model/user_data.dart';
+import '../../state/user_data.dart';
 
 class CalendarScreen extends StatefulWidget {
   static String id = '/calendar_screen';
@@ -17,13 +17,15 @@ class CalendarScreen extends StatefulWidget {
 }
 
 class _CalendarScreenState extends State<CalendarScreen> {
-  DateTime _selectedDay = DateTime.now();
+  var _selectedDay = DateTime.now();
   late DateTime _focusedDay;
 
-  CalendarFormat _calendarFormat = CalendarFormat.month;
+  var _calendarFormat = CalendarFormat.month;
 
-  ValueNotifier<List<Task>> _scheduledTasks = ValueNotifier([]);
-  ValueNotifier<List<ExecutableTask>> _executableTasks = ValueNotifier([]);
+  final ValueNotifier<List<Task>> _scheduledTasks = ValueNotifier([]);
+  final ValueNotifier<List<ExecutableTask>> _executableTasks = ValueNotifier(
+    [],
+  );
 
   @override
   void didChangeDependencies() {
@@ -31,12 +33,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
     _focusedDay = _selectedDay;
 
     final userData = Provider.of<UserData>(context, listen: true);
-    _scheduledTasks.value = userData.getTasks(
-      _selectedDay,
-    ); // All tasks on provided day based on their frequency scheduling
-    _executableTasks.value = userData.getExecutableTasks(
-      _selectedDay,
-    ); // All executable tasks based on the provided day
+
+    // All tasks on provided day based on their frequency scheduling.
+    _scheduledTasks.value = userData.getTasksFromDate(_selectedDay);
+
+    // All executable tasks based on the provided day
+    _executableTasks.value = userData.getExecutableTasksFromDate(_selectedDay);
   }
 
   @override
@@ -60,8 +62,8 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   _focusedDay = focusedDay;
                 });
 
-                _scheduledTasks.value = userData.getTasks(_selectedDay);
-                _executableTasks.value = userData.getExecutableTasks(
+                _scheduledTasks.value = userData.getTasksFromDate(_selectedDay);
+                _executableTasks.value = userData.getExecutableTasksFromDate(
                   _selectedDay,
                 );
               }
@@ -74,7 +76,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
             });
           },
           eventLoader: (day) {
-            return userData.getTaskTypes(day);
+            return userData.getScheduledHabitTypes(day);
           },
           calendarBuilders: CalendarBuilders(
             markerBuilder: (context, date, events) {

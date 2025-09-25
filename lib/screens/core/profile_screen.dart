@@ -8,7 +8,7 @@ import 'package:morphe/screens/edit/change_goals_screen.dart';
 import 'package:provider/provider.dart';
 
 import '../../components/progress_bars/habit_progress_bar.dart';
-import '../../model/user_data.dart';
+import '../../state/user_data.dart';
 import '../../utils/constants.dart';
 import '../../utils/enums.dart';
 
@@ -33,8 +33,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     super.didChangeDependencies();
     final userData = Provider.of<UserData>(context, listen: true);
 
-    _selectedHabits = userData.selectedHabits;
-    _experience = userData.experience;
+    _selectedHabits = userData.user.selectedHabits;
+    _experience = userData.user.experience;
 
     maxMetaXp = Experience.getMetaMaxXp(_experience);
 
@@ -75,7 +75,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         horizontal: 50,
                       ),
                       child: Text(
-                        userData.username,
+                        userData.user.username,
                         style: kTitleTextStyle.copyWith(
                           color: Theme.of(context).primaryColor,
                           fontSize: 38,
@@ -127,8 +127,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       context.push(ChangeGoalsScreen.id).then((_) {
                         // This callback runs when the screen is popped
                         setState(() {
-                          _selectedHabits = userData.selectedHabits;
-                          _experience = userData.experience;
+                          _selectedHabits = userData.user.selectedHabits;
+                          _experience = userData.user.experience;
                           maxMetaXp = Experience.getMetaMaxXp(_experience);
                           userData.updateMetaLevel(
                             Experience.getMetaXp(_experience),
