@@ -5,7 +5,8 @@ import 'package:morphe/screens/edit/edit_plan_screen.dart';
 import 'package:provider/provider.dart';
 
 import '../../components/text/screen_title.dart';
-import '../../model/user_data.dart';
+import '../../repositories/impl/user_repository.dart';
+import '../../state/user_data.dart';
 import '../../utils/constants.dart';
 import '../../utils/enums.dart';
 import '../onboarding/describe_your_goals_screen.dart';
@@ -20,6 +21,9 @@ class ChangeGoalsScreen extends StatefulWidget {
 }
 
 class _ChangeGoalsScreenState extends State<ChangeGoalsScreen> {
+  // Repositories
+  final UserRepository userRepository = UserRepository();
+
   late bool physical;
   late bool general;
   late bool mental;
@@ -29,9 +33,9 @@ class _ChangeGoalsScreenState extends State<ChangeGoalsScreen> {
     super.initState();
     final userData = Provider.of<UserData>(context, listen: false);
 
-    physical = userData.selectedHabits[HabitType.PHYSICAL];
-    general = userData.selectedHabits[HabitType.GENERAL];
-    mental = userData.selectedHabits[HabitType.MENTAL];
+    physical = userData.user.selectedHabits[HabitType.PHYSICAL]!;
+    general = userData.user.selectedHabits[HabitType.GENERAL]!;
+    mental = userData.user.selectedHabits[HabitType.MENTAL]!;
   }
 
   @override
@@ -63,12 +67,15 @@ class _ChangeGoalsScreenState extends State<ChangeGoalsScreen> {
                       context.push(EditPlanScreen.id_physical);
                     },
                     isChecked: physical,
-                    checkboxCallback: (checkboxState) {
+                    checkboxCallback: (checkboxState) async {
                       setState(() {
                         physical = checkboxState;
                       });
                       userData.setSelectedHabits(physical, general, mental);
-                      userData.pushSelectedHabitsToFirebase();
+                      await userRepository.updateUser(
+                        userData.userId,
+                        userData.user.toMap(),
+                      );
                     },
                     backgroundColor: kPhysicalColor,
                     title: "PHYSICAL GOALS",
@@ -81,12 +88,15 @@ class _ChangeGoalsScreenState extends State<ChangeGoalsScreen> {
                       context.push(EditPlanScreen.id_general);
                     },
                     isChecked: general,
-                    checkboxCallback: (checkboxState) {
+                    checkboxCallback: (checkboxState) async {
                       setState(() {
                         general = checkboxState;
                       });
                       userData.setSelectedHabits(physical, general, mental);
-                      userData.pushSelectedHabitsToFirebase();
+                      await userRepository.updateUser(
+                        userData.userId,
+                        userData.user.toMap(),
+                      );
                     },
                     backgroundColor: kGeneralColor,
                     title: "GENERAL HABITS",
@@ -99,12 +109,15 @@ class _ChangeGoalsScreenState extends State<ChangeGoalsScreen> {
                       context.push(EditPlanScreen.id_mental);
                     },
                     isChecked: mental,
-                    checkboxCallback: (checkboxState) {
+                    checkboxCallback: (checkboxState) async {
                       setState(() {
                         mental = checkboxState;
                       });
                       userData.setSelectedHabits(physical, general, mental);
-                      userData.pushSelectedHabitsToFirebase();
+                      await userRepository.updateUser(
+                        userData.userId,
+                        userData.user.toMap(),
+                      );
                     },
                     backgroundColor: kMentalColor,
                     title: "MENTAL GOALS",

@@ -6,20 +6,20 @@ import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
 import 'package:toastification/toastification.dart';
 
-import '../../model/user_data.dart';
+import '../../state/user_data.dart';
 import '../../utils/constants.dart';
 import 'choose_goals_screen.dart';
 
-class RegistrationScreen extends StatefulWidget {
+class RegisterScreen extends StatefulWidget {
   static String id = '/registration_screen';
 
-  const RegistrationScreen({super.key});
+  const RegisterScreen({super.key});
 
   @override
-  State<RegistrationScreen> createState() => _RegistrationScreenState();
+  State<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _RegistrationScreenState extends State<RegistrationScreen> {
+class _RegisterScreenState extends State<RegisterScreen> {
   late String username;
   late String email;
   late String password;

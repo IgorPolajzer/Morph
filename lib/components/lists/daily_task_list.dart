@@ -7,7 +7,7 @@ import 'package:toastification/toastification.dart';
 
 import '../../model/executable_task.dart';
 import '../../model/task.dart';
-import '../../model/user_data.dart';
+import '../../state/user_data.dart';
 import '../pop_ups/show_more_popup.dart';
 
 class DailyTasksList extends StatefulWidget {

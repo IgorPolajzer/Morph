@@ -33,3 +33,15 @@ String getUserFirebaseId() {
   if (currentUser == null) throw Exception("User not authenticated");
   return currentUser.uid;
 }
+
+DateTime normalizeTime(DateTime input) {
+  final now = DateTime.now();
+  return DateTime(
+    now.year,
+    now.month,
+    now.day,
+    input.hour,
+    input.minute,
+    input.second,
+  );
+}

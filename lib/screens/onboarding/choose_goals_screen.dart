@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:toastification/toastification.dart';
 
 import '../../components/text/screen_title.dart';
-import '../../model/user_data.dart';
+import '../../state/user_data.dart';
 import '../../utils/constants.dart';
 import 'describe_your_goals_screen.dart';
 

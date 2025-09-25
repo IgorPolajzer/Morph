@@ -4,6 +4,8 @@ import 'package:flutter_popup_card/flutter_popup_card.dart';
 import 'package:morphe/components/buttons/square_button.dart';
 import 'package:morphe/components/menus/day_picker.dart';
 import 'package:morphe/components/text_fields/add_property_field.dart';
+import 'package:morphe/repositories/impl/habit_repository.dart';
+import 'package:morphe/repositories/impl/task_repository.dart';
 import 'package:morphe/utils/constants.dart';
 import 'package:morphe/utils/enums.dart';
 import 'package:provider/provider.dart';
@@ -11,7 +13,7 @@ import 'package:toastification/toastification.dart';
 
 import '../../model/habit.dart';
 import '../../model/task.dart';
-import '../../model/user_data.dart';
+import '../../state/user_data.dart';
 import '../../utils/functions.dart';
 import '../menus/frequency_picker.dart';
 import '../menus/time_picker.dart';
@@ -27,6 +29,10 @@ class AddTaskPopUp extends StatefulWidget {
 
 class _AddTaskPopUpState extends State<AddTaskPopUp>
     with SingleTickerProviderStateMixin {
+  // Repositories
+  final taskRepository = TaskRepository();
+  final habitRepository = HabitRepository();
+
   // Task controllers
   late TextEditingController taskTitleController;
   late TextEditingController taskSubtitleController;
@@ -247,7 +253,7 @@ class _AddTaskPopUpState extends State<AddTaskPopUp>
                       title: "Add Task",
                       onPressed: () async {
                         try {
-                          Task newTask = Task(
+                          var newTask = Task(
                             title: taskTitle,
                             subtitle: taskSubtitle,
                             description: taskDescription,
@@ -260,7 +266,7 @@ class _AddTaskPopUpState extends State<AddTaskPopUp>
                           );
 
                           userData.addTask(newTask);
-                          await userData.pushTasksToFireBase();
+                          await taskRepository.save(userData.userId, newTask);
 
                           Navigator.of(context).pop();
                         } catch (e) {
@@ -375,7 +381,7 @@ class _AddTaskPopUpState extends State<AddTaskPopUp>
                           );
 
                           userData.addHabit(newHabit);
-                          await userData.pushHabitsToFirebase();
+                          await habitRepository.save(userData.userId, newHabit);
                           Navigator.of(context).pop();
                         } catch (e) {
                           toastification.show(
