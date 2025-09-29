@@ -19,9 +19,10 @@ bool isToday(DateTime? date) {
       date.day == now.day;
 }
 
-bool isSameDay(DateTime? a, DateTime? b) {
-  if (a == null || b == null) return false;
-  return a.year == b.year && a.month == b.month && a.day == b.day;
+bool isSameDay(DateTime? dateA, DateTime? dateB) {
+  return dateA?.year == dateB?.year &&
+      dateA?.month == dateB?.month &&
+      dateA?.day == dateB?.day;
 }
 
 String getCompletedTaskId(Task task, DateTime date) {

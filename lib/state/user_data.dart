@@ -278,7 +278,11 @@ class UserData extends ChangeNotifier {
     DateTime scheduledDate,
     ValueNotifier<int> experience,
   ) async {
-    user.experience[type]?.increment(scheduledDate, experience.value);
+    var incrementedExperience = user.experience[type]!;
+    user.experience[type] = incrementedExperience.increment(
+      scheduledDate,
+      experience,
+    );
     await userRepository.updateExperience(userId, user.experience);
     updateMetaLevel(
       Experience.getMetaXp(user.experience),
