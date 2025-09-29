@@ -1,4 +1,7 @@
+import 'package:flutter/cupertino.dart';
+
 import '../utils/enums.dart';
+import '../utils/functions.dart';
 
 class Experience {
   final int points;
@@ -31,11 +34,11 @@ class Experience {
   }
 
   /// Returns a new [Experience] after applying XP increment.
-  Experience increment(DateTime scheduledDate, int increment) {
-    final bool isPast = scheduledDate.isBefore(DateTime.now());
-    final int gainedXp = isPast ? (increment / 2).round() : increment;
+  Experience increment(DateTime scheduledDate, ValueNotifier<int> increment) {
+    final bool isToday = isSameDay(scheduledDate, DateTime.now());
+    increment.value = isToday ? increment.value : (increment.value / 2).round();
 
-    int newPoints = points + gainedXp;
+    int newPoints = points + increment.value;
     int newLevel = level;
 
     if (newPoints >= maxXp) {
