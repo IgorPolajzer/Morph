@@ -4,16 +4,11 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:morphe/components/buttons/arrow_button.dart';
 import 'package:morphe/exceptions/request_exception.dart';
-import 'package:morphe/repositories/impl/habit_repository.dart';
-import 'package:morphe/repositories/impl/task_repository.dart';
-import 'package:morphe/repositories/impl/user_repository.dart';
 import 'package:morphe/screens/onboarding/plan_overview_screen.dart';
 import 'package:morphe/screens/onboarding/register_screen.dart';
 import 'package:pair/pair.dart';
 import 'package:provider/provider.dart';
 import 'package:toastification/toastification.dart';
-import 'package:morphe/utils/plan_generator.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../components/text/screen_title.dart';
@@ -23,6 +18,7 @@ import '../../model/habit.dart';
 import '../../model/task.dart';
 import '../../state/user_data.dart';
 import '../../utils/enums.dart';
+import '../../utils/plan_generator.dart';
 
 class DescribeYourGoalsScreen extends StatefulWidget {
   static String id = '/describe_your_goals_screen';
@@ -268,15 +264,15 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
     Map<HabitType, String> prompts,
   ) async {
     // Show ad
-    //_showInterstitialAd();
+    _showInterstitialAd();
 
     // Generate plan
-    /*Pair<List<Task>, List<Habit>> plan = await generateAndParse(
+    Pair<List<Task>, List<Habit>> plan = await generateAndParse(
       prompts,
       userData.user.selectedHabits,
-    );*/
+    );
 
-    var plan = createHardcodedPlan();
+    //var plan = createHardcodedPlan();
 
     // Save plan
     WidgetsBinding.instance.addPostFrameCallback((_) {

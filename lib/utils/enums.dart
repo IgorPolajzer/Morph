@@ -1,9 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:morphe/utils/constants.dart';
+import 'package:hive/hive.dart';
 
+part 'enums.g.dart';
+
+@HiveType(typeId: 3)
 enum HabitType {
+  @HiveField(0)
   PHYSICAL,
+
+  @HiveField(1)
   GENERAL,
+
+  @HiveField(2)
   MENTAL;
 
   Color getColor() {
@@ -31,17 +40,25 @@ enum HabitType {
   }
 
   String format() {
-    return name[0] + name.substring(1, name.length).toLowerCase();
+    return name[0] + name.substring(1).toLowerCase();
   }
 }
 
+@HiveType(typeId: 4)
 enum Day {
+  @HiveField(0)
   MONDAY,
+  @HiveField(1)
   TUESDAY,
+  @HiveField(2)
   WEDNESDAY,
+  @HiveField(3)
   THURSDAY,
+  @HiveField(4)
   FRIDAY,
+  @HiveField(5)
   SATURDAY,
+  @HiveField(6)
   SUNDAY;
 
   static Day getDayFromString(String type) {
@@ -80,7 +97,7 @@ enum Day {
   DateTime toDateTime({DateTime? date}) {
     final fromDate = date ?? DateTime.now();
     final todayWeekday = fromDate.weekday; // 1 (Mon) - 7 (Sun)
-    final targetWeekday = index + 1; // Because MONDAY.index = 0 => 1 (Mon)
+    final targetWeekday = index + 1;
 
     int daysDifference = (targetWeekday - todayWeekday) % 7;
     if (daysDifference < 0) daysDifference += 7;
@@ -89,14 +106,19 @@ enum Day {
   }
 
   String format() {
-    return name[0] + name.substring(1, name.length).toLowerCase();
+    return name[0] + name.substring(1).toLowerCase();
   }
 }
 
+@HiveType(typeId: 5)
 enum Frequency {
+  @HiveField(0)
   DAILY,
+  @HiveField(1)
   WEEKLY,
+  @HiveField(2)
   BYWEEKLY,
+  @HiveField(3)
   MONTHLY;
 
   static Frequency getFrequencyFromString(String type) {
@@ -115,8 +137,18 @@ enum Frequency {
   }
 
   String format() {
-    return name[0] + name.substring(1, name.length).toLowerCase();
+    return name[0] + name.substring(1).toLowerCase();
   }
 }
 
-enum AppLoadState { notInitialized, loading, ready, error }
+@HiveType(typeId: 6)
+enum AppLoadState {
+  @HiveField(0)
+  notInitialized,
+  @HiveField(1)
+  loading,
+  @HiveField(2)
+  ready,
+  @HiveField(3)
+  error,
+}

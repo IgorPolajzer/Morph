@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../model/experience.dart';
-import '../../model/user.dart';
+import '../../model/user_model.dart';
 import '../../utils/enums.dart';
 
 class UserRepository {
