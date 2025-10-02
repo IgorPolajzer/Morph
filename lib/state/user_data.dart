@@ -2,13 +2,16 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:morphe/model/executable_task.dart';
 import 'package:morphe/model/task.dart';
-import 'package:morphe/model/user.dart';
+import 'package:morphe/model/user_model.dart';
 import 'package:morphe/repositories/impl/user_repository.dart';
 import 'package:morphe/repositories/impl/task_repository.dart';
 import 'package:morphe/repositories/impl/habit_repository.dart';
 
 import '../model/experience.dart';
 import '../model/habit.dart';
+import '../repositories/impl/habit_hive_repository.dart';
+import '../repositories/impl/task_hive_repository.dart';
+import '../repositories/impl/user_hive_repository.dart';
 import '../utils/enums.dart';
 import '../utils/functions.dart';
 
@@ -20,6 +23,16 @@ class UserData extends ChangeNotifier {
   final UserRepository userRepository = UserRepository();
   final TaskRepository taskRepository = TaskRepository();
   final HabitRepository habitRepository = HabitRepository();
+
+  final UserHiveRepository userHiveRepository;
+  final TaskHiveRepository taskHiveRepository;
+  final HabitHiveRepository habitHiveRepository;
+
+  UserData(
+    this.userHiveRepository,
+    this.taskHiveRepository,
+    this.habitHiveRepository,
+  );
 
   late UserModel _user;
   String? _userId;
@@ -426,7 +439,7 @@ class UserData extends ChangeNotifier {
   Future<void> patchUser() async {
     await userRepository.updateUser(userId, user.toMap());
     await taskRepository.overrideAll(userId, getTasksFromType(null)!);
-    await habitRepository.overrideAll(userId, getHabitsFromType(null)!);
+    await habitRepository.overrideAll(userId, getHabitsFromType(null));
 
     setExecutableTasks(DateTime.now());
     notifyListeners();
@@ -440,8 +453,9 @@ class UserData extends ChangeNotifier {
     notifyListeners();
 
     var res = await userRepository.fetchUser(userId);
+    var local = await userRepository.fetchUser(userId);
 
-    if (res != null && userId != null) {
+    if (local != null && res != null && userId != null) {
       _user = res;
       _userId = userId;
 
@@ -452,6 +466,7 @@ class UserData extends ChangeNotifier {
       setTasks(tasks);
     } else {
       _user = UserModel();
+      await userHiveRepository.saveUser(_user);
     }
 
     // Set tasks that are available for execution

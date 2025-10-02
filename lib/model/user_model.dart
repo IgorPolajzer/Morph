@@ -1,12 +1,31 @@
+import 'package:hive/hive.dart';
 import '../utils/enums.dart';
 import 'experience.dart';
 
-class UserModel {
-  late final String email;
-  late final String username;
-  late final List<String> completedTasks;
-  late final Map<HabitType, Experience> experience;
-  late final Map<HabitType, bool> selectedHabits;
+part 'user_model.g.dart';
+
+@HiveType(typeId: 0)
+class UserModel extends HiveObject {
+  @HiveField(0)
+  late String email;
+
+  @HiveField(1)
+  late String username;
+
+  @HiveField(2)
+  late List<String> completedTasks;
+
+  @HiveField(3)
+  late Map<HabitType, Experience> experience;
+
+  @HiveField(4)
+  late Map<HabitType, bool> selectedHabits;
+
+  @HiveField(5)
+  bool dirty = false;
+
+  @HiveField(6)
+  bool deleted = false;
 
   UserModel() {
     completedTasks = [];
@@ -25,6 +44,28 @@ class UserModel {
     this.experience,
     this.selectedHabits,
   );
+
+  /// Immutable update helper
+  UserModel copyWith({
+    String? email,
+    String? username,
+    List<String>? completedTasks,
+    Map<HabitType, Experience>? experience,
+    Map<HabitType, bool>? selectedHabits,
+    bool? dirty,
+    bool? deleted,
+  }) {
+    final newUser = UserModel.populate(
+      email ?? this.email,
+      username ?? this.username,
+      completedTasks ?? List.from(this.completedTasks),
+      experience ?? Map.from(this.experience),
+      selectedHabits ?? Map.from(this.selectedHabits),
+    );
+    newUser.dirty = dirty ?? this.dirty;
+    newUser.deleted = deleted ?? this.deleted;
+    return newUser;
+  }
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     // Deserialize experience map

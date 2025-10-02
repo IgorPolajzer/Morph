@@ -1,20 +1,48 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:hive/hive.dart';
 import 'package:uuid/uuid.dart';
 import '../utils/enums.dart';
 import '../utils/functions.dart';
 
-class Task {
+part 'task.g.dart';
+
+@HiveType(typeId: 1)
+class Task extends HiveObject {
+  @HiveField(0)
   final String id;
 
+  @HiveField(1)
   final String title;
+
+  @HiveField(2)
   final String subtitle;
+
+  @HiveField(3)
   final String description;
+
+  @HiveField(4)
   final Frequency scheduledFrequency;
+
+  @HiveField(5)
   final Day scheduledDay;
+
+  @HiveField(6)
   final DateTime startDateTime;
+
+  @HiveField(7)
   final DateTime endDateTime;
+
+  @HiveField(8)
   final HabitType type;
+
+  @HiveField(9)
   final bool notifications;
+
+  @HiveField(10)
+  bool dirty = false;
+
+  @HiveField(11)
+  bool deleted = false;
 
   Task({
     String? id,
