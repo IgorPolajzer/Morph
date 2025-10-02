@@ -1,16 +1,25 @@
+import 'package:hive/hive.dart';
 import 'package:flutter/cupertino.dart';
 
 import '../utils/enums.dart';
 import '../utils/functions.dart';
 
-class Experience {
+part 'experience.g.dart';
+
+@HiveType(typeId: 3)
+class Experience extends HiveObject {
+  @HiveField(0)
   final int points;
+
+  @HiveField(1)
   final int maxXp;
+
+  @HiveField(2)
   final int level;
 
   static const int defaultIncrement = 20;
 
-  const Experience({this.points = 0, this.maxXp = 100, this.level = 1});
+  Experience({this.points = 0, this.maxXp = 100, this.level = 1});
 
   /// Creates a copy of this [Experience] with optional field overrides.
   Experience copyWith({int? points, int? maxXp, int? level}) {

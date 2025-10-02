@@ -8,8 +8,8 @@ import 'package:morphe/repositories/impl/habit_repository.dart';
 import 'package:morphe/repositories/impl/task_repository.dart';
 import 'package:morphe/utils/constants.dart';
 import 'package:morphe/utils/enums.dart';
+import 'package:morphe/utils/toast_util.dart';
 import 'package:provider/provider.dart';
-import 'package:toastification/toastification.dart';
 
 import '../../model/habit.dart';
 import '../../model/task.dart';
@@ -270,14 +270,10 @@ class _AddTaskPopUpState extends State<AddTaskPopUp>
 
                           Navigator.of(context).pop();
                         } catch (e) {
-                          toastification.show(
-                            context: context,
-                            title: Text('Try again'),
-                            description: Text(
-                              'Something went wrong while creating a task, make sure no field is empty',
-                            ),
-                            type: ToastificationType.info,
-                            autoCloseDuration: Duration(seconds: 3),
+                          customInfoToast(
+                            context,
+                            'Try again',
+                            'Something went wrong while creating a task, make sure no field is empty',
                           );
                         }
                       },
@@ -384,14 +380,10 @@ class _AddTaskPopUpState extends State<AddTaskPopUp>
                           await habitRepository.save(userData.userId, newHabit);
                           Navigator.of(context).pop();
                         } catch (e) {
-                          toastification.show(
-                            context: context,
-                            title: Text('Try again'),
-                            description: Text(
-                              'Something went wrong while creating a habit, make sure no field is empty',
-                            ),
-                            type: ToastificationType.info,
-                            autoCloseDuration: Duration(seconds: 3),
+                          customInfoToast(
+                            context,
+                            'Try again',
+                            'Something went wrong while creating a habit, make sure no field is empty',
                           );
                         }
                       },

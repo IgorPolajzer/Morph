@@ -392,7 +392,7 @@ class UserData extends ChangeNotifier {
     return tasks[index];
   }
 
-  /// Creates user in the database.
+  /// Creates user and saves to local and remote database.
   Future<void> createUser() async {
     UserCredential? credential;
 
@@ -405,10 +405,18 @@ class UserData extends ChangeNotifier {
 
       _userId = credential.user?.uid;
 
+      var tasks = getTasksFromType(null);
+      var habits = getHabitsFromType(null);
+
+      // Save user locally.
+      await userHiveRepository.saveUser(_user);
+      await taskHiveRepository.saveAll(tasks);
+      await habitHiveRepository.saveAll(habits);
+
       // Create Firestore user document
-      await userRepository.saveUser(userId, user);
-      await taskRepository.saveAll(userId, getTasksFromType(null));
-      await habitRepository.saveAll(userId, getHabitsFromType(null));
+      await userRepository.saveUser(userId, _user);
+      await taskRepository.saveAll(userId, tasks);
+      await habitRepository.saveAll(userId, habits);
     } catch (e) {
       // Something went wrong, rollback
       print('Registration failed: $e');
@@ -466,7 +474,6 @@ class UserData extends ChangeNotifier {
       setTasks(tasks);
     } else {
       _user = UserModel();
-      await userHiveRepository.saveUser(_user);
     }
 
     // Set tasks that are available for execution

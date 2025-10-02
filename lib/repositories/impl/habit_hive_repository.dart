@@ -50,7 +50,9 @@ class HabitHiveRepository {
   }
 
   /// Save multiple habits at once
-  Future<void> saveAll(List<Habit> habits) async {
+  Future<void> saveAll(List<Habit>? habits) async {
+    if (habits == null || habits.isEmpty) return;
+
     final Map<String, Habit> map = {};
     for (var habit in habits) {
       habit.dirty = true;

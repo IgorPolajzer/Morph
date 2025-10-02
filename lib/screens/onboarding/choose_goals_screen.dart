@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:morphe/components/buttons/arrow_button.dart';
 import 'package:morphe/components/buttons/goal_radio_button.dart';
+import 'package:morphe/utils/toast_util.dart';
 import 'package:provider/provider.dart';
-import 'package:toastification/toastification.dart';
 
 import '../../components/text/screen_title.dart';
 import '../../state/user_data.dart';
@@ -83,12 +83,10 @@ class _ChooseGoalsScreenState extends State<ChooseGoalsScreen> {
           onPressed: () {
             // Minimum one goal.
             if (!general && !physical && !mental) {
-              toastification.show(
-                context: context,
-                title: Text('Invalid choice'),
-                description: Text('You have to choose at least one habit type'),
-                type: ToastificationType.info,
-                autoCloseDuration: Duration(seconds: 3),
+              customInfoToast(
+                context,
+                'Invalid choice',
+                'You have to choose at least one habit type.',
               );
             } else {
               userData.setSelectedHabits(physical, general, mental);

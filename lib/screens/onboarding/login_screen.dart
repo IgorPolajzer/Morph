@@ -6,10 +6,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:morphe/screens/core/your_day_screen.dart';
 import 'package:provider/provider.dart';
-import 'package:toastification/toastification.dart';
 
+import '../../state/connectivity_notifier.dart';
 import '../../state/user_data.dart';
 import '../../utils/constants.dart';
+import '../../utils/toast_util.dart';
 
 class LoginScreen extends StatefulWidget {
   static String id = '/login_screen';
@@ -40,6 +41,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final router = GoRouter.of(context);
+
+    final connectivity = Provider.of<ConnectivityNotifier>(
+      context,
+      listen: false,
+    );
     final userData = Provider.of<UserData>(context, listen: true);
 
     late OutlineInputBorder enabledOutlineInputBorder;
@@ -166,7 +173,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 title: "Login",
                 onPressed: () async {
-                  final router = GoRouter.of(context);
+                  if (!assertConnectivity(connectivity, context)) return;
 
                   try {
                     setState(() {
@@ -187,81 +194,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       router.push(YourDayScreen.id);
                     }
                   } on FirebaseAuthException catch (e) {
-                    print(e);
-
-                    switch (e.code) {
-                      case 'invalid-email':
-                        toastification.show(
-                          context: context,
-                          title: Text('Invalid Email'),
-                          description: Text(
-                            'Please enter a valid email address.',
-                          ),
-                          type: ToastificationType.error,
-                          autoCloseDuration: Duration(seconds: 3),
-                        );
-                        break;
-                      case 'user-disabled':
-                        toastification.show(
-                          context: context,
-                          title: Text('Account Disabled'),
-                          description: Text('This account has been disabled.'),
-                          type: ToastificationType.error,
-                          autoCloseDuration: Duration(seconds: 3),
-                        );
-                        break;
-                      case 'user-not-found':
-                        toastification.show(
-                          context: context,
-                          title: Text('User Not Found'),
-                          description: Text('No account found for this email.'),
-                          type: ToastificationType.error,
-                          autoCloseDuration: Duration(seconds: 3),
-                        );
-                        break;
-                      case 'wrong-password':
-                        toastification.show(
-                          context: context,
-                          title: Text('Wrong Password'),
-                          description: Text(
-                            'The password you entered is incorrect.',
-                          ),
-                          type: ToastificationType.error,
-                          autoCloseDuration: Duration(seconds: 3),
-                        );
-                        break;
-                      case 'too-many-requests':
-                        toastification.show(
-                          context: context,
-                          title: Text('Too Many Attempts'),
-                          description: Text('Please try again later.'),
-                          type: ToastificationType.error,
-                          autoCloseDuration: Duration(seconds: 3),
-                        );
-                        break;
-                      default:
-                        toastification.show(
-                          context: context,
-                          title: Text('Login Failed'),
-                          description: Text(
-                            'Something went wrong. Please try again.',
-                          ),
-                          type: ToastificationType.error,
-                          autoCloseDuration: Duration(seconds: 3),
-                        );
-                    }
+                    firebaseAuthToast(e, context);
                   } catch (e) {
-                    print(e);
-
-                    toastification.show(
-                      context: context,
-                      title: Text('Login Failed'),
-                      description: Text(
-                        'Something went wrong. Please try again.',
-                      ),
-                      type: ToastificationType.error,
-                      autoCloseDuration: Duration(seconds: 3),
-                    );
+                    somethingWentWrongToast(context);
                   } finally {
                     setState(() {
                       showSpinner = false;

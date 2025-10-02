@@ -8,7 +8,7 @@ part of 'enums.dart';
 
 class HabitTypeAdapter extends TypeAdapter<HabitType> {
   @override
-  final int typeId = 3;
+  final int typeId = 4;
 
   @override
   HabitType read(BinaryReader reader) {
@@ -52,7 +52,7 @@ class HabitTypeAdapter extends TypeAdapter<HabitType> {
 
 class DayAdapter extends TypeAdapter<Day> {
   @override
-  final int typeId = 4;
+  final int typeId = 5;
 
   @override
   Day read(BinaryReader reader) {
@@ -116,7 +116,7 @@ class DayAdapter extends TypeAdapter<Day> {
 
 class FrequencyAdapter extends TypeAdapter<Frequency> {
   @override
-  final int typeId = 5;
+  final int typeId = 6;
 
   @override
   Frequency read(BinaryReader reader) {

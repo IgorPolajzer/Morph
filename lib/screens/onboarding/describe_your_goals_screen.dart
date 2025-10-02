@@ -8,7 +8,6 @@ import 'package:morphe/screens/onboarding/plan_overview_screen.dart';
 import 'package:morphe/screens/onboarding/register_screen.dart';
 import 'package:pair/pair.dart';
 import 'package:provider/provider.dart';
-import 'package:toastification/toastification.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../components/text/screen_title.dart';
@@ -16,9 +15,11 @@ import '../../components/text_fields/describe_goal_text_field.dart';
 import '../../exceptions/generation_exception.dart';
 import '../../model/habit.dart';
 import '../../model/task.dart';
+import '../../state/connectivity_notifier.dart';
 import '../../state/user_data.dart';
 import '../../utils/enums.dart';
 import '../../utils/plan_generator.dart';
+import '../../utils/toast_util.dart';
 
 class DescribeYourGoalsScreen extends StatefulWidget {
   static String id = '/describe_your_goals_screen';
@@ -90,6 +91,12 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final router = GoRouter.of(context);
+
+    final connectivity = Provider.of<ConnectivityNotifier>(
+      context,
+      listen: false,
+    );
     final userData = Provider.of<UserData>(context, listen: true);
 
     var physical = userData.user.selectedHabits[HabitType.PHYSICAL] ?? false;
@@ -164,7 +171,7 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
           enabled: !showSpinner,
           title: "GENERATE",
           onPressed: () async {
-            final router = GoRouter.of(context);
+            if (!assertConnectivity(connectivity, context)) return;
 
             if (physical == physicalGoals.isNotEmpty &&
                 general == generalGoals.isNotEmpty &&
@@ -190,38 +197,21 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
                 await _handleUser(userData, prompts);
                 _toPlanOverview(userData.user.selectedHabits);
               } on GenerationException {
-                toastification.show(
-                  context: context,
-                  title: Text('Try again'),
-                  description: Text(
-                    'Prompts were insufficient. Tap the ? symbols for instructions',
-                  ),
-                  type: ToastificationType.error,
-                  autoCloseDuration: Duration(seconds: 3),
+                customErrorToast(
+                  context,
+                  'Try again',
+                  'Prompts were insufficient. Tap the ? symbols for instructions',
                 );
                 router.push(DescribeYourGoalsScreen.id);
               } on RequestException {
-                toastification.show(
-                  context: context,
-                  title: Text('Try again'),
-                  description: Text(
-                    'The prompt exceeded max token count. Try a shorter version.',
-                  ),
-                  type: ToastificationType.error,
-                  autoCloseDuration: Duration(seconds: 3),
+                customErrorToast(
+                  context,
+                  'Try again',
+                  'The prompt exceeded max token count. Try a shorter version.',
                 );
                 router.push(DescribeYourGoalsScreen.id);
               } catch (e) {
-                print(e);
-                toastification.show(
-                  context: context,
-                  title: Text('Try again'),
-                  description: Text(
-                    'Something went wrong during the registration',
-                  ),
-                  type: ToastificationType.error,
-                  autoCloseDuration: Duration(seconds: 3),
-                );
+                somethingWentWrongToast(context);
                 router.push(RegisterScreen.id);
               } finally {
                 physicalController.clear();
@@ -232,14 +222,10 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
                 });
               }
             } else {
-              toastification.show(
-                context: context,
-                title: Text('Empty input boxes'),
-                description: Text(
-                  'All the goals you chose have to have be described',
-                ),
-                type: ToastificationType.info,
-                autoCloseDuration: Duration(seconds: 3),
+              customInfoToast(
+                context,
+                "Empty input boxes",
+                "All the goals you chose have to have be described",
               );
             }
           },
@@ -264,15 +250,15 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
     Map<HabitType, String> prompts,
   ) async {
     // Show ad
-    _showInterstitialAd();
+    //_showInterstitialAd();
 
     // Generate plan
-    Pair<List<Task>, List<Habit>> plan = await generateAndParse(
+    /*    Pair<List<Task>, List<Habit>> plan = await generateAndParse(
       prompts,
       userData.user.selectedHabits,
-    );
+    );*/
 
-    //var plan = createHardcodedPlan();
+    var plan = createHardcodedPlan();
 
     // Save plan
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -290,64 +276,10 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
         userData.setExecutableTasks(DateTime.now());
       }
     } on FirebaseAuthException catch (e) {
-      switch (e.code) {
-        case 'email-already-in-use':
-          toastification.show(
-            context: context,
-            title: Text('Email In Use'),
-            description: Text('This email is already registered.'),
-            type: ToastificationType.error,
-            autoCloseDuration: Duration(seconds: 3),
-          );
-          break;
-        case 'invalid-email':
-          toastification.show(
-            context: context,
-            title: Text('Invalid Email'),
-            description: Text('Please enter a valid email address.'),
-            type: ToastificationType.error,
-            autoCloseDuration: Duration(seconds: 3),
-          );
-          break;
-        case 'operation-not-allowed':
-          toastification.show(
-            context: context,
-            title: Text('Sign-Up Disabled'),
-            description: Text('This sign-up method is not allowed.'),
-            type: ToastificationType.error,
-            autoCloseDuration: Duration(seconds: 3),
-          );
-          break;
-        case 'weak-password':
-          toastification.show(
-            context: context,
-            title: Text('Weak Password'),
-            description: Text('Password must be at least 6 characters.'),
-            type: ToastificationType.error,
-            autoCloseDuration: Duration(seconds: 3),
-          );
-          break;
-        default:
-          toastification.show(
-            context: context,
-            title: Text('Registration Failed'),
-            description: Text('Something went wrong during registration.'),
-            type: ToastificationType.error,
-            autoCloseDuration: Duration(seconds: 3),
-          );
-      }
-
-      // Re-throw if needed for external handling
+      firebaseAuthToast(e, context);
       rethrow;
     } catch (e) {
-      // Generic fallback
-      toastification.show(
-        context: context,
-        title: Text('Registration Failed'),
-        description: Text('Something went wrong during registration.'),
-        type: ToastificationType.error,
-        autoCloseDuration: Duration(seconds: 3),
-      );
+      somethingWentWrongToast(context);
       rethrow;
     }
   }

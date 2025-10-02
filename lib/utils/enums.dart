@@ -4,7 +4,7 @@ import 'package:hive/hive.dart';
 
 part 'enums.g.dart';
 
-@HiveType(typeId: 3)
+@HiveType(typeId: 4)
 enum HabitType {
   @HiveField(0)
   PHYSICAL,
@@ -44,7 +44,7 @@ enum HabitType {
   }
 }
 
-@HiveType(typeId: 4)
+@HiveType(typeId: 5)
 enum Day {
   @HiveField(0)
   MONDAY,
@@ -110,7 +110,7 @@ enum Day {
   }
 }
 
-@HiveType(typeId: 5)
+@HiveType(typeId: 6)
 enum Frequency {
   @HiveField(0)
   DAILY,

@@ -4,10 +4,11 @@ import 'package:go_router/go_router.dart';
 import 'package:morphe/components/buttons/gradient_button.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:provider/provider.dart';
-import 'package:toastification/toastification.dart';
 
+import '../../state/connectivity_notifier.dart';
 import '../../state/user_data.dart';
 import '../../utils/constants.dart';
+import '../../utils/toast_util.dart';
 import 'choose_goals_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -27,6 +28,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final router = GoRouter.of(context);
+
+    final connectivity = Provider.of<ConnectivityNotifier>(
+      context,
+      listen: false,
+    );
     final userData = Provider.of<UserData>(context, listen: false);
 
     late OutlineInputBorder enabledOutlineInputBorder;
@@ -172,16 +179,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 ),
                 title: "Register",
                 onPressed: () async {
-                  final router = GoRouter.of(context);
+                  if (!assertConnectivity(connectivity, context)) return;
 
                   if (!isValidEmail(email)) {
-                    toastification.show(
-                      context: context,
-                      title: Text("Email isn't valid."),
-                      description: Text('Enter a valid email.'),
-                      type: ToastificationType.error,
-                      autoCloseDuration: Duration(seconds: 3),
-                    );
+                    emailNotValidToast(context);
                   } else {
                     try {
                       setState(() {
@@ -203,15 +204,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                       if (emailQuery.docs.isNotEmpty ||
                           usernameQuery.docs.isNotEmpty) {
-                        toastification.show(
-                          context: context,
-                          title: Text('Email or username already in use'),
-                          description: Text(
-                            'Try a different email or username',
-                          ),
-                          type: ToastificationType.error,
-                          autoCloseDuration: Duration(seconds: 3),
-                        );
+                        emailOrUsernameAlreadyInUseToast(context);
                       } else {
                         userData.setCredentials(email, username, password);
                         router.push(ChooseGoalsScreen.id);
@@ -222,14 +215,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       });
                     } catch (e) {
                       print(e);
-
-                      toastification.show(
-                        context: context,
-                        title: Text('Try again'),
-                        description: Text('Something went wrong'),
-                        type: ToastificationType.error,
-                        autoCloseDuration: Duration(seconds: 3),
-                      );
+                      somethingWentWrongToast(context);
 
                       setState(() {
                         showSpinner = false;

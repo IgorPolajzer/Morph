@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:morphe/model/experience.dart';
+import 'package:morphe/state/connectivity_notifier.dart';
+import 'package:morphe/utils/enums.dart';
 import 'package:provider/provider.dart';
 
 import 'config/router_config.dart';
@@ -35,6 +38,13 @@ void main() async {
 
   // Initialize Hive and register adapters
   await Hive.initFlutter();
+  // Enums.
+  Hive.registerAdapter(HabitTypeAdapter());
+  Hive.registerAdapter(DayAdapter());
+  Hive.registerAdapter(FrequencyAdapter());
+  Hive.registerAdapter(ExperienceAdapter());
+
+  // Models.
   Hive.registerAdapter(UserModelAdapter());
   Hive.registerAdapter(TaskAdapter());
   Hive.registerAdapter(HabitAdapter());
@@ -54,7 +64,15 @@ void main() async {
   final user = FirebaseAuth.instance.currentUser;
   await userData.initialize(user?.uid);
 
-  runApp(MyApp(userData: userData));
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider<UserData>.value(value: userData),
+        ChangeNotifierProvider(create: (_) => ConnectivityNotifier()),
+      ],
+      child: SafeArea(child: MyApp(userData: userData)),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -64,25 +82,20 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<UserData>.value(
-      value: userData,
-      child: SafeArea(
-        child: Builder(
-          builder: (context) {
-            return MediaQuery(
-              data: MediaQuery.of(
-                context,
-              ).copyWith(textScaler: TextScaler.linear(1.0)),
-              child: MaterialApp.router(
-                routerConfig: router,
-                title: 'Morph',
-                theme: kLightTheme,
-                darkTheme: kDarkTheme,
-              ),
-            );
-          },
-        ),
-      ),
+    return Builder(
+      builder: (context) {
+        return MediaQuery(
+          data: MediaQuery.of(
+            context,
+          ).copyWith(textScaler: TextScaler.linear(1.0)),
+          child: MaterialApp.router(
+            routerConfig: router,
+            title: 'Morph',
+            theme: kLightTheme,
+            darkTheme: kDarkTheme,
+          ),
+        );
+      },
     );
   }
 }
