@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_popup_card/flutter_popup_card.dart';
 import 'package:morphe/components/tiles/task_tile.dart';
 import 'package:provider/provider.dart';
-import 'package:toastification/toastification.dart';
 
 import '../../model/executable_task.dart';
 import '../../model/task.dart';
 import '../../state/user_data.dart';
+import '../../utils/toast_util.dart';
 import '../pop_ups/show_more_popup.dart';
 
 class DailyTasksList extends StatefulWidget {
@@ -74,16 +74,10 @@ class _DailyTasksListState extends State<DailyTasksList> {
                                 widget.scheduledDay,
                                 experience,
                               );
-                              toastification.show(
-                                context: context,
-                                title: Text(
-                                  '${widget.executableTasks[index].task.type.format()} task completed!',
-                                ),
-                                description: Text(
-                                  '${experience.value}+ ${widget.executableTasks[index].task.type.format()} xp',
-                                ),
-                                type: ToastificationType.success,
-                                autoCloseDuration: Duration(seconds: 3),
+                              customSuccessToast(
+                                context,
+                                '${widget.executableTasks[index].task.type.format()} task completed!',
+                                '${experience.value}+ ${widget.executableTasks[index].task.type.format()} xp',
                               );
                             });
                             Navigator.pop(context);

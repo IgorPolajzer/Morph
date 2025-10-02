@@ -54,7 +54,9 @@ class TaskHiveRepository {
   }
 
   /// Save multiple tasks at once
-  Future<void> saveAll(List<Task> tasks) async {
+  Future<void> saveAll(List<Task>? tasks) async {
+    if (tasks == null || tasks.isEmpty) return;
+
     final Map<String, Task> itemsMap = {};
     for (var task in tasks) {
       task.dirty = true;

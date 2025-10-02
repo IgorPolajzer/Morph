@@ -7,11 +7,11 @@ import 'package:morphe/components/text_fields/add_property_field.dart';
 import 'package:morphe/repositories/impl/task_repository.dart';
 import 'package:morphe/utils/constants.dart';
 import 'package:provider/provider.dart';
-import 'package:toastification/toastification.dart';
 
 import '../../model/task.dart';
 import '../../state/user_data.dart';
 import '../../utils/functions.dart';
+import '../../utils/toast_util.dart';
 import '../menus/frequency_picker.dart';
 import '../menus/time_picker.dart';
 
@@ -220,13 +220,7 @@ class _EditTaskPopUpState extends State<EditTaskPopUp>
 
                       Navigator.of(context).pop();
                     } catch (e) {
-                      toastification.show(
-                        context: context,
-                        title: Text('Try again'),
-                        description: Text('Something went wrong'),
-                        type: ToastificationType.error,
-                        autoCloseDuration: Duration(seconds: 3),
-                      );
+                      somethingWentWrongToast(context);
                     }
                   },
                 ),

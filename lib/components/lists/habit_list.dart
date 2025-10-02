@@ -26,8 +26,9 @@ class _HabitListState extends State<HabitList> {
 
   @override
   Widget build(BuildContext context) {
-    final userData = Provider.of<UserData>(context, listen: true);
     final router = GoRouter.of(context);
+
+    final userData = Provider.of<UserData>(context, listen: true);
     var habits = userData.getHabitsFromType(widget.type);
 
     return ListView.builder(
