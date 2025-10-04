@@ -24,15 +24,15 @@ class UserData extends ChangeNotifier {
   final TaskRepository taskRepository = TaskRepository();
   final HabitRepository habitRepository = HabitRepository();
 
-  final UserHiveRepository userHiveRepository;
+  /*final UserHiveRepository userHiveRepository;
   final TaskHiveRepository taskHiveRepository;
   final HabitHiveRepository habitHiveRepository;
 
-  UserData(
-    this.userHiveRepository,
-    this.taskHiveRepository,
-    this.habitHiveRepository,
-  );
+  UserData({
+    required this.userHiveRepository,
+    required this.taskHiveRepository,
+    required this.habitHiveRepository,
+  });*/
 
   late UserModel _user;
   String? _userId;
@@ -393,7 +393,7 @@ class UserData extends ChangeNotifier {
   }
 
   /// Creates user and saves to local and remote database.
-  Future<void> createUser() async {
+  Future<void> createUser(List<Task> tasks, List<Habit> habits) async {
     UserCredential? credential;
 
     try {
@@ -403,22 +403,21 @@ class UserData extends ChangeNotifier {
         password: password,
       );
 
+      if (credential.user?.uid == null) throw Exception('User ID is null');
+
       _userId = credential.user?.uid;
 
-      var tasks = getTasksFromType(null);
-      var habits = getHabitsFromType(null);
-
-      // Save user locally.
-      await userHiveRepository.saveUser(_user);
+      // Create user locally.
+      /* await userHiveRepository.saveUser(_user);
       await taskHiveRepository.saveAll(tasks);
-      await habitHiveRepository.saveAll(habits);
+      await habitHiveRepository.saveAll(habits);*/
 
-      // Create Firestore user document
+      // Create Firestore user document.
       await userRepository.saveUser(userId, _user);
       await taskRepository.saveAll(userId, tasks);
       await habitRepository.saveAll(userId, habits);
     } catch (e) {
-      // Something went wrong, rollback
+      // Something went wrong, rollback.
       print('Registration failed: $e');
 
       // Rollback Auth user if it was created
@@ -460,11 +459,11 @@ class UserData extends ChangeNotifier {
     _loading = true;
     notifyListeners();
 
-    var res = await userRepository.fetchUser(userId);
+    var firebase = await userRepository.fetchUser(userId);
     var local = await userRepository.fetchUser(userId);
 
-    if (local != null && res != null && userId != null) {
-      _user = res;
+    if (local != null && firebase != null && userId != null) {
+      _user = firebase;
       _userId = userId;
 
       var habits = await habitRepository.fetchAll(userId);

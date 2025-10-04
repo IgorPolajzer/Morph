@@ -20,22 +20,15 @@ class UserHiveRepository {
   }
 
   /// Update specific fields using copyWith
-  Future<void> updateUser(
-    String userId, {
-    String? email,
-    String? username,
-    Map<HabitType, Experience>? experience,
-    Map<HabitType, bool>? selectedHabits,
-    List<String>? completedTasks,
-  }) async {
+  Future<void> updateUser(String userId, Map<String, dynamic> updatedFields) async {
     final user = userBox.get(userId);
     if (user != null) {
       final updatedUser = user.copyWith(
-        email: email,
-        username: username,
-        experience: experience,
-        selectedHabits: selectedHabits,
-        completedTasks: completedTasks,
+        email: updatedFields['email'] ?? user.email,
+        username: updatedFields['username'] ?? user.username,
+        experience: updatedFields['experience'] ?? user.experience,
+        selectedHabits: updatedFields['selectedHabits'] ?? user.selectedHabits,
+        completedTasks: updatedFields['completedTasks'] ?? user.completedTasks,
         dirty: true,
       );
       await userBox.put(userId, updatedUser);
