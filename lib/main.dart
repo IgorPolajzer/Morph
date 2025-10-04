@@ -5,6 +5,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:morphe/model/experience.dart';
+import 'package:morphe/services/notification_service.dart';
 import 'package:morphe/state/connectivity_notifier.dart';
 import 'package:morphe/utils/enums.dart';
 import 'package:provider/provider.dart';
@@ -23,6 +24,8 @@ void main() async {
   await dotenv.load(fileName: ".env");
   WidgetsFlutterBinding.ensureInitialized();
 
+  NotificationService().initialize();
+
   // Initialize Mobile Ads
   MobileAds.instance.initialize();
   RequestConfiguration requestConfiguration = RequestConfiguration(
@@ -38,6 +41,7 @@ void main() async {
 
   // Initialize Hive and register adapters
   await Hive.initFlutter();
+
   // Enums.
   Hive.registerAdapter(HabitTypeAdapter());
   Hive.registerAdapter(DayAdapter());
@@ -50,19 +54,23 @@ void main() async {
   Hive.registerAdapter(HabitAdapter());
 
   // Open Hive boxes
-  final userBox = await Hive.openBox<UserModel>('users');
+  /*final userBox = await Hive.openBox<UserModel>('users');
   final habitBox = await Hive.openBox<Habit>('habits');
-  final taskBox = await Hive.openBox<Task>('tasks');
+  final taskBox = await Hive.openBox<Task>('tasks');*/
 
   // Initialize repositories
-  final userRepo = UserHiveRepository(userBox);
-  final taskRepo = TaskHiveRepository(taskBox);
-  final habitRepo = HabitHiveRepository(habitBox);
+  /*final userHiveRepo = UserHiveRepository(userBox);
+  final taskHiveRepo = TaskHiveRepository(taskBox);
+  final habitHiveRepo = HabitHiveRepository(habitBox);*/
 
   // Initialize UserData state
-  final userData = UserData(userRepo, taskRepo, habitRepo);
-  final user = FirebaseAuth.instance.currentUser;
-  await userData.initialize(user?.uid);
+  final userData = UserData(
+    //userHiveRepository: userHiveRepo,
+    //taskHiveRepository: taskHiveRepo,
+    //habitHiveRepository: habitHiveRepo,
+  );
+
+  await userData.initialize(FirebaseAuth.instance.currentUser?.uid);
 
   runApp(
     MultiProvider(

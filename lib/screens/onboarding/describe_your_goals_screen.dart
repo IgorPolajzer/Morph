@@ -194,7 +194,7 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
                   prompts[HabitType.MENTAL] = mentalGoals;
                 }
 
-                await _handleUser(userData, prompts);
+                await _registerUser(userData, prompts);
                 _toPlanOverview(userData.user.selectedHabits);
               } on GenerationException {
                 customErrorToast(
@@ -245,7 +245,7 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
     super.dispose();
   }
 
-  Future<void> _handleUser(
+  Future<void> _registerUser(
     UserData userData,
     Map<HabitType, String> prompts,
   ) async {
@@ -258,22 +258,13 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
       userData.user.selectedHabits,
     );*/
 
-    var plan = createHardcodedPlan();
-
-    // Save plan
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      userData.setTasks(plan.key);
-      userData.setHabits(plan.value);
-    });
+    var plan = _createHardcodedPlan();
 
     try {
       if (FirebaseAuth.instance.currentUser == null) {
-        // Create user and initialise in firebase if not logged in.
-
-        await userData.createUser();
+        await userData.createUser(plan.key, plan.value);
       } else {
-        await userData.patchUser(); // Line of excepiton
-        userData.setExecutableTasks(DateTime.now());
+        await userData.patchUser();
       }
     } on FirebaseAuthException catch (e) {
       firebaseAuthToast(e, context);
@@ -339,69 +330,69 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
       throw Exception("No habits chosen");
     }
   }
-}
 
-Pair<List<Task>, List<Habit>> createHardcodedPlan() {
-  // Habits
-  final habits = [
-    Habit(
-      title: 'Morning Run',
-      description: 'Run 3 km every morning to improve cardiovascular health.',
-      type: HabitType.PHYSICAL,
-      notifications: true,
-    ),
-    Habit(
-      title: 'Read Daily',
-      description: 'Read at least 30 minutes every day to expand knowledge.',
-      type: HabitType.GENERAL,
-      notifications: true,
-    ),
-    Habit(
-      title: 'Meditation',
-      description:
-          'Meditate for 15 minutes to reduce stress and improve focus.',
-      type: HabitType.MENTAL,
-      notifications: true,
-    ),
-  ];
+  Pair<List<Task>, List<Habit>> _createHardcodedPlan() {
+    // Habits
+    final habits = [
+      Habit(
+        title: 'Morning Run',
+        description: 'Run 3 km every morning to improve cardiovascular health.',
+        type: HabitType.PHYSICAL,
+        notifications: true,
+      ),
+      Habit(
+        title: 'Read Daily',
+        description: 'Read at least 30 minutes every day to expand knowledge.',
+        type: HabitType.GENERAL,
+        notifications: true,
+      ),
+      Habit(
+        title: 'Meditation',
+        description:
+            'Meditate for 15 minutes to reduce stress and improve focus.',
+        type: HabitType.MENTAL,
+        notifications: true,
+      ),
+    ];
 
-  // Tasks
-  final now = DateTime.now();
-  final tasks = [
-    Task(
-      title: 'Run 3 km',
-      subtitle: 'Morning exercise',
-      description: 'Go for a 3 km run in the morning to stay fit.',
-      scheduledFrequency: Frequency.DAILY,
-      scheduledDay: Day.MONDAY,
-      startDateTime: now,
-      endDateTime: now.add(const Duration(hours: 1)),
-      type: HabitType.PHYSICAL,
-      notifications: true,
-    ),
-    Task(
-      title: 'Read a Book',
-      subtitle: 'Daily reading',
-      description: 'Spend at least 30 minutes reading a book.',
-      scheduledFrequency: Frequency.DAILY,
-      scheduledDay: Day.MONDAY,
-      startDateTime: now,
-      endDateTime: now.add(const Duration(minutes: 30)),
-      type: HabitType.GENERAL,
-      notifications: true,
-    ),
-    Task(
-      title: 'Meditate',
-      subtitle: 'Mindfulness',
-      description: 'Meditate for 15 minutes to reduce stress.',
-      scheduledFrequency: Frequency.DAILY,
-      scheduledDay: Day.MONDAY,
-      startDateTime: now,
-      endDateTime: now.add(const Duration(minutes: 15)),
-      type: HabitType.MENTAL,
-      notifications: true,
-    ),
-  ];
+    // Tasks
+    final now = DateTime.now();
+    final tasks = [
+      Task(
+        title: 'Run 3 km',
+        subtitle: 'Morning exercise',
+        description: 'Go for a 3 km run in the morning to stay fit.',
+        scheduledFrequency: Frequency.DAILY,
+        scheduledDay: Day.MONDAY,
+        startDateTime: now,
+        endDateTime: now.add(const Duration(hours: 1)),
+        type: HabitType.PHYSICAL,
+        notifications: true,
+      ),
+      Task(
+        title: 'Read a Book',
+        subtitle: 'Daily reading',
+        description: 'Spend at least 30 minutes reading a book.',
+        scheduledFrequency: Frequency.DAILY,
+        scheduledDay: Day.MONDAY,
+        startDateTime: now,
+        endDateTime: now.add(const Duration(minutes: 30)),
+        type: HabitType.GENERAL,
+        notifications: true,
+      ),
+      Task(
+        title: 'Meditate',
+        subtitle: 'Mindfulness',
+        description: 'Meditate for 15 minutes to reduce stress.',
+        scheduledFrequency: Frequency.DAILY,
+        scheduledDay: Day.MONDAY,
+        startDateTime: now,
+        endDateTime: now.add(const Duration(minutes: 15)),
+        type: HabitType.MENTAL,
+        notifications: true,
+      ),
+    ];
 
-  return Pair(tasks, habits);
+    return Pair(tasks, habits);
+  }
 }

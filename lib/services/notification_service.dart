@@ -1,84 +1,61 @@
-/*
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:timezone/timezone.dart' as tz;
-
-import '../model/executable_task.dart';
 
 class NotificationService {
-  // Singleton pattern
-  static final NotificationService _instance = NotificationService._internal();
-  factory NotificationService() => _instance;
-  NotificationService._internal();
+  final notificationsPlugin = FlutterLocalNotificationsPlugin();
 
-  //handles: Creating, Displaying, Scheduling, Cancelling notifications
-  final FlutterLocalNotificationsPlugin _plugin =
-      FlutterLocalNotificationsPlugin();
+  bool _isInitialized = false;
 
-  // Prepare notifications for use when the app starts.
-  Future<void> init() async {
-    //Defines default icon for notifications.
+  bool get isInitialized => _isInitialized;
+
+  // initialize
+  Future<void> initialize() async {
+    if (_isInitialized) return;
+
+    // Android settings
     const androidSettings = AndroidInitializationSettings(
       '@mipmap/ic_launcher',
     );
 
-    // iOS/macOS permissions & settings.
-    const iosSettings = DarwinInitializationSettings();
+    // IOS settings
+    const iosSettings = DarwinInitializationSettings(
+      requestAlertPermission: true,
+      requestBadgePermission: true,
+      requestSoundPermission: true,
+    );
 
-    final initSettings = InitializationSettings(
+    const initSettings = InitializationSettings(
       android: androidSettings,
       iOS: iosSettings,
     );
-    await _plugin.initialize(initSettings);
 
-    // Optionally configure Firebase Messaging foreground handler
-    FirebaseMessaging.onMessage.listen((message) {
-      // Show local notification if app is open
-      _plugin.show(
-        message.hashCode,
-        message.notification?.title,
-        message.notification?.body,
-        const NotificationDetails(
-          android: AndroidNotificationDetails(
-            'fcm_channel',
-            'Push Notifications',
-          ),
-        ),
-      );
-    });
+    await notificationsPlugin.initialize(initSettings);
   }
 
-  Future<void> scheduleNotification(ExecutableTask task) async {
-    if (!task.notifications) return;
-
-    final scheduledTime = tz.TZDateTime.from(task.scheduledDateTime, tz.local);
-
-    await _plugin.zonedSchedule(
-      task.task.id.hashCode ^
-          task.scheduledDateTime.hashCode, // unique notification id
-      task.task.title,
-      task.task.description,
-      scheduledTime,
-      const NotificationDetails(
-        android: AndroidNotificationDetails(
-          'task_channel',
-          'Task Reminders',
-          importance: Importance.max,
-          priority: Priority.high,
-        ),
+  // Notification detail setup
+  NotificationDetails notificationDetails() {
+    return const NotificationDetails(
+      android: AndroidNotificationDetails(
+        'scheduled_task_channel', // channel id
+        'Scheduled Task Notifications', // channel name
+        channelDescription: 'Notifications for scheduled tasks',
+        importance: Importance.max,
+        priority: Priority.high,
       ),
-      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-      matchDateTimeComponents: DateTimeComponents.time, // Optional repeat daily
+      iOS: DarwinNotificationDetails(),
     );
   }
 
-  Future<void> cancelNotification(ExecutableTask task) async {
-    await _plugin.cancel(
-      task.task.id.hashCode ^
-          task.scheduledDateTime.hashCode, // unique notification id
+  // Show Notification
+  Future<void> showNotification({
+    int id = 0,
+    String? title,
+    String? body,
+  }) async {
+    await notificationsPlugin.show(
+      id,
+      title,
+      body,
+      const NotificationDetails(),
     );
   }
-
-  Future<void> cancelAll() async => _plugin.cancelAll();
 }
-*/
