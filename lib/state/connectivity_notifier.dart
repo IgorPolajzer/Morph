@@ -1,9 +1,8 @@
 import 'dart:async';
-import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 
 class ConnectivityNotifier extends ChangeNotifier {
-  final Connectivity _connectivity = Connectivity();
+  /*final Connectivity _connectivity = Connectivity();
   List<ConnectivityResult> _connectionStatus = [ConnectivityResult.none];
   late final StreamSubscription<List<ConnectivityResult>> _subscription;
 
@@ -34,5 +33,5 @@ class ConnectivityNotifier extends ChangeNotifier {
   void dispose() {
     _subscription.cancel();
     super.dispose();
-  }
+  }*/
 }
