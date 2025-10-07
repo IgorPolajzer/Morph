@@ -21,7 +21,6 @@ import 'state/user_data.dart';
 import 'utils/constants.dart';
 
 void main() async {
-  await dotenv.load(fileName: ".env");
   WidgetsFlutterBinding.ensureInitialized();
 
   NotificationService().initialize();
@@ -32,6 +31,7 @@ void main() async {
     testDeviceIds: [
       'd68e3860-8865-46f9-8339-8ca0d3b248e0',
       '5da57a97-f5d7-4da7-be5c-23f2b71bd3bd',
+      '539d28f1-d59f-4e7f-a54e-16227139c841',
     ],
   );
   MobileAds.instance.updateRequestConfiguration(requestConfiguration);

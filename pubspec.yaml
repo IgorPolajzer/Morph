@@ -40,8 +40,8 @@ dependencies:
   hive_ce_flutter: ^2.3.2
   hive: ^2.2.3
   hive_flutter: ^1.1.0
-  connectivity_plus: ^7.0.0
-  flutter_timezone: ^5.0.0
+  #connectivity_plus: ^7.0.0
+  #flutter_timezone: ^5.0.0
 
 dev_dependencies:
   build_runner: ^2.5.4
@@ -60,11 +60,6 @@ flutter:
         - asset: assets/fonts/Josefin_Sans/static/JosefinSans-Medium.ttf
         - asset: assets/fonts/Josefin_Sans/static/JosefinSans-MediumItalic.ttf
           style: italic
-
-    - family: Poppins
-      fonts:
-        - asset: assets/fonts/Poppins/Poppins-Medium.ttf
-        - asset: assets/fonts/Poppins/Poppins-MediumItalic.ttf
 
   assets:
     - assets/images/

@@ -250,15 +250,12 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
     Map<HabitType, String> prompts,
   ) async {
     // Show ad
-    //_showInterstitialAd();
+    _showInterstitialAd();
 
     // Generate plan
-    /*    Pair<List<Task>, List<Habit>> plan = await generateAndParse(
-      prompts,
-      userData.user.selectedHabits,
-    );*/
+    var plan = await generateAndParse(prompts, userData.user.selectedHabits);
 
-    var plan = _createHardcodedPlan();
+    //var plan = _createHardcodedPlan();
 
     try {
       if (FirebaseAuth.instance.currentUser == null) {

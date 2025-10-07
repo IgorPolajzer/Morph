@@ -8,7 +8,7 @@ bool assertConnectivity(
   ConnectivityNotifier connectivity,
   BuildContext? context,
 ) {
-  if (!connectivity.isConnected) {
+  /*  if (!connectivity.isConnected) {
     // Show a message to the user
     toastification.show(
       context: context,
@@ -18,7 +18,7 @@ bool assertConnectivity(
       autoCloseDuration: Duration(seconds: 3),
     );
     return false;
-  }
+  }*/
   return true;
 }
 
