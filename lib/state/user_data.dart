@@ -6,6 +6,7 @@ import 'package:morphe/model/user_model.dart';
 import 'package:morphe/repositories/impl/user_repository.dart';
 import 'package:morphe/repositories/impl/task_repository.dart';
 import 'package:morphe/repositories/impl/habit_repository.dart';
+import 'package:morphe/services/notification_service.dart';
 
 import '../model/experience.dart';
 import '../model/habit.dart';
@@ -339,11 +340,20 @@ class UserData extends ChangeNotifier {
     for (Task task in tasks) {
       addTask(task);
     }
+
+    // Schedule notifications for all tasks
+    for (final type in HabitType.values) {
+      for (final task in (_tasks[type] ?? [])) {
+        NotificationService().scheduleTask(task);
+      }
+    }
   }
 
   /// Ads task to [_tasks].
   void addTask(Task task) {
     _tasks[task.type]?.add(task);
+    // Schedule notification for this task
+    NotificationService().scheduleTask(task);
     notifyListeners();
   }
 
@@ -351,6 +361,9 @@ class UserData extends ChangeNotifier {
   void deleteTask(Task newTask) {
     final tasks = _tasks[newTask.type];
     if (tasks == null) return;
+
+    // Cancel scheduled notification
+    NotificationService().cancelTaskNotification(newTask);
 
     tasks.removeWhere((taskEntry) => newTask.id == taskEntry.id);
     notifyListeners();
@@ -374,6 +387,9 @@ class UserData extends ChangeNotifier {
 
     final index = tasks.indexWhere((task) => task.id == taskId);
     if (index != -1) {
+      // Cancel existing schedule for this task id
+      NotificationService().cancelTaskNotification(tasks[index]);
+
       var task = tasks[index].copyWith(
         title: title,
         subtitle: subtitle,
@@ -386,6 +402,10 @@ class UserData extends ChangeNotifier {
       );
 
       tasks[index] = task;
+
+      // Schedule updated task
+      setExecutableTasks(DateTime.now());
+      NotificationService().scheduleTask(task);
     }
 
     notifyListeners();
@@ -407,6 +427,9 @@ class UserData extends ChangeNotifier {
 
       _userId = credential.user?.uid;
 
+      setTasks(tasks);
+      setHabits(habits);
+
       // Create user locally.
       /* await userHiveRepository.saveUser(_user);
       await taskHiveRepository.saveAll(tasks);
@@ -414,8 +437,8 @@ class UserData extends ChangeNotifier {
 
       // Create Firestore user document.
       await userRepository.saveUser(userId, _user);
-      await taskRepository.saveAll(userId, tasks);
-      await habitRepository.saveAll(userId, habits);
+      await taskRepository.saveAll(userId, getTasksFromType(null));
+      await habitRepository.saveAll(userId, getHabitsFromType(null));
     } catch (e) {
       // Something went wrong, rollback.
       print('Registration failed: $e');
