@@ -8,6 +8,7 @@ import 'package:morphe/model/experience.dart';
 import 'package:morphe/services/notification_service.dart';
 import 'package:morphe/state/connectivity_notifier.dart';
 import 'package:morphe/utils/enums.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 import 'config/router_config.dart';
@@ -23,7 +24,13 @@ import 'utils/constants.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  NotificationService().initialize();
+  var status = await Permission.notification.status;
+
+  if (!status.isGranted) {
+    status = await Permission.notification.request();
+  }
+
+  await NotificationService().initialize();
 
   // Initialize Mobile Ads
   MobileAds.instance.initialize();

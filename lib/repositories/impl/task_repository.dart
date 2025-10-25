@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../model/task.dart';
+import '../../services/notification_service.dart';
 import '../firestore_repository.dart';
 
 class TaskRepository implements FirestoreRepository<Task> {
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  final NotificationService notificationService = NotificationService();
 
   @override
   Future<void> save(String userId, Task item) async {
@@ -15,7 +17,7 @@ class TaskRepository implements FirestoreRepository<Task> {
           .collection('tasks')
           .doc(item.id)
           .set(item.toMap());
-      // set because we provide our own id.
+      await notificationService.scheduleTask(item);
     } catch (e) {
       print('Error saving task: $e');
       rethrow;
@@ -25,6 +27,18 @@ class TaskRepository implements FirestoreRepository<Task> {
   @override
   Future<void> delete(String userId, String itemId) async {
     try {
+      // Fetch the task before deleting to cancel notification
+      final taskDoc = await firestore
+          .collection('users')
+          .doc(userId)
+          .collection('tasks')
+          .doc(itemId)
+          .get();
+      if (taskDoc.exists) {
+        final task = Task.fromJson(taskDoc.data()!);
+        await notificationService.cancelTaskNotification(task);
+      }
+
       await firestore
           .collection('users')
           .doc(userId)
@@ -50,23 +64,32 @@ class TaskRepository implements FirestoreRepository<Task> {
           .collection('tasks')
           .doc(itemId)
           .set(updatedFields, SetOptions(merge: true));
-      // Updates object even if not all fields are provided (doesn't override unprovided fields).
-    } catch (e) {
+
+      final updatedDoc = await firestore
+          .collection('users')
+          .doc(userId)
+          .collection('tasks')
+          .doc(itemId)
+          .get();
+      if (updatedDoc.exists) {
+        final task = Task.fromJson(updatedDoc.data()!);
+        await notificationService.scheduleTask(task);
+      }
+    }
+    catch (e) {
       print('Error updating task: $e');
       rethrow;
     }
-    ;
   }
 
   @override
   Future<List<Task>> fetchAll(String userId) async {
     try {
-      final snapshot =
-          await firestore
-              .collection('users')
-              .doc(userId)
-              .collection('tasks')
-              .get();
+      final snapshot = await firestore
+          .collection('users')
+          .doc(userId)
+          .collection('tasks')
+          .get();
 
       return snapshot.docs.map((task) => Task.fromJson(task.data())).toList();
     } catch (e) {
@@ -81,19 +104,18 @@ class TaskRepository implements FirestoreRepository<Task> {
     if (items == null || items.isEmpty) return;
 
     final batch = firestore.batch();
-    final tasksRef = firestore
-        .collection('users')
-        .doc(userId)
-        .collection('tasks');
+    final tasksRef = firestore.collection('users').doc(userId).collection('tasks');
 
     for (final task in items) {
       final docRef = tasksRef.doc(task.id);
       batch.set(docRef, task.toMap());
+      await notificationService.scheduleTask(task);
     }
 
     try {
       await batch.commit();
-    } catch (e) {
+    }
+    catch (e) {
       print('Error batch saving tasks: $e');
       rethrow;
     }
@@ -101,15 +123,15 @@ class TaskRepository implements FirestoreRepository<Task> {
 
   @override
   Future<void> overrideAll(String userId, List<Task> newItems) async {
-    final tasksCollection = firestore
-        .collection('users')
-        .doc(userId)
-        .collection('tasks');
+    final tasksCollection =
+        firestore.collection('users').doc(userId).collection('tasks');
 
     try {
       final snapshot = await tasksCollection.get();
       final batch = firestore.batch();
       for (var doc in snapshot.docs) {
+        final task = Task.fromJson(doc.data());
+        await notificationService.cancelTaskNotification(task);
         batch.delete(doc.reference);
       }
       await batch.commit();
@@ -118,9 +140,11 @@ class TaskRepository implements FirestoreRepository<Task> {
       for (var task in newItems) {
         final docRef = tasksCollection.doc(task.id);
         batchSave.set(docRef, task.toMap());
+        await notificationService.scheduleTask(task);
       }
       await batchSave.commit();
-    } catch (e) {
+    }
+    catch (e) {
       print('Error overriding all tasks: $e');
       rethrow;
     }

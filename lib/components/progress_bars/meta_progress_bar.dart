@@ -28,57 +28,64 @@ class MetaProgressBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final size = constraints.maxWidth;
+        final radius = size / 2;
+        final strokeWidth = 32.0;
+        final circleSize = 62.0;
 
-    return Stack(
-      alignment: AlignmentDirectional.center,
-      clipBehavior: Clip.none,
-      children: [
-        DashedCircularProgressBar.aspectRatio(
-          aspectRatio: 1, // width ÷ height
-          valueNotifier: valueNotifier,
-          progress: xp,
-          maxProgress: maxXp,
-          startAngle: 90,
-          corners: StrokeCap.round,
-          foregroundColor: kMetaLevelColor,
-          backgroundColor: Theme.of(
-            context,
-          ).secondaryHeaderColor.withAlpha(100),
-          foregroundStrokeWidth: 32,
-          backgroundStrokeWidth: 32,
-          animation: true,
-          child: Padding(
-            padding: const EdgeInsets.all(50.0),
-            child: Image.asset("assets/images/tree/${getTreeAsset()}"),
-          ),
-        ),
-        Positioned(
-          left: screenWidth / 2.25,
-          child: Padding(
-            padding: const EdgeInsets.only(left: 20.0),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Theme.of(context).cardColor,
-                shape: BoxShape.circle,
-                border: Border.all(color: kMetaLevelColor, width: 2.0),
+        final centerRadius = radius - strokeWidth / 2;
+
+        return Stack(
+          alignment: AlignmentDirectional.center,
+          clipBehavior: Clip.none,
+          children: [
+            DashedCircularProgressBar.aspectRatio(
+              aspectRatio: 1,
+              valueNotifier: valueNotifier,
+              progress: xp,
+              maxProgress: maxXp,
+              startAngle: 90,
+              corners: StrokeCap.round,
+              foregroundColor: kMetaLevelColor,
+              backgroundColor: Theme.of(
+                context,
+              ).secondaryHeaderColor.withAlpha(100),
+              foregroundStrokeWidth: strokeWidth,
+              backgroundStrokeWidth: strokeWidth,
+              animation: true,
+              child: Padding(
+                padding: const EdgeInsets.all(50.0),
+                child: Image.asset("assets/images/tree/${getTreeAsset()}"),
               ),
-              height: 62,
-              width: 62,
-              child: Center(
-                child: Text(
-                  "$level lvl",
-                  style: kPlaceHolderTextStyle.copyWith(
-                    color: Theme.of(context).primaryColor,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
+            ),
+            Positioned(
+              left: radius + centerRadius - circleSize / 2,
+              top: radius - circleSize / 2,
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Theme.of(context).cardColor,
+                  shape: BoxShape.circle,
+                  border: Border.all(color: kMetaLevelColor, width: 2.0),
+                ),
+                height: circleSize,
+                width: circleSize,
+                child: Center(
+                  child: Text(
+                    "$level lvl",
+                    style: kPlaceHolderTextStyle.copyWith(
+                      color: Theme.of(context).primaryColor,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-        ),
-      ],
+          ],
+        );
+      },
     );
   }
 }

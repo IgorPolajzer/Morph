@@ -144,7 +144,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       email = value;
                     },
                     decoration: kTextFieldDecoration.copyWith(
-                      hintText: 'Create your email',
+                      hintText: 'Insert your email',
                       hintStyle: kInputPlaceHolderText.copyWith(
                         color: Theme.of(context).secondaryHeaderColor,
                       ),

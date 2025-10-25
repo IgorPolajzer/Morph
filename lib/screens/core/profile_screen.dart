@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import 'package:morphe/components/progress_bars/meta_progress_bar.dart';
 import 'package:morphe/model/experience.dart';
 import 'package:morphe/screens/edit/change_goals_screen.dart';
+import 'package:morphe/services/notification_service.dart';
 import 'package:provider/provider.dart';
 
 import '../../components/progress_bars/habit_progress_bar.dart';
@@ -124,6 +125,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   padding: EdgeInsets.only(left: 10),
                   child: TextButton(
                     onPressed: () {
+                      NotificationService().showNotification(
+                        title: "Notification",
+                        body: "test",
+                      );
+
                       context.push(ChangeGoalsScreen.id).then((_) {
                         // This callback runs when the screen is popped
                         setState(() {

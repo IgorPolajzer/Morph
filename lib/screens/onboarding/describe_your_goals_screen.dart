@@ -261,6 +261,8 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
       if (FirebaseAuth.instance.currentUser == null) {
         await userData.createUser(plan.key, plan.value);
       } else {
+        userData.setTasks(plan.key);
+        userData.setHabits(plan.value);
         await userData.patchUser();
       }
     } on FirebaseAuthException catch (e) {
