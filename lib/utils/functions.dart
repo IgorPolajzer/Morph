@@ -46,3 +46,8 @@ DateTime normalizeTime(DateTime input) {
     input.second,
   );
 }
+
+int taskIdToNotificationId(String taskId) {
+  // Create a positive, bounded int ID
+  return taskId.hashCode & 0x7fffffff;
+}
