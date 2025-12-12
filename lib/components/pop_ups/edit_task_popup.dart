@@ -7,7 +7,7 @@ import 'package:morphe/components/text_fields/add_property_field.dart';
 import 'package:morphe/repositories/impl/task_repository.dart';
 import 'package:morphe/utils/constants.dart';
 import 'package:provider/provider.dart';
-
+import 'package:morphe/services/notification_service.dart';
 import '../../model/task.dart';
 import '../../state/user_data.dart';
 import '../../utils/functions.dart';
@@ -16,9 +16,9 @@ import '../menus/frequency_picker.dart';
 import '../menus/time_picker.dart';
 
 class EditTaskPopUp extends StatefulWidget {
-  Task task;
+  final Task task;
 
-  EditTaskPopUp({required this.task, super.key});
+  const EditTaskPopUp({required this.task, super.key});
 
   @override
   State<EditTaskPopUp> createState() => _EditTaskPopUpState();
@@ -69,7 +69,7 @@ class _EditTaskPopUpState extends State<EditTaskPopUp>
 
     _controller = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 400),
+      duration: const Duration(milliseconds: 400),
     );
 
     _offsetAnimation = Tween<Offset>(
@@ -82,13 +82,11 @@ class _EditTaskPopUpState extends State<EditTaskPopUp>
 
   @override
   Widget build(BuildContext context) {
-    final userData = Provider.of<UserData>(context, listen: true);
-
     return SlideTransition(
       position: _offsetAnimation,
       child: PopupCard(
         elevation: 8,
-        shape: RoundedRectangleBorder(
+        shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(25),
             topRight: Radius.circular(25),
@@ -148,7 +146,7 @@ class _EditTaskPopUpState extends State<EditTaskPopUp>
                             });
                           },
                         ),
-                        Text(
+                        const Text(
                           "*Day is irrelevant if frequency is daily",
                           style: kPlaceHolderTextStyle,
                         ),
@@ -199,6 +197,12 @@ class _EditTaskPopUpState extends State<EditTaskPopUp>
                   title: "Save changes",
                   onPressed: () async {
                     try {
+                      final userData = context.read<UserData>();
+                      final notificationService = NotificationService();
+
+                      // Cancel the old notification before updating the task
+                      await notificationService.cancelTaskNotification(widget.task);
+
                       var updatedTask = userData.updateTask(
                         title,
                         subtitle,
@@ -212,11 +216,15 @@ class _EditTaskPopUpState extends State<EditTaskPopUp>
                         widget.task.id,
                       );
 
-                      await taskRepository.update(
-                        userData.userId,
-                        widget.task.id,
-                        updatedTask!.toMap(),
-                      );
+                      if (updatedTask != null) {
+                        // Schedule a new notification for the updated task
+                        await notificationService.scheduleTaskNotification(updatedTask);
+                        await taskRepository.update(
+                          userData.userId,
+                          widget.task.id,
+                          updatedTask.toMap(),
+                        );
+                      }
 
                       Navigator.of(context).pop();
                     } catch (e) {

@@ -8,15 +8,13 @@ import 'package:morphe/repositories/impl/task_repository.dart';
 import 'package:morphe/repositories/impl/habit_repository.dart';
 import 'package:morphe/services/notification_service.dart';
 
+import '../utils/constants.dart';
 import '../model/experience.dart';
 import '../model/habit.dart';
 import '../utils/enums.dart';
 import '../utils/functions.dart';
 
 class UserData extends ChangeNotifier {
-  static final int TASK_RANGE =
-      7; // can complete tasks up to a maximum of 7 days old
-
   // Repositories
   final UserRepository userRepository = UserRepository();
   final TaskRepository taskRepository = TaskRepository();
@@ -145,7 +143,7 @@ class UserData extends ChangeNotifier {
     notifyListeners();
 
     // Tasks can be completed for TASK_RANGE number of days behind their scheduling.
-    var from = today.subtract(Duration(days: TASK_RANGE));
+    var from = today.subtract(const Duration(days: kTaskCompletionRangeDays));
 
     // Fetch users completed task history.
     final completedTasks = await userRepository.getCompletedTasks(userId);
@@ -173,7 +171,7 @@ class UserData extends ChangeNotifier {
         //executableTask.scheduleNotification();
       }
 
-      from = from.add(Duration(days: 1));
+      from = from.add(const Duration(days: 1));
     }
 
     _executableTasksLoaded = true;
@@ -349,9 +347,6 @@ class UserData extends ChangeNotifier {
   /// Ads task to [_tasks].
   void addTask(Task task) {
     _tasks[task.type]?.add(task);
-
-    // Schedule notification for this task
-    NotificationService().scheduleTaskNotification(task);
     setExecutableTasks(DateTime.now());
 
     notifyListeners();
@@ -361,9 +356,6 @@ class UserData extends ChangeNotifier {
   void deleteTask(Task newTask) {
     final tasks = _tasks[newTask.type];
     if (tasks == null) return;
-
-    // Cancel scheduled notification
-    NotificationService().cancelTaskNotification(newTask);
 
     tasks.removeWhere((taskEntry) => newTask.id == taskEntry.id);
     notifyListeners();
@@ -388,8 +380,6 @@ class UserData extends ChangeNotifier {
     final index = tasks.indexWhere((task) => task.id == taskId);
     if (index != -1) {
       // Cancel existing schedule for this task id
-      NotificationService().cancelTaskNotification(tasks[index]);
-
       var task = tasks[index].copyWith(
         title: title,
         subtitle: subtitle,
@@ -405,7 +395,6 @@ class UserData extends ChangeNotifier {
 
       // Schedule updated task
       setExecutableTasks(DateTime.now());
-      NotificationService().scheduleTaskNotification(task);
     }
 
     notifyListeners();
