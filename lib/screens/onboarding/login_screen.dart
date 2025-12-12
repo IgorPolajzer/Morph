@@ -69,6 +69,7 @@ class _LoginScreenState extends State<LoginScreen> {
       resizeToAvoidBottomInset: true,
       body: ModalProgressHUD(
         opacity: 1,
+        color: Theme.of(context).scaffoldBackgroundColor,
         inAsyncCall: showSpinner,
         child: Padding(
           padding: const EdgeInsets.all(20.0),

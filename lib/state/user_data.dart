@@ -149,11 +149,11 @@ class UserData extends ChangeNotifier {
 
     // Fetch users completed task history.
     final completedTasks = await userRepository.getCompletedTasks(userId);
+    _executableTasks = <ExecutableTask>[];
 
     // Executable tasks are tasks which are scheduled for TASK_RANGE number of days behind.
     while (today.difference(from).inDays >= 0) {
       List<Task> tasks = getTasksFromDate(from);
-      _executableTasks = <ExecutableTask>[];
 
       for (var task in tasks) {
         final scheduledDateTime = DateTime(from.year, from.month, from.day);
@@ -352,6 +352,7 @@ class UserData extends ChangeNotifier {
 
     // Schedule notification for this task
     NotificationService().scheduleTaskNotification(task);
+    setExecutableTasks(DateTime.now());
 
     notifyListeners();
   }

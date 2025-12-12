@@ -13,7 +13,7 @@ import '../../utils/constants.dart';
 class YourDayScreen extends StatefulWidget {
   static String id = '/your_day_screen';
 
-  YourDayScreen({super.key});
+  const YourDayScreen({super.key});
 
   @override
   State<YourDayScreen> createState() => _YourDayScreenState();
@@ -21,7 +21,9 @@ class YourDayScreen extends StatefulWidget {
 
 class _YourDayScreenState extends State<YourDayScreen> {
   final ValueNotifier<List<Task>> _scheduledTasks = ValueNotifier([]);
-  final ValueNotifier<List<ExecutableTask>> _executableTasks = ValueNotifier([]);
+  final ValueNotifier<List<ExecutableTask>> _executableTasks = ValueNotifier(
+    [],
+  );
   final ValueNotifier<List<Habit>> _habits = ValueNotifier([]);
 
   @override

@@ -107,6 +107,7 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
       appBar: ScreenTitle(title: "DESCRIBE YOUR GOALS"),
       body: ModalProgressHUD(
         opacity: 1,
+        color: Theme.of(context).scaffoldBackgroundColor,
         inAsyncCall: showSpinner,
         child: Column(
           children: [
