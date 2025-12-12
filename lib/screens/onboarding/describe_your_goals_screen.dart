@@ -106,6 +106,7 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
     return Scaffold(
       appBar: ScreenTitle(title: "DESCRIBE YOUR GOALS"),
       body: ModalProgressHUD(
+        opacity: 1,
         inAsyncCall: showSpinner,
         child: Column(
           children: [

@@ -9,7 +9,6 @@ import '../../model/habit.dart';
 import '../../model/task.dart';
 import '../../state/user_data.dart';
 import '../../utils/constants.dart';
-import '../../utils/enums.dart';
 
 class YourDayScreen extends StatefulWidget {
   static String id = '/your_day_screen';
@@ -21,9 +20,9 @@ class YourDayScreen extends StatefulWidget {
 }
 
 class _YourDayScreenState extends State<YourDayScreen> {
-  ValueNotifier<List<Task>> _scheduledTasks = ValueNotifier([]);
-  ValueNotifier<List<ExecutableTask>> _executableTasks = ValueNotifier([]);
-  ValueNotifier<List<Habit>> _habits = ValueNotifier([]);
+  final ValueNotifier<List<Task>> _scheduledTasks = ValueNotifier([]);
+  final ValueNotifier<List<ExecutableTask>> _executableTasks = ValueNotifier([]);
+  final ValueNotifier<List<Habit>> _habits = ValueNotifier([]);
 
   @override
   void didChangeDependencies() {

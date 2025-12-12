@@ -10,9 +10,6 @@ import 'package:morphe/services/notification_service.dart';
 
 import '../model/experience.dart';
 import '../model/habit.dart';
-import '../repositories/impl/habit_hive_repository.dart';
-import '../repositories/impl/task_hive_repository.dart';
-import '../repositories/impl/user_hive_repository.dart';
 import '../utils/enums.dart';
 import '../utils/functions.dart';
 
@@ -24,16 +21,6 @@ class UserData extends ChangeNotifier {
   final UserRepository userRepository = UserRepository();
   final TaskRepository taskRepository = TaskRepository();
   final HabitRepository habitRepository = HabitRepository();
-
-  /*final UserHiveRepository userHiveRepository;
-  final TaskHiveRepository taskHiveRepository;
-  final HabitHiveRepository habitHiveRepository;
-
-  UserData({
-    required this.userHiveRepository,
-    required this.taskHiveRepository,
-    required this.habitHiveRepository,
-  });*/
 
   late UserModel _user;
   String? _userId;
@@ -143,7 +130,7 @@ class UserData extends ChangeNotifier {
   List<ExecutableTask> getExecutableTasksFromDate(DateTime day) {
     var tasks = <ExecutableTask>[];
 
-    for (ExecutableTask task in _executableTasks) {
+    for (var task in _executableTasks) {
       if (isSameDay(task.scheduledDateTime, day)) {
         tasks.add(task);
       }
@@ -206,6 +193,16 @@ class UserData extends ChangeNotifier {
     }
 
     return taskTypes;
+  }
+
+  List<Task> getDailyTasks() {
+    var tasks = getTasksFromDate(DateTime.now());
+
+    for (var task in tasks) {
+      NotificationService().scheduleTaskNotification(task);
+    }
+
+    return tasks;
   }
 
   /// Gets all scheduled tasks on provided date from [_tasks].
@@ -344,7 +341,7 @@ class UserData extends ChangeNotifier {
     // Schedule notifications for all tasks
     for (final type in HabitType.values) {
       for (final task in (_tasks[type] ?? [])) {
-        NotificationService().scheduleTask(task);
+        NotificationService().scheduleTaskNotification(task);
       }
     }
   }
@@ -352,8 +349,10 @@ class UserData extends ChangeNotifier {
   /// Ads task to [_tasks].
   void addTask(Task task) {
     _tasks[task.type]?.add(task);
+
     // Schedule notification for this task
-    NotificationService().scheduleTask(task);
+    NotificationService().scheduleTaskNotification(task);
+
     notifyListeners();
   }
 
@@ -405,7 +404,7 @@ class UserData extends ChangeNotifier {
 
       // Schedule updated task
       setExecutableTasks(DateTime.now());
-      NotificationService().scheduleTask(task);
+      NotificationService().scheduleTaskNotification(task);
     }
 
     notifyListeners();

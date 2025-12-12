@@ -125,11 +125,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   padding: EdgeInsets.only(left: 10),
                   child: TextButton(
                     onPressed: () {
-                      NotificationService().showNotification(
-                        title: "Notification",
-                        body: "test",
-                      );
-
                       context.push(ChangeGoalsScreen.id).then((_) {
                         // This callback runs when the screen is popped
                         setState(() {

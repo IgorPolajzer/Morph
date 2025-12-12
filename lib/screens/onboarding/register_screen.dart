@@ -55,6 +55,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       body: ModalProgressHUD(
+        opacity: 1,
         inAsyncCall: showSpinner,
         child: Padding(
           padding: const EdgeInsets.all(20.0),
