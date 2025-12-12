@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+// App constants
+const int kTaskCompletionRangeDays = 7;
+
 // App themes
 var kLightTheme = ThemeData(
   fontFamily: 'Poppins',
