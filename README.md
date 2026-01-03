@@ -33,7 +33,7 @@ Morph generates personalized growth plans using AI, tracks progress, and visuali
 
 Morph was developed to explore the combination of AI personalization, structured task planning, and visual progress feedback. The design and technical choices are documented in the diploma thesis:  
 
-**Igor Polajzer, “Morph – AI-Powered Personal Growth App,” 2025**  
+[**Igor Polajzer, “Morph – AI-Powered Personal Growth App,” 2025**](https://dk.um.si/IzpisGradiva.php?id=94126&lang=slv)
 
 The thesis includes the rationale behind AI integration, behavioral design considerations, and architecture decisions.
 
