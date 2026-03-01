@@ -47,7 +47,7 @@ class _AddTaskPopUpState extends State<AddTaskPopUp>
   late String taskSubtitle;
   late String taskDescription;
   late Frequency taskScheduledFrequency;
-  late Day taskScheduledDay;
+  late DayType taskScheduledDay;
   late DateTime taskStartDateTime;
   late DateTime taskEndDateTime;
 

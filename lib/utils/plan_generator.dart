@@ -107,7 +107,9 @@ List<Task> parseTasks(List<dynamic> list) {
             scheduledFrequency: Frequency.getFrequencyFromString(
               taskMap['scheduledFrequency'] ?? '',
             ),
-            scheduledDay: Day.getDayFromString(taskMap['scheduledDay'] ?? ''),
+            scheduledDay: DayType.getDayFromString(
+              taskMap['scheduledDay'] ?? '',
+            ),
             startDateTime: DateTime.parse(taskMap['startDateTime']),
             endDateTime: DateTime.parse(taskMap['endDateTime']),
             type: HabitType.getTypeFromString(taskMap['type'] ?? ''),

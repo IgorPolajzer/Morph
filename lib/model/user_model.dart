@@ -1,30 +1,13 @@
-import 'package:hive/hive.dart';
 import '../utils/enums.dart';
 import 'experience.dart';
 
-part 'user_model.g.dart';
-
-@HiveType(typeId: 0)
-class UserModel extends HiveObject {
-  @HiveField(0)
+class UserModel {
   late String email;
-
-  @HiveField(1)
   late String username;
-
-  @HiveField(2)
   late List<String> completedTasks;
-
-  @HiveField(3)
   late Map<HabitType, Experience> experience;
-
-  @HiveField(4)
   late Map<HabitType, bool> selectedHabits;
-
-  @HiveField(5)
   bool dirty = false;
-
-  @HiveField(6)
   bool deleted = false;
 
   UserModel() {

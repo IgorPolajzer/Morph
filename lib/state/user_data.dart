@@ -168,7 +168,6 @@ class UserData extends ChangeNotifier {
         }
 
         _executableTasks.add(executableTask);
-        //executableTask.scheduleNotification();
       }
 
       from = from.add(const Duration(days: 1));
@@ -233,7 +232,7 @@ class UserData extends ChangeNotifier {
             case Frequency.WEEKLY:
               if (isAfterOrToday && isSameWeekday) allTasks.add(task);
               break;
-            case Frequency.BYWEEKLY:
+            case Frequency.BIWEEKLY:
               if (isAfterOrToday && isSameWeekday) {
                 if (diff >= 0 && diff % 14 == 0) {
                   allTasks.add(task);
@@ -301,12 +300,12 @@ class UserData extends ChangeNotifier {
 
   /// Overwrites [_tasks] with new values.
   void setHabits(List<Habit> habits) {
-    for (var habit in HabitType.values) {
-      _habits[habit] = [];
+    for (final type in HabitType.values) {
+      _habits[type] = <Habit>[];
     }
 
-    for (Habit habit in habits) {
-      addHabit(habit);
+    for (final habit in habits) {
+      _habits[habit.type]?.add(habit);
     }
   }
 
@@ -326,19 +325,24 @@ class UserData extends ChangeNotifier {
   }
 
   /// Overwrites [_tasks] with new values.
-  void setTasks(List<Task> tasks) {
-    // Clear tasks
-    for (var habit in HabitType.values) {
-      _tasks[habit] = [];
+  void setTasks(List<Task> tasks, [handleNotification = true]) {
+    // Clear tasks.
+    if (handleNotification) {
+      for (var habit in HabitType.values) {
+        for (var task in _tasks[habit] ?? []) {
+          NotificationService().cancelTaskNotification(task);
+        }
+      }
     }
 
-    for (Task task in tasks) {
-      addTask(task);
-    }
-
-    // Schedule notifications for all tasks
     for (final type in HabitType.values) {
-      for (final task in (_tasks[type] ?? [])) {
+      _tasks[type] = [];
+    }
+
+    // Schedule notifications for all tasks.
+    for (final task in tasks) {
+      _tasks[task.type]?.add(task);
+      if (handleNotification) {
         NotificationService().scheduleTaskNotification(task);
       }
     }
@@ -367,7 +371,7 @@ class UserData extends ChangeNotifier {
     String subtitle,
     String description,
     Frequency frequency,
-    Day day,
+    DayType day,
     DateTime startDateTime,
     DateTime endDateTime,
     bool notifications,
@@ -419,11 +423,6 @@ class UserData extends ChangeNotifier {
       setTasks(tasks);
       setHabits(habits);
 
-      // Create user locally.
-      /* await userHiveRepository.saveUser(_user);
-      await taskHiveRepository.saveAll(tasks);
-      await habitHiveRepository.saveAll(habits);*/
-
       // Create Firestore user document.
       await userRepository.saveUser(userId, _user);
       await taskRepository.saveAll(userId, getTasksFromType(null));
@@ -471,26 +470,57 @@ class UserData extends ChangeNotifier {
     _loading = true;
     notifyListeners();
 
-    var firebase = await userRepository.fetchUser(userId);
-    var local = await userRepository.fetchUser(userId);
-
-    if (local != null && firebase != null && userId != null) {
-      _user = firebase;
+    try {
       _userId = userId;
+      var isLoggedIn = userId == null;
 
-      var habits = await habitRepository.fetchAll(userId);
+      // No logged-in user. Guest mode.
+      if (isLoggedIn) {
+        _user = UserModel();
+        _isInitialized = true;
+        _loading = false;
+        notifyListeners();
+        return;
+      }
+
+      // Fetch user.
+      final fetchedUser = await userRepository.fetchUser(userId);
+
+      if (fetchedUser == null) {
+        // User exists in Auth but not Firestore.
+        _user = UserModel();
+        _isInitialized = true;
+        _loading = false;
+        notifyListeners();
+        return;
+      }
+
+      _user = fetchedUser;
+
+      // Fetch habits and tasks.
+      final results = await Future.wait([
+        habitRepository.fetchAll(userId),
+        taskRepository.fetchAll(userId),
+      ]);
+
+      final habits = results[0] as List<Habit>;
+      final tasks = results[1] as List<Task>;
+
       setHabits(habits);
 
-      var tasks = await taskRepository.fetchAll(userId);
-      setTasks(tasks);
-    } else {
-      _user = UserModel();
-    }
+      // Handle notifications. If user not logged in, not handle them.
+      setTasks(tasks, isLoggedIn);
 
-    // Set tasks that are available for execution
-    setExecutableTasks(DateTime.now());
-    _isInitialized = true;
-    _loading = false;
-    notifyListeners();
+      // Compute executable tasks.
+      await setExecutableTasks(DateTime.now());
+
+      _isInitialized = true;
+    } catch (e) {
+      debugPrint('UserData initialization failed: $e');
+      rethrow;
+    } finally {
+      _loading = false;
+      notifyListeners();
+    }
   }
 }

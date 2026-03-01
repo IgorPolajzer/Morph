@@ -5,6 +5,7 @@ import 'package:flutter_timezone/flutter_timezone.dart';
 
 import '../model/task.dart';
 import '../utils/functions.dart';
+import '../utils/enums.dart';
 
 class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
@@ -13,9 +14,15 @@ class NotificationService {
     return _instance;
   }
 
-  NotificationService._internal();
+  NotificationService._internal({
+    FlutterLocalNotificationsPlugin? notificationsPlugin,
+    FlutterTimezone? flutterTimezone,
+  }) : notificationsPlugin =
+           notificationsPlugin ?? FlutterLocalNotificationsPlugin(),
+       _flutterTimezone = flutterTimezone ?? FlutterTimezone();
 
-  final notificationsPlugin = FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin notificationsPlugin;
+  final FlutterTimezone _flutterTimezone;
 
   bool _isInitialized = false;
 
@@ -78,11 +85,10 @@ class NotificationService {
   /// Cancel Notification
   Future<void> cancelTaskNotification(Task task) async {
     final id = taskIdToNotificationId(task.id);
-
     await notificationsPlugin.cancel(id);
   }
 
-  /// Schedule Task
+  /// Schedule Task with frequency support
   Future<void> scheduleTaskNotification(Task task) async {
     if (!task.notifications) {
       return;
@@ -92,26 +98,28 @@ class NotificationService {
     final title = task.title;
     final body = task.subtitle.isNotEmpty ? task.subtitle : task.description;
 
-    final tz.TZDateTime next = _nextScheduledTime(task);
+    final details = _getSchedulingDetails(task);
 
     await notificationsPlugin.zonedSchedule(
       id,
       title,
       body,
-      next,
+      details.scheduledTime,
       _notificationDetails(),
       androidScheduleMode: AndroidScheduleMode.alarmClock,
-      matchDateTimeComponents: DateTimeComponents.time,
+      matchDateTimeComponents: details.matchComponents,
       payload: task.id,
     );
   }
 
-  tz.TZDateTime _nextScheduledTime(Task task) {
+  /// Get scheduling details based on frequency
+  ({tz.TZDateTime scheduledTime, DateTimeComponents? matchComponents})
+  _getSchedulingDetails(Task task) {
     final now = tz.TZDateTime.now(tz.local);
     final start = task.startDateTime;
 
-    // The time of day for the notification
-    final time = tz.TZDateTime(
+    // Create a time today at the scheduled hour/minute.
+    tz.TZDateTime scheduledTime = tz.TZDateTime(
       tz.local,
       now.year,
       now.month,
@@ -120,12 +128,177 @@ class NotificationService {
       start.minute,
     );
 
-    // If the time is in the future today, schedule for today
-    if (time.isAfter(now)) {
-      return time;
+    switch (task.scheduledFrequency) {
+      case Frequency.DAILY:
+        // If time has passed today, schedule for tomorrow.
+        if (scheduledTime.isBefore(now)) {
+          scheduledTime = scheduledTime.add(const Duration(days: 1));
+        }
+        return (
+          scheduledTime: scheduledTime,
+          matchComponents: DateTimeComponents.time,
+        );
+
+      case Frequency.WEEKLY:
+        return (
+          scheduledTime: _nextWeeklyOccurrence(
+            scheduledTime,
+            task.scheduledDay.dayTypeToDay(),
+            now,
+          ),
+          matchComponents: DateTimeComponents.dayOfWeekAndTime,
+        );
+
+      case Frequency.BIWEEKLY:
+        return (
+          scheduledTime: _nextBiweeklyOccurrence(
+            scheduledTime,
+            task.scheduledDay.dayTypeToDay(),
+            now,
+            start,
+          ),
+          matchComponents: DateTimeComponents.dateAndTime,
+        );
+
+      case Frequency.MONTHLY:
+        return (
+          scheduledTime: _nextMonthlyOccurrence(scheduledTime, now, start),
+          matchComponents: DateTimeComponents.dayOfMonthAndTime,
+        );
+
+      default:
+        return (
+          scheduledTime: scheduledTime,
+          matchComponents: DateTimeComponents.time,
+        );
     }
-    // Otherwise, schedule for tomorrow
-    return time.add(const Duration(days: 1));
+  }
+
+  /// Calculate next weekly occurrence
+  tz.TZDateTime _nextWeeklyOccurrence(
+    tz.TZDateTime scheduledTime,
+    Day scheduledDay,
+    tz.TZDateTime now,
+  ) {
+    // Convert Day enum to weekday (1 = Monday, 7 = Sunday)
+    final targetWeekday = _dayToWeekday(scheduledDay);
+    final currentWeekday = scheduledTime.weekday;
+
+    int daysToAdd = targetWeekday - currentWeekday;
+
+    // If target day is earlier in the week or same day but time has passed
+    if (daysToAdd < 0 || (daysToAdd == 0 && scheduledTime.isBefore(now))) {
+      daysToAdd += 7; // Move to next week
+    }
+
+    return scheduledTime.add(Duration(days: daysToAdd));
+  }
+
+  /// Calculate next biweekly occurrence
+  tz.TZDateTime _nextBiweeklyOccurrence(
+    tz.TZDateTime scheduledTime,
+    Day scheduledDay,
+    tz.TZDateTime now,
+    DateTime startDateTime,
+  ) {
+    // First, find the next weekly occurrence
+    tz.TZDateTime nextWeekly = _nextWeeklyOccurrence(
+      scheduledTime,
+      scheduledDay,
+      now,
+    );
+
+    // Calculate weeks since start date
+    final startTz = tz.TZDateTime.from(startDateTime, tz.local);
+    final daysSinceStart = nextWeekly.difference(startTz).inDays;
+    final weeksSinceStart = daysSinceStart ~/ 7;
+
+    // If on an odd week cycle, add one more week
+    if (weeksSinceStart % 2 != 0) {
+      nextWeekly = nextWeekly.add(const Duration(days: 7));
+    }
+
+    return nextWeekly;
+  }
+
+  /// Calculate next monthly occurrence
+  tz.TZDateTime _nextMonthlyOccurrence(
+    tz.TZDateTime scheduledTime,
+    tz.TZDateTime now,
+    DateTime startDateTime,
+  ) {
+    // Use the day of month from start date
+    final targetDay = startDateTime.day;
+
+    // Try this month first
+    tz.TZDateTime nextMonthly = tz.TZDateTime(
+      tz.local,
+      scheduledTime.year,
+      scheduledTime.month,
+      targetDay,
+      scheduledTime.hour,
+      scheduledTime.minute,
+    );
+
+    // If the date has passed or is invalid, move to next month
+    if (nextMonthly.isBefore(now) || nextMonthly.day != targetDay) {
+      // Move to next month
+      final nextMonth =
+          scheduledTime.month == 12
+              ? tz.TZDateTime(
+                tz.local,
+                scheduledTime.year + 1,
+                1,
+                targetDay,
+                scheduledTime.hour,
+                scheduledTime.minute,
+              )
+              : tz.TZDateTime(
+                tz.local,
+                scheduledTime.year,
+                scheduledTime.month + 1,
+                targetDay,
+                scheduledTime.hour,
+                scheduledTime.minute,
+              );
+
+      // Handle months with fewer days (e.g., Feb 31 -> Feb 28/29)
+      if (nextMonth.day != targetDay) {
+        // Use the last day of the month instead
+        nextMonthly = tz.TZDateTime(
+          tz.local,
+          nextMonth.year,
+          nextMonth.month + 1,
+          0, // Day 0 of next month = last day of this month
+          scheduledTime.hour,
+          scheduledTime.minute,
+        );
+      } else {
+        nextMonthly = nextMonth;
+      }
+    }
+
+    return nextMonthly;
+  }
+
+  /// Convert Day enum to weekday number
+  int _dayToWeekday(Day day) {
+    switch (day) {
+      case Day.monday:
+        return DateTime.monday;
+      case Day.tuesday:
+        return DateTime.tuesday;
+      case Day.wednesday:
+        return DateTime.wednesday;
+      case Day.thursday:
+        return DateTime.thursday;
+      case Day.friday:
+        return DateTime.friday;
+      case Day.saturday:
+        return DateTime.saturday;
+      case Day.sunday:
+        return DateTime.sunday;
+    }
   }
 
   /// Check if a notification with specific ID is scheduled
@@ -133,7 +306,6 @@ class NotificationService {
     final List<PendingNotificationRequest> pendingNotifications =
         await notificationsPlugin.pendingNotificationRequests();
 
-    // Check if any pending notification has the matching ID
     return pendingNotifications.any(
       (notification) => notification.id == notificationId,
     );

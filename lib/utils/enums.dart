@@ -1,18 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:morphe/utils/constants.dart';
-import 'package:hive/hive.dart';
 
-part 'enums.g.dart';
-
-@HiveType(typeId: 4)
 enum HabitType {
-  @HiveField(0)
   PHYSICAL,
 
-  @HiveField(1)
   GENERAL,
 
-  @HiveField(2)
   MENTAL;
 
   Color getColor() {
@@ -44,39 +38,51 @@ enum HabitType {
   }
 }
 
-@HiveType(typeId: 5)
-enum Day {
-  @HiveField(0)
+enum DayType {
   MONDAY,
-  @HiveField(1)
   TUESDAY,
-  @HiveField(2)
   WEDNESDAY,
-  @HiveField(3)
   THURSDAY,
-  @HiveField(4)
   FRIDAY,
-  @HiveField(5)
   SATURDAY,
-  @HiveField(6)
   SUNDAY;
 
-  static Day getDayFromString(String type) {
+  /// Converts DayType enum to flutter_local_notifications Day enum
+  Day dayTypeToDay() {
+    switch (this) {
+      case DayType.MONDAY:
+        return Day.monday;
+      case DayType.TUESDAY:
+        return Day.tuesday;
+      case DayType.WEDNESDAY:
+        return Day.wednesday;
+      case DayType.THURSDAY:
+        return Day.thursday;
+      case DayType.FRIDAY:
+        return Day.friday;
+      case DayType.SATURDAY:
+        return Day.saturday;
+      case DayType.SUNDAY:
+        return Day.sunday;
+    }
+  }
+
+  static DayType getDayFromString(String type) {
     switch (type) {
       case "monday":
-        return Day.MONDAY;
+        return DayType.MONDAY;
       case "tuesday":
-        return Day.TUESDAY;
+        return DayType.TUESDAY;
       case "wednesday":
-        return Day.WEDNESDAY;
+        return DayType.WEDNESDAY;
       case "thursday":
-        return Day.THURSDAY;
+        return DayType.THURSDAY;
       case "friday":
-        return Day.FRIDAY;
+        return DayType.FRIDAY;
       case "saturday":
-        return Day.SATURDAY;
+        return DayType.SATURDAY;
       case "sunday":
-        return Day.SUNDAY;
+        return DayType.SUNDAY;
       case "":
         final weekday =
             [
@@ -110,15 +116,10 @@ enum Day {
   }
 }
 
-@HiveType(typeId: 6)
 enum Frequency {
-  @HiveField(0)
   DAILY,
-  @HiveField(1)
   WEEKLY,
-  @HiveField(2)
-  BYWEEKLY,
-  @HiveField(3)
+  BIWEEKLY,
   MONTHLY;
 
   static Frequency getFrequencyFromString(String type) {
@@ -127,8 +128,8 @@ enum Frequency {
         return Frequency.DAILY;
       case "weekly":
         return Frequency.WEEKLY;
-      case "byweekly":
-        return Frequency.BYWEEKLY;
+      case "biweekly":
+        return Frequency.BIWEEKLY;
       case "monthly":
         return Frequency.MONTHLY;
       default:
@@ -141,14 +142,4 @@ enum Frequency {
   }
 }
 
-@HiveType(typeId: 6)
-enum AppLoadState {
-  @HiveField(0)
-  notInitialized,
-  @HiveField(1)
-  loading,
-  @HiveField(2)
-  ready,
-  @HiveField(3)
-  error,
-}
+enum AppLoadState { notInitialized, loading, ready, error }

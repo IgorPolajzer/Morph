@@ -18,6 +18,7 @@ import '../../model/task.dart';
 import '../../state/connectivity_notifier.dart';
 import '../../state/user_data.dart';
 import '../../utils/enums.dart';
+import '../../utils/functions.dart';
 import '../../utils/plan_generator.dart';
 import '../../utils/toast_util.dart';
 
@@ -252,12 +253,12 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
     Map<HabitType, String> prompts,
   ) async {
     // Show ad
-    _showInterstitialAd();
+    //_showInterstitialAd();
 
     // Generate plan
-    var plan = await generateAndParse(prompts, userData.user.selectedHabits);
+    // var plan = await generateAndParse(prompts, userData.user.selectedHabits);
 
-    //var plan = _createHardcodedPlan();
+    var plan = createHardcodedPlan();
 
     try {
       if (FirebaseAuth.instance.currentUser == null) {
@@ -266,6 +267,8 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
         userData.setTasks(plan.key);
         userData.setHabits(plan.value);
         await userData.patchUser();
+
+        userData.setExecutableTasks(DateTime.now());
       }
     } on FirebaseAuthException catch (e) {
       firebaseAuthToast(e, context);
@@ -330,70 +333,5 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
     } else {
       throw Exception("No habits chosen");
     }
-  }
-
-  Pair<List<Task>, List<Habit>> _createHardcodedPlan() {
-    // Habits
-    final habits = [
-      Habit(
-        title: 'Morning Run',
-        description: 'Run 3 km every morning to improve cardiovascular health.',
-        type: HabitType.PHYSICAL,
-        notifications: true,
-      ),
-      Habit(
-        title: 'Read Daily',
-        description: 'Read at least 30 minutes every day to expand knowledge.',
-        type: HabitType.GENERAL,
-        notifications: true,
-      ),
-      Habit(
-        title: 'Meditation',
-        description:
-            'Meditate for 15 minutes to reduce stress and improve focus.',
-        type: HabitType.MENTAL,
-        notifications: true,
-      ),
-    ];
-
-    // Tasks
-    final now = DateTime.now();
-    final tasks = [
-      Task(
-        title: 'Run 3 km',
-        subtitle: 'Morning exercise',
-        description: 'Go for a 3 km run in the morning to stay fit.',
-        scheduledFrequency: Frequency.DAILY,
-        scheduledDay: Day.MONDAY,
-        startDateTime: now,
-        endDateTime: now.add(const Duration(hours: 1)),
-        type: HabitType.PHYSICAL,
-        notifications: true,
-      ),
-      Task(
-        title: 'Read a Book',
-        subtitle: 'Daily reading',
-        description: 'Spend at least 30 minutes reading a book.',
-        scheduledFrequency: Frequency.DAILY,
-        scheduledDay: Day.MONDAY,
-        startDateTime: now,
-        endDateTime: now.add(const Duration(minutes: 30)),
-        type: HabitType.GENERAL,
-        notifications: true,
-      ),
-      Task(
-        title: 'Meditate',
-        subtitle: 'Mindfulness',
-        description: 'Meditate for 15 minutes to reduce stress.',
-        scheduledFrequency: Frequency.DAILY,
-        scheduledDay: Day.MONDAY,
-        startDateTime: now,
-        endDateTime: now.add(const Duration(minutes: 15)),
-        type: HabitType.MENTAL,
-        notifications: true,
-      ),
-    ];
-
-    return Pair(tasks, habits);
   }
 }

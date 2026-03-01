@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:morphe/components/lists/habit_list.dart';
 import 'package:morphe/model/executable_task.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 import '../../components/lists/daily_task_list.dart';
 import '../../components/text/screen_title.dart';
 import '../../model/habit.dart';
 import '../../model/task.dart';
+import '../../services/notification_service.dart';
 import '../../state/user_data.dart';
 import '../../utils/constants.dart';
 
@@ -25,6 +27,23 @@ class _YourDayScreenState extends State<YourDayScreen> {
     [],
   );
   final ValueNotifier<List<Habit>> _habits = ValueNotifier([]);
+
+  Future<void> handleNotifications() async {
+    var status = await Permission.notification.status;
+    if (!status.isGranted) {
+      status = await Permission.notification.request();
+    }
+    await NotificationService().initialize();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      handleNotifications();
+    });
+  }
 
   @override
   void didChangeDependencies() {

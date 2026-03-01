@@ -1,30 +1,19 @@
 import 'package:uuid/uuid.dart';
 import '../../utils/enums.dart';
-import 'package:hive/hive.dart';
 
-part 'habit.g.dart';
-
-@HiveType(typeId: 2)
-class Habit extends HiveObject {
-  @HiveField(0)
+class Habit {
   final String id;
 
-  @HiveField(1)
   final String title;
 
-  @HiveField(2)
   final String description;
 
-  @HiveField(3)
   final HabitType type;
 
-  @HiveField(4)
   final bool notifications;
 
-  @HiveField(5)
   bool dirty = false;
 
-  @HiveField(6)
   bool deleted = false;
 
   Habit({

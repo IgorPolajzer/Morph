@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:toastification/toastification.dart';
 
 import '../state/connectivity_notifier.dart';
@@ -142,5 +143,36 @@ void firebaseAuthToast(FirebaseAuthException e, BuildContext? context) {
       break;
     default:
       somethingWentWrongToast(context);
+  }
+}
+
+void permissionToast(
+  PermissionStatus status,
+  String name,
+  BuildContext? context,
+) {
+  if (status.isGranted) {
+    customSuccessToast(context, 'Notifications enabled.', 'Permission granted');
+  } else if (status.isPermanentlyDenied) {
+    customErrorToast(
+      context,
+      'Permission denied.',
+      '$name permission permanently denied. Enable it in settings.',
+    );
+    openAppSettings();
+  } else if (status.isRestricted) {
+    customErrorToast(
+      context,
+      'Permission denied.',
+      '$name permission restricted by system.',
+    );
+  } else if (status.isLimited) {
+    customErrorToast(
+      context,
+      'Permission denied.',
+      '$name permission limited access granted.',
+    );
+  } else {
+    customErrorToast(context, 'Permission denied.', '$name permission denied');
   }
 }
