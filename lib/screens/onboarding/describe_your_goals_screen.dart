@@ -138,7 +138,7 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
                       hint:
                           "Tips for describing general goals:\n- Focus on daily habits or routines (e.g., cleaning, reading, studying).\n- Mention specific tasks or responsibilities you want to be consistent with.\n- Include projects or hobbies you're working on (e.g., learning a language, building an app).\n- Indicate how often or how long you want to work on these (e.g., 3x a week, 15 mins daily).",
                       description:
-                          "Describe your general goals.\nExample: I want to improve adhere better to doing my chores more specifically: cleaning my room, reading at least 1 book a month, revising after my classes and working on my personal project “Morphe” at least 5 hours a week.",
+                          "Describe your general goals.\nExample: I want to improve adhere better to doing my chores more specifically: cleaning my room, reading at least 1 book a month, revising after my classes and working on my personal project “Morph” at least 5 hours a week.",
                       enabled: general,
                       onChanged: (value) {
                         generalGoals = value;
@@ -253,12 +253,11 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
     Map<HabitType, String> prompts,
   ) async {
     // Show ad
-    //_showInterstitialAd();
+    _showInterstitialAd();
 
     // Generate plan
-    // var plan = await generateAndParse(prompts, userData.user.selectedHabits);
-
-    var plan = createHardcodedPlan();
+    var plan = await generateAndParse(prompts, userData.user.selectedHabits);
+    //var plan = createHardcodedPlan();
 
     try {
       if (FirebaseAuth.instance.currentUser == null) {
@@ -322,7 +321,7 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
   void _toPlanOverview(Map<HabitType, bool> selectedHabits) {
     // Navigate to first selected habit type
 
-    // TODO commit functioning version and try to implement with stack
+    // TODO commit functioning version and implement with stack.
 
     if (selectedHabits[HabitType.PHYSICAL] ?? false) {
       context.push(PlanOverviewScreen.id_physical);

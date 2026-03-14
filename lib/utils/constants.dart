@@ -200,7 +200,7 @@ CATEGORY DEFINITIONS:
 
 - physical: goals related to health, fitness, weight loss, muscle gain, sports, or physical endurance.
 - mental: goals focused on mindfulness, creativity, focus, motivation, learning, or discipline.
-- general: goals related to everyday life improvements like cleanliness, organization, hydration, routines, pets, or chores.
+- general: goals related to anything the user wants.
 
 IMPORTANT:
 
@@ -281,7 +281,7 @@ RULES:
 - Always match field names exactly.
 - For physical tasks, include structured strength training or cardio descriptions (e.g., "3 x 10-12 reps\n").
 - For mental tasks, include focused activities like reading, mindfulness, or creative practice with durations.
-- For general tasks, include everyday actions like cleaning, errands, hydration, or pet care.
+- For general tasks, include any task or habit the user wants.
 - If any sub-prompt is too vague to understand or off-topic, return **only** the error JSON.
 - **Do not exceed ${kMaxOutputTokens} tokens in total output. Combine tasks or habits if necessary to stay under this limit.**
 
