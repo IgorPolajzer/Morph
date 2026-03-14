@@ -37,7 +37,7 @@ class _PlanOverviewScreenState extends State<PlanOverviewScreen> {
   Widget build(BuildContext context) {
     final userData = Provider.of<UserData>(context, listen: true);
 
-    if (userData.loading && userData.isInitialized) {
+    if (userData.loading) {
       return Center(child: CircularProgressIndicator());
     }
 

@@ -189,9 +189,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
                     if (user != null) {
                       if (!userData.loading && !userData.isInitialized) {
-                        userData.initialize(
-                          FirebaseAuth.instance.currentUser?.uid,
-                        );
+                        userData.initialize();
                       }
                       router.push(YourDayScreen.id);
                     }

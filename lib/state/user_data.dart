@@ -447,22 +447,23 @@ class UserData extends ChangeNotifier {
   }
 
   /// Initializes the [UserModel] instance.
-  Future<void> initialize(String? userId) async {
+  Future<void> initialize() async {
     if (_isInitialized) return;
+
+    final userId = FirebaseAuth.instance.currentUser?.uid;
 
     _loading = true;
     notifyListeners();
 
     try {
       _userId = userId;
-      var isLoggedIn = userId == null;
+      var isLoggedIn = userId != null;
 
       // No logged-in user. Guest mode.
-      if (isLoggedIn) {
+      if (!isLoggedIn) {
         _user = UserModel();
         _isInitialized = true;
         _loading = false;
-        notifyListeners();
         return;
       }
 
@@ -474,11 +475,10 @@ class UserData extends ChangeNotifier {
         _user = UserModel();
         _isInitialized = true;
         _loading = false;
-        notifyListeners();
         return;
+      } else {
+        _user = fetchedUser;
       }
-
-      _user = fetchedUser;
 
       // Fetch habits and tasks.
       final results = await Future.wait([

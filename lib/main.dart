@@ -41,12 +41,21 @@ class _AppBootstrapState extends State<AppBootstrap> {
     await Firebase.initializeApp();
 
     // Mobile Ads.
-    await MobileAds.instance.initialize();
+    // Initialize Mobile Ads
+    MobileAds.instance.initialize();
+    RequestConfiguration requestConfiguration = RequestConfiguration(
+      testDeviceIds: [
+        'd68e3860-8865-46f9-8339-8ca0d3b248e0',
+        '5da57a97-f5d7-4da7-be5c-23f2b71bd3bd',
+        '539d28f1-d59f-4e7f-a54e-16227139c841',
+      ],
+    );
+
+    MobileAds.instance.updateRequestConfiguration(requestConfiguration);
 
     // UserData.
     final userData = UserData();
-    final uid = FirebaseAuth.instance.currentUser?.uid;
-    await userData.initialize(uid);
+    await userData.initialize();
 
     return userData;
   }
