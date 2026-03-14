@@ -13,7 +13,7 @@ import '../screens/edit/change_goals_screen.dart';
 import '../screens/onboarding/choose_goals_screen.dart';
 import '../screens/onboarding/describe_your_goals_screen.dart';
 import '../screens/onboarding/plan_overview_screen.dart';
-import '../screens/onboarding/registration_screen.dart';
+import '../screens/onboarding/register_screen.dart';
 import '../screens/onboarding/welcome_screen.dart';
 
 class AuthNotifier extends ChangeNotifier {
@@ -89,9 +89,9 @@ final GoRouter router = GoRouter(
       },
     ),
     GoRoute(
-      path: RegistrationScreen.id,
+      path: RegisterScreen.id,
       builder: (BuildContext context, GoRouterState state) {
-        return const RegistrationScreen();
+        return const RegisterScreen();
       },
     ),
     GoRoute(
@@ -134,13 +134,12 @@ final GoRouter router = GoRouter(
   initialLocation: '/',
   redirect: (context, state) {
     final isLoggedIn = FirebaseAuth.instance.currentUser != null;
+    final isInitialLocation = state.fullPath == '/';
 
     final isAuthPage =
         state.fullPath == LoginScreen.id ||
-        state.fullPath == RegistrationScreen.id ||
+        state.fullPath == RegisterScreen.id ||
         state.fullPath == WelcomeScreen.id;
-
-    final isInitalLocation = state.fullPath == '/';
 
     final isOnboardingPage =
         state.fullPath == ChooseGoalsScreen.id ||
@@ -150,16 +149,16 @@ final GoRouter router = GoRouter(
         state.fullPath == PlanOverviewScreen.id_mental;
 
     if (!isLoggedIn && !isAuthPage && !isOnboardingPage) {
-      // Not logged in and trying to go somewhere protected
+      // If not logged in and not on auth or onboarding page, redirect to WelcomeScreen
       return WelcomeScreen.id;
     }
 
-    if (isLoggedIn && isInitalLocation) {
-      // Logged in coming from initial page
+    if (isLoggedIn && isInitialLocation) {
+      // If user is logged in and on the initial page, redirect to YourDayScreen
       return YourDayScreen.id;
     }
 
-    // Otherwise allow navigation
+    // Allow navigation if conditions don't match
     return null;
   },
 );

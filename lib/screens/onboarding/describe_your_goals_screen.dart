@@ -5,12 +5,9 @@ import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 import 'package:morphe/components/buttons/arrow_button.dart';
 import 'package:morphe/exceptions/request_exception.dart';
 import 'package:morphe/screens/onboarding/plan_overview_screen.dart';
-import 'package:morphe/screens/onboarding/registration_screen.dart';
+import 'package:morphe/screens/onboarding/register_screen.dart';
 import 'package:pair/pair.dart';
 import 'package:provider/provider.dart';
-import 'package:toastification/toastification.dart';
-import 'package:morphe/utils/plan_generator.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import '../../components/text/screen_title.dart';
@@ -18,8 +15,12 @@ import '../../components/text_fields/describe_goal_text_field.dart';
 import '../../exceptions/generation_exception.dart';
 import '../../model/habit.dart';
 import '../../model/task.dart';
-import '../../model/user_data.dart';
+import '../../state/connectivity_notifier.dart';
+import '../../state/user_data.dart';
 import '../../utils/enums.dart';
+import '../../utils/functions.dart';
+import '../../utils/plan_generator.dart';
+import '../../utils/toast_util.dart';
 
 class DescribeYourGoalsScreen extends StatefulWidget {
   static String id = '/describe_your_goals_screen';
@@ -32,10 +33,6 @@ class DescribeYourGoalsScreen extends StatefulWidget {
 }
 
 class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
-  // Authentication
-  late final FirebaseApp _app;
-  late final _auth;
-
   // Add config
   late InterstitialAd _interstitialAd;
   bool isInterstitialAdReady = false;
@@ -57,7 +54,6 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
   @override
   void initState() {
     super.initState();
-    _setUpAuth();
 
     // Add setup
     InterstitialAd.load(
@@ -96,11 +92,23 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final router = GoRouter.of(context);
+
+    final connectivity = Provider.of<ConnectivityNotifier>(
+      context,
+      listen: false,
+    );
     final userData = Provider.of<UserData>(context, listen: true);
+
+    var physical = userData.user.selectedHabits[HabitType.PHYSICAL] ?? false;
+    var general = userData.user.selectedHabits[HabitType.GENERAL] ?? false;
+    var mental = userData.user.selectedHabits[HabitType.MENTAL] ?? false;
 
     return Scaffold(
       appBar: ScreenTitle(title: "DESCRIBE YOUR GOALS"),
       body: ModalProgressHUD(
+        opacity: 1,
+        color: Theme.of(context).scaffoldBackgroundColor,
         inAsyncCall: showSpinner,
         child: Column(
           children: [
@@ -117,7 +125,7 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
                           "Tips for describing physical goals:\n- State your desired outcome (e.g., build muscle, lose fat, increase energy).\n- Mention preferred activities (e.g., running, weightlifting, yoga).\n- Include any constraints or limitations (e.g., no access to gym, previous injury).\n- Add timeline or urgency if relevant (e.g., in 3 months, before summer)",
                       description:
                           "Describe your physical goals.\nExample: I want to reach a healthy bodyfat range, improve my general strength and health. I would like to achieve those goals through weight training and swimming.",
-                      enabled: userData.selectedHabits[HabitType.PHYSICAL],
+                      enabled: physical,
                       onChanged: (value) {
                         physicalGoals = value;
                       },
@@ -130,8 +138,8 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
                       hint:
                           "Tips for describing general goals:\n- Focus on daily habits or routines (e.g., cleaning, reading, studying).\n- Mention specific tasks or responsibilities you want to be consistent with.\n- Include projects or hobbies you're working on (e.g., learning a language, building an app).\n- Indicate how often or how long you want to work on these (e.g., 3x a week, 15 mins daily).",
                       description:
-                          "Describe your general goals.\nExample: I want to improve adhere better to doing my chores more specifically: cleaning my room, reading at least 1 book a month, revising after my classes and working on my personal project “Morphe” at least 5 hours a week.",
-                      enabled: userData.selectedHabits[HabitType.GENERAL],
+                          "Describe your general goals.\nExample: I want to improve adhere better to doing my chores more specifically: cleaning my room, reading at least 1 book a month, revising after my classes and working on my personal project “Morph” at least 5 hours a week.",
+                      enabled: general,
                       onChanged: (value) {
                         generalGoals = value;
                       },
@@ -145,7 +153,7 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
                           "Tips for describing mental goals:\n- Identify what you want to improve (e.g., focus, memory, mindfulness).\n- Mention emotional goals (e.g., reduce anxiety, increase motivation).\n- Describe situations or patterns you struggle with (e.g., overthinking, low energy in mornings).\n- Note if you're interested in specific methods (e.g., meditation, journaling, therapy techniques).",
                       description:
                           "Describe your mental goals.\nExample: I want to improve my memory, mental clarity and get better at managing stress and anxiety.",
-                      enabled: userData.selectedHabits[HabitType.MENTAL],
+                      enabled: mental,
                       onChanged: (value) {
                         mentalGoals = value;
                       },
@@ -166,70 +174,48 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
           enabled: !showSpinner,
           title: "GENERATE",
           onPressed: () async {
-            final router = GoRouter.of(context);
+            if (!assertConnectivity(connectivity, context)) return;
 
-            if (userData.selectedHabits[HabitType.PHYSICAL] ==
-                    physicalGoals.isNotEmpty &&
-                userData.selectedHabits[HabitType.GENERAL] ==
-                    generalGoals.isNotEmpty &&
-                userData.selectedHabits[HabitType.MENTAL] ==
-                    mentalGoals.isNotEmpty) {
+            if (physical == physicalGoals.isNotEmpty &&
+                general == generalGoals.isNotEmpty &&
+                mental == mentalGoals.isNotEmpty) {
               try {
                 setState(() {
                   showSpinner = true;
                 });
+
                 // Generate plans
                 Map<HabitType, String> prompts = {};
 
-                if (userData.selectedHabits[HabitType.PHYSICAL] == true &&
-                    physicalGoals.isNotEmpty) {
+                if (physical && physicalGoals.isNotEmpty) {
                   prompts[HabitType.PHYSICAL] = physicalGoals;
                 }
-                if (userData.selectedHabits[HabitType.GENERAL] == true &&
-                    generalGoals.isNotEmpty) {
+                if (general && generalGoals.isNotEmpty) {
                   prompts[HabitType.GENERAL] = generalGoals;
                 }
-                if (userData.selectedHabits[HabitType.MENTAL] == true &&
-                    mentalGoals.isNotEmpty) {
+                if (mental && mentalGoals.isNotEmpty) {
                   prompts[HabitType.MENTAL] = mentalGoals;
                 }
 
-                await _handleUser(userData, prompts);
-                _toPlanOverview(userData);
+                await _registerUser(userData, prompts);
+                _toPlanOverview(userData.user.selectedHabits);
               } on GenerationException {
-                toastification.show(
-                  context: context,
-                  title: Text('Try again'),
-                  description: Text(
-                    'Prompts were insufficient. Tap the ? symbols for instructions',
-                  ),
-                  type: ToastificationType.error,
-                  autoCloseDuration: Duration(seconds: 3),
+                customErrorToast(
+                  context,
+                  'Try again',
+                  'Prompts were insufficient. Tap the ? symbols for instructions',
                 );
                 router.push(DescribeYourGoalsScreen.id);
               } on RequestException {
-                toastification.show(
-                  context: context,
-                  title: Text('Try again'),
-                  description: Text(
-                    'The prompt exceeded max token count. Try a shorter version.',
-                  ),
-                  type: ToastificationType.error,
-                  autoCloseDuration: Duration(seconds: 3),
+                customErrorToast(
+                  context,
+                  'Try again',
+                  'The prompt exceeded max token count. Try a shorter version.',
                 );
                 router.push(DescribeYourGoalsScreen.id);
               } catch (e) {
-                print(e);
-                toastification.show(
-                  context: context,
-                  title: Text('Try again'),
-                  description: Text(
-                    'Something went wrong during the registration',
-                  ),
-                  type: ToastificationType.error,
-                  autoCloseDuration: Duration(seconds: 3),
-                );
-                router.push(RegistrationScreen.id);
+                somethingWentWrongToast(context);
+                router.push(RegisterScreen.id);
               } finally {
                 physicalController.clear();
                 generalController.clear();
@@ -239,14 +225,10 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
                 });
               }
             } else {
-              toastification.show(
-                context: context,
-                title: Text('Empty input boxes'),
-                description: Text(
-                  'All the goals you chose have to have be described',
-                ),
-                type: ToastificationType.info,
-                autoCloseDuration: Duration(seconds: 3),
+              customInfoToast(
+                context,
+                "Empty input boxes",
+                "All the goals you chose have to have be described",
               );
             }
           },
@@ -266,7 +248,7 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
     super.dispose();
   }
 
-  Future<void> _handleUser(
+  Future<void> _registerUser(
     UserData userData,
     Map<HabitType, String> prompts,
   ) async {
@@ -274,85 +256,24 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
     _showInterstitialAd();
 
     // Generate plan
-    Pair<List<Task>, List<Habit>> plan = await generateAndParse(
-      prompts,
-      userData.selectedHabits,
-    );
-
-    // Save plan
-    userData.setTasks(plan.key);
-    userData.setHabits(plan.value);
+    var plan = await generateAndParse(prompts, userData.user.selectedHabits);
+    //var plan = createHardcodedPlan();
 
     try {
-      // Create user and initialise in firebase if not logged in
       if (FirebaseAuth.instance.currentUser == null) {
-        await _auth.createUserWithEmailAndPassword(
-          email: userData.email,
-          password: userData.password,
-        );
-        userData.initializeUser();
+        await userData.createUser(plan.key, plan.value);
       } else {
-        userData.patchUserPlan();
+        userData.setTasks(plan.key);
+        userData.setHabits(plan.value);
+        await userData.patchUser();
+
+        userData.setExecutableTasks(DateTime.now());
       }
     } on FirebaseAuthException catch (e) {
-      switch (e.code) {
-        case 'email-already-in-use':
-          toastification.show(
-            context: context,
-            title: Text('Email In Use'),
-            description: Text('This email is already registered.'),
-            type: ToastificationType.error,
-            autoCloseDuration: Duration(seconds: 3),
-          );
-          break;
-        case 'invalid-email':
-          toastification.show(
-            context: context,
-            title: Text('Invalid Email'),
-            description: Text('Please enter a valid email address.'),
-            type: ToastificationType.error,
-            autoCloseDuration: Duration(seconds: 3),
-          );
-          break;
-        case 'operation-not-allowed':
-          toastification.show(
-            context: context,
-            title: Text('Sign-Up Disabled'),
-            description: Text('This sign-up method is not allowed.'),
-            type: ToastificationType.error,
-            autoCloseDuration: Duration(seconds: 3),
-          );
-          break;
-        case 'weak-password':
-          toastification.show(
-            context: context,
-            title: Text('Weak Password'),
-            description: Text('Password must be at least 6 characters.'),
-            type: ToastificationType.error,
-            autoCloseDuration: Duration(seconds: 3),
-          );
-          break;
-        default:
-          toastification.show(
-            context: context,
-            title: Text('Registration Failed'),
-            description: Text('Something went wrong during registration.'),
-            type: ToastificationType.error,
-            autoCloseDuration: Duration(seconds: 3),
-          );
-      }
-
-      // Re-throw if needed for external handling
+      firebaseAuthToast(e, context);
       rethrow;
     } catch (e) {
-      // Generic fallback
-      toastification.show(
-        context: context,
-        title: Text('Registration Failed'),
-        description: Text('Something went wrong during registration.'),
-        type: ToastificationType.error,
-        autoCloseDuration: Duration(seconds: 3),
-      );
+      somethingWentWrongToast(context);
       rethrow;
     }
   }
@@ -397,24 +318,19 @@ class _DescribeYourGoalsScreenState extends State<DescribeYourGoalsScreen> {
     showNextAd();
   }
 
-  void _toPlanOverview(UserData userData) {
+  void _toPlanOverview(Map<HabitType, bool> selectedHabits) {
     // Navigate to first selected habit type
-    var selectedHabits = userData.selectedHabits;
 
-    // TODO commit functioning version and try to implement with stack
+    // TODO commit functioning version and implement with stack.
 
-    if (selectedHabits[HabitType.PHYSICAL])
+    if (selectedHabits[HabitType.PHYSICAL] ?? false) {
       context.push(PlanOverviewScreen.id_physical);
-    else if (selectedHabits[HabitType.GENERAL])
+    } else if (selectedHabits[HabitType.GENERAL] ?? false) {
       context.push(PlanOverviewScreen.id_general);
-    else if (selectedHabits[HabitType.MENTAL])
+    } else if (selectedHabits[HabitType.MENTAL] ?? false) {
       context.push(PlanOverviewScreen.id_mental);
-    else
-      throw Exception("No habits choosen");
-  }
-
-  void _setUpAuth() async {
-    _app = await Firebase.initializeApp();
-    _auth = FirebaseAuth.instanceFor(app: _app);
+    } else {
+      throw Exception("No habits chosen");
+    }
   }
 }

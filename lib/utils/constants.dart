@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
+// App constants
+const int kTaskCompletionRangeDays = 7;
+
 // App themes
 var kLightTheme = ThemeData(
   fontFamily: 'Poppins',
@@ -197,7 +200,7 @@ CATEGORY DEFINITIONS:
 
 - physical: goals related to health, fitness, weight loss, muscle gain, sports, or physical endurance.
 - mental: goals focused on mindfulness, creativity, focus, motivation, learning, or discipline.
-- general: goals related to everyday life improvements like cleanliness, organization, hydration, routines, pets, or chores.
+- general: goals related to anything the user wants.
 
 IMPORTANT:
 
@@ -239,7 +242,7 @@ Each Task must include:
 - `description` (string): For gym workouts, format exercises like:  
   - "Bench Press 3 x 8-12\n"  
   - "Pull ups 4 x AMRAP\n"
-- `scheduledFrequency` (string): One of "daily", "weekly", "biweekly", "monthly"
+- `scheduledFrequency` (string): One of "daily", "weekly", "monthly"
 - `scheduledDay` (string): One of: "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"
 - `startDateTime` (string): ISO 8601 format (e.g., "2025-06-01T08:00:00")
 - `endDateTime` (string): ISO 8601 format (e.g., "2025-06-01T09:00:00")
@@ -278,7 +281,7 @@ RULES:
 - Always match field names exactly.
 - For physical tasks, include structured strength training or cardio descriptions (e.g., "3 x 10-12 reps\n").
 - For mental tasks, include focused activities like reading, mindfulness, or creative practice with durations.
-- For general tasks, include everyday actions like cleaning, errands, hydration, or pet care.
+- For general tasks, include any task or habit the user wants.
 - If any sub-prompt is too vague to understand or off-topic, return **only** the error JSON.
 - **Do not exceed ${kMaxOutputTokens} tokens in total output. Combine tasks or habits if necessary to stay under this limit.**
 

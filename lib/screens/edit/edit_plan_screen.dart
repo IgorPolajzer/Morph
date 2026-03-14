@@ -9,7 +9,7 @@ import '../../components/pop_ups/add_task_popup.dart';
 import '../../components/text/screen_title.dart';
 import '../../components/text/subtitle.dart';
 import '../../model/task.dart';
-import '../../model/user_data.dart';
+import '../../state/user_data.dart';
 import '../../utils/constants.dart';
 import '../../utils/enums.dart';
 
@@ -36,14 +36,12 @@ class _EditPlanScreenState extends State<EditPlanScreen> {
     final userData = Provider.of<UserData>(context, listen: true);
 
     DateTime date = DateTime.now();
-    _scheduledTasks.value = userData.getTasks(date);
-    _executableTasks.value = userData.getExecutableTasks(date);
+    _scheduledTasks.value = userData.getTasksFromDate(date);
+    _executableTasks.value = userData.getExecutableTasksFromDate(date);
   }
 
   @override
   Widget build(BuildContext context) {
-    final userData = Provider.of<UserData>(context, listen: true);
-
     return PopScope(
       canPop: false,
       child: Scaffold(

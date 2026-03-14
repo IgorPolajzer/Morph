@@ -4,20 +4,21 @@ import 'package:flutter_popup_card/flutter_popup_card.dart';
 import 'package:morphe/components/buttons/square_button.dart';
 import 'package:morphe/components/menus/day_picker.dart';
 import 'package:morphe/components/text_fields/add_property_field.dart';
+import 'package:morphe/repositories/impl/task_repository.dart';
 import 'package:morphe/utils/constants.dart';
 import 'package:provider/provider.dart';
-import 'package:toastification/toastification.dart';
-
+import 'package:morphe/services/notification_service.dart';
 import '../../model/task.dart';
-import '../../model/user_data.dart';
+import '../../state/user_data.dart';
 import '../../utils/functions.dart';
+import '../../utils/toast_util.dart';
 import '../menus/frequency_picker.dart';
 import '../menus/time_picker.dart';
 
 class EditTaskPopUp extends StatefulWidget {
-  Task task;
+  final Task task;
 
-  EditTaskPopUp({required this.task, super.key});
+  const EditTaskPopUp({required this.task, super.key});
 
   @override
   State<EditTaskPopUp> createState() => _EditTaskPopUpState();
@@ -25,6 +26,9 @@ class EditTaskPopUp extends StatefulWidget {
 
 class _EditTaskPopUpState extends State<EditTaskPopUp>
     with SingleTickerProviderStateMixin {
+  // Repositories.
+  final taskRepository = TaskRepository();
+
   late TextEditingController taskTitleController;
   late TextEditingController taskSubtitleController;
   late TextEditingController taskDescriptionController;
@@ -38,6 +42,11 @@ class _EditTaskPopUpState extends State<EditTaskPopUp>
   late TimePicker startTimePicker;
   late TimePicker endTimePicker;
 
+  // Task attributes.
+  late String title;
+  late String subtitle;
+  late String description;
+
   @override
   void initState() {
     super.initState();
@@ -50,15 +59,17 @@ class _EditTaskPopUpState extends State<EditTaskPopUp>
     startTimePicker = TimePicker(time: widget.task.startDateTime);
     endTimePicker = TimePicker(time: widget.task.endDateTime);
 
-    taskTitleController = TextEditingController(text: widget.task.title);
-    taskSubtitleController = TextEditingController(text: widget.task.subtitle);
-    taskDescriptionController = TextEditingController(
-      text: widget.task.description,
-    );
+    title = widget.task.title;
+    subtitle = widget.task.subtitle;
+    description = widget.task.description;
+
+    taskTitleController = TextEditingController(text: title);
+    taskSubtitleController = TextEditingController(text: subtitle);
+    taskDescriptionController = TextEditingController(text: description);
 
     _controller = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 400),
+      duration: const Duration(milliseconds: 400),
     );
 
     _offsetAnimation = Tween<Offset>(
@@ -71,13 +82,11 @@ class _EditTaskPopUpState extends State<EditTaskPopUp>
 
   @override
   Widget build(BuildContext context) {
-    final userData = Provider.of<UserData>(context, listen: true);
-
     return SlideTransition(
       position: _offsetAnimation,
       child: PopupCard(
         elevation: 8,
-        shape: RoundedRectangleBorder(
+        shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(25),
             topRight: Radius.circular(25),
@@ -113,7 +122,7 @@ class _EditTaskPopUpState extends State<EditTaskPopUp>
                           controller: taskTitleController,
                           onChanged: (newTasktitle) {
                             setState(() {
-                              widget.task.title = newTasktitle;
+                              title = newTasktitle;
                             });
                           },
                         ),
@@ -123,7 +132,7 @@ class _EditTaskPopUpState extends State<EditTaskPopUp>
                           height: 100,
                           onChanged: (newTaskSubtitle) {
                             setState(() {
-                              widget.task.subtitle = newTaskSubtitle;
+                              subtitle = newTaskSubtitle;
                             });
                           },
                         ),
@@ -133,11 +142,11 @@ class _EditTaskPopUpState extends State<EditTaskPopUp>
                           height: 150,
                           onChanged: (newTaskDescription) {
                             setState(() {
-                              widget.task.description = newTaskDescription;
+                              description = newTaskDescription;
                             });
                           },
                         ),
-                        Text(
+                        const Text(
                           "*Day is irrelevant if frequency is daily",
                           style: kPlaceHolderTextStyle,
                         ),
@@ -188,10 +197,16 @@ class _EditTaskPopUpState extends State<EditTaskPopUp>
                   title: "Save changes",
                   onPressed: () async {
                     try {
-                      userData.updateTask(
-                        widget.task.title,
-                        widget.task.subtitle,
-                        widget.task.description,
+                      final userData = context.read<UserData>();
+                      final notificationService = NotificationService();
+
+                      // Cancel the old notification before updating the task
+                      await notificationService.cancelTaskNotification(widget.task);
+
+                      var updatedTask = userData.updateTask(
+                        title,
+                        subtitle,
+                        description,
                         frequencyPicker.frequency,
                         dayPicker.day,
                         toDateTime(startTimePicker.newTime),
@@ -200,17 +215,20 @@ class _EditTaskPopUpState extends State<EditTaskPopUp>
                         widget.task.type,
                         widget.task.id,
                       );
-                      await userData.pushTasksToFireBase();
+
+                      if (updatedTask != null) {
+                        // Schedule a new notification for the updated task
+                        await notificationService.scheduleTaskNotification(updatedTask);
+                        await taskRepository.update(
+                          userData.userId,
+                          widget.task.id,
+                          updatedTask.toMap(),
+                        );
+                      }
 
                       Navigator.of(context).pop();
                     } catch (e) {
-                      toastification.show(
-                        context: context,
-                        title: Text('Try again'),
-                        description: Text('Something went wrong'),
-                        type: ToastificationType.error,
-                        autoCloseDuration: Duration(seconds: 3),
-                      );
+                      somethingWentWrongToast(context);
                     }
                   },
                 ),

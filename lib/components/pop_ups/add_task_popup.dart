@@ -1,20 +1,22 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_popup_card/flutter_popup_card.dart';
-import 'package:morphe/components/buttons/square_button.dart';
-import 'package:morphe/components/menus/day_picker.dart';
-import 'package:morphe/components/text_fields/add_property_field.dart';
-import 'package:morphe/utils/constants.dart';
-import 'package:morphe/utils/enums.dart';
-import 'package:provider/provider.dart';
-import 'package:toastification/toastification.dart';
-
+import 'package:morphe/services/notification_service.dart';
 import '../../model/habit.dart';
 import '../../model/task.dart';
-import '../../model/user_data.dart';
+import '../../repositories/impl/habit_repository.dart';
+import '../../repositories/impl/task_repository.dart';
+import '../../state/user_data.dart';
+import '../../utils/constants.dart';
+import '../../utils/enums.dart';
 import '../../utils/functions.dart';
+import '../../utils/toast_util.dart';
+import '../buttons/square_button.dart';
+import '../menus/day_picker.dart';
 import '../menus/frequency_picker.dart';
 import '../menus/time_picker.dart';
+import '../text_fields/add_property_field.dart';
+import 'package:provider/provider.dart';
 
 class AddTaskPopUp extends StatefulWidget {
   final HabitType type;
@@ -27,6 +29,10 @@ class AddTaskPopUp extends StatefulWidget {
 
 class _AddTaskPopUpState extends State<AddTaskPopUp>
     with SingleTickerProviderStateMixin {
+  // Repositories
+  final taskRepository = TaskRepository();
+  final habitRepository = HabitRepository();
+
   // Task controllers
   late TextEditingController taskTitleController;
   late TextEditingController taskSubtitleController;
@@ -41,7 +47,7 @@ class _AddTaskPopUpState extends State<AddTaskPopUp>
   late String taskSubtitle;
   late String taskDescription;
   late Frequency taskScheduledFrequency;
-  late Day taskScheduledDay;
+  late DayType taskScheduledDay;
   late DateTime taskStartDateTime;
   late DateTime taskEndDateTime;
 
@@ -82,7 +88,7 @@ class _AddTaskPopUpState extends State<AddTaskPopUp>
 
     _controller = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 400),
+      duration: const Duration(milliseconds: 400),
     );
 
     _offsetAnimation = Tween<Offset>(
@@ -95,13 +101,11 @@ class _AddTaskPopUpState extends State<AddTaskPopUp>
 
   @override
   Widget build(BuildContext context) {
-    final userData = Provider.of<UserData>(context, listen: true);
-
     return SlideTransition(
       position: _offsetAnimation,
       child: PopupCard(
         elevation: 8,
-        shape: RoundedRectangleBorder(
+        shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(25),
             topRight: Radius.circular(25),
@@ -133,8 +137,8 @@ class _AddTaskPopUpState extends State<AddTaskPopUp>
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: List.generate(2, (index) {
                                   return AnimatedContainer(
-                                    duration: Duration(milliseconds: 300),
-                                    margin: EdgeInsets.symmetric(
+                                    duration: const Duration(milliseconds: 300),
+                                    margin: const EdgeInsets.symmetric(
                                       horizontal: 4.0,
                                     ),
                                     height: 6.0,
@@ -192,7 +196,7 @@ class _AddTaskPopUpState extends State<AddTaskPopUp>
                                 });
                               },
                             ),
-                            Text(
+                            const Text(
                               "*Day is irrelevant if frequency is daily or monthly",
                               style: kPlaceHolderTextStyle,
                             ),
@@ -247,7 +251,8 @@ class _AddTaskPopUpState extends State<AddTaskPopUp>
                       title: "Add Task",
                       onPressed: () async {
                         try {
-                          Task newTask = Task(
+                          final userData = context.read<UserData>();
+                          var newTask = Task(
                             title: taskTitle,
                             subtitle: taskSubtitle,
                             description: taskDescription,
@@ -260,18 +265,17 @@ class _AddTaskPopUpState extends State<AddTaskPopUp>
                           );
 
                           userData.addTask(newTask);
-                          await userData.pushTasksToFireBase();
+                          NotificationService().scheduleTaskNotification(
+                            newTask,
+                          );
+                          await taskRepository.save(userData.userId, newTask);
 
                           Navigator.of(context).pop();
                         } catch (e) {
-                          toastification.show(
-                            context: context,
-                            title: Text('Try again'),
-                            description: Text(
-                              'Something went wrong while creating a task, make sure no field is empty',
-                            ),
-                            type: ToastificationType.info,
-                            autoCloseDuration: Duration(seconds: 3),
+                          customInfoToast(
+                            context,
+                            'Try again',
+                            'Something went wrong while creating a task, make sure no field is empty',
                           );
                         }
                       },
@@ -291,8 +295,8 @@ class _AddTaskPopUpState extends State<AddTaskPopUp>
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: List.generate(2, (index) {
                                   return AnimatedContainer(
-                                    duration: Duration(milliseconds: 300),
-                                    margin: EdgeInsets.symmetric(
+                                    duration: const Duration(milliseconds: 300),
+                                    margin: const EdgeInsets.symmetric(
                                       horizontal: 4.0,
                                     ),
                                     height: 6.0,
@@ -367,6 +371,7 @@ class _AddTaskPopUpState extends State<AddTaskPopUp>
                       title: "Add Habit",
                       onPressed: () async {
                         try {
+                          final userData = context.read<UserData>();
                           Habit newHabit = Habit(
                             title: habitTitle,
                             description: habitDescription,
@@ -375,17 +380,13 @@ class _AddTaskPopUpState extends State<AddTaskPopUp>
                           );
 
                           userData.addHabit(newHabit);
-                          await userData.pushHabitsToFirebase();
+                          await habitRepository.save(userData.userId, newHabit);
                           Navigator.of(context).pop();
                         } catch (e) {
-                          toastification.show(
-                            context: context,
-                            title: Text('Try again'),
-                            description: Text(
-                              'Something went wrong while creating a habit, make sure no field is empty',
-                            ),
-                            type: ToastificationType.info,
-                            autoCloseDuration: Duration(seconds: 3),
+                          customInfoToast(
+                            context,
+                            'Try again',
+                            'Something went wrong while creating a habit, make sure no field is empty',
                           );
                         }
                       },

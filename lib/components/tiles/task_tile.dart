@@ -1,13 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_popup_card/flutter_popup_card.dart';
+import 'package:morphe/repositories/impl/task_repository.dart';
 import 'package:morphe/utils/constants.dart';
 
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../model/task.dart';
-import '../../model/user_data.dart';
+import '../../state/user_data.dart';
 import '../pop_ups/edit_task_popup.dart';
 
 enum MenuActions { edit, delete }
@@ -21,6 +22,9 @@ class TaskTile extends StatelessWidget {
   bool modifiable;
   bool completed;
   bool executable;
+
+  // Repositories.
+  final taskRepository = TaskRepository();
 
   TaskTile({
     required this.onTap,
@@ -96,7 +100,10 @@ class TaskTile extends StatelessWidget {
                               isDestructiveAction: true,
                               onPressed: () async {
                                 userData.deleteTask(task);
-                                await userData.pushTasksToFireBase();
+                                await taskRepository.delete(
+                                  userData.userId,
+                                  task.id,
+                                );
                                 Navigator.pop(context);
                               },
                               child: const Text('Delete'),
@@ -145,12 +152,40 @@ class TaskTile extends StatelessWidget {
                   size: 18.0,
                 ),
               ),
-              title: Text(
-                '${task.scheduledDay.name}: ${DateFormat.Hm().format(task.startDateTime)}-${DateFormat.Hm().format(task.endDateTime)}',
-                style: TextStyle(
-                  decoration: completed ? TextDecoration.lineThrough : null,
-                  decorationThickness: 2.0,
-                ),
+              title: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      '${task.scheduledDay.name}: ${DateFormat.Hm().format(task.startDateTime)}-${DateFormat.Hm().format(task.endDateTime)}',
+                      style: kTitleTextStyle.copyWith(
+                        color:
+                            executable
+                                ? Theme.of(context).primaryColor
+                                : Theme.of(context).primaryColor.withAlpha(75),
+                        fontSize: 12,
+                        decoration:
+                            completed ? TextDecoration.lineThrough : null,
+                        decorationThickness: 2.0,
+                      ),
+                    ),
+                  ),
+                  if (task.scheduledFrequency.format().isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8.0),
+                      child: Text(
+                        task.scheduledFrequency.format(),
+                        style: kPlaceHolderTextStyle.copyWith(
+                          fontSize: 12,
+                          color:
+                              executable
+                                  ? Theme.of(context).secondaryHeaderColor
+                                  : Theme.of(
+                                    context,
+                                  ).secondaryHeaderColor.withAlpha(75),
+                        ),
+                      ),
+                    ),
+                ],
               ),
               titleTextStyle: kTitleTextStyle.copyWith(
                 color:
