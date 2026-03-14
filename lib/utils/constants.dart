@@ -242,7 +242,7 @@ Each Task must include:
 - `description` (string): For gym workouts, format exercises like:  
   - "Bench Press 3 x 8-12\n"  
   - "Pull ups 4 x AMRAP\n"
-- `scheduledFrequency` (string): One of "daily", "weekly", "biweekly", "monthly"
+- `scheduledFrequency` (string): One of "daily", "weekly", "monthly"
 - `scheduledDay` (string): One of: "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday"
 - `startDateTime` (string): ISO 8601 format (e.g., "2025-06-01T08:00:00")
 - `endDateTime` (string): ISO 8601 format (e.g., "2025-06-01T09:00:00")

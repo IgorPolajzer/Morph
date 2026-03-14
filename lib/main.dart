@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import '../../services/notification_service.dart';
 
 import 'state/user_data.dart';
 import 'state/connectivity_notifier.dart';
@@ -33,6 +34,9 @@ class _AppBootstrapState extends State<AppBootstrap> {
   }
 
   Future<UserData> _initializeApp() async {
+    // Notifications.
+    await NotificationService().initialize();
+
     // Firebase.
     await Firebase.initializeApp();
 

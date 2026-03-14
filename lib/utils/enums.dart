@@ -119,7 +119,6 @@ enum DayType {
 enum Frequency {
   DAILY,
   WEEKLY,
-  BIWEEKLY,
   MONTHLY;
 
   static Frequency getFrequencyFromString(String type) {
@@ -128,8 +127,6 @@ enum Frequency {
         return Frequency.DAILY;
       case "weekly":
         return Frequency.WEEKLY;
-      case "biweekly":
-        return Frequency.BIWEEKLY;
       case "monthly":
         return Frequency.MONTHLY;
       default:

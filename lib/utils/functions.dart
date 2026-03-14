@@ -123,17 +123,6 @@ Pair<List<Task>, List<Habit>> createHardcodedPlan() {
       notifications: true,
     ),
     Task(
-      title: 'Biweekly Deep Work',
-      subtitle: 'Focused session',
-      description: 'Longer focused work session every two weeks.',
-      scheduledFrequency: Frequency.BIWEEKLY,
-      scheduledDay: DayType.WEDNESDAY,
-      startDateTime: start,
-      endDateTime: end3,
-      type: HabitType.GENERAL,
-      notifications: true,
-    ),
-    Task(
       title: 'Monthly Reflection',
       subtitle: 'Monthly check-in',
       description: 'Reflect on the month and set intentions.',

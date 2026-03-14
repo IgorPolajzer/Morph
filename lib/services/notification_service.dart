@@ -149,27 +149,10 @@ class NotificationService {
           matchComponents: DateTimeComponents.dayOfWeekAndTime,
         );
 
-      case Frequency.BIWEEKLY:
-        return (
-          scheduledTime: _nextBiweeklyOccurrence(
-            scheduledTime,
-            task.scheduledDay.dayTypeToDay(),
-            now,
-            start,
-          ),
-          matchComponents: DateTimeComponents.dateAndTime,
-        );
-
       case Frequency.MONTHLY:
         return (
           scheduledTime: _nextMonthlyOccurrence(scheduledTime, now, start),
           matchComponents: DateTimeComponents.dayOfMonthAndTime,
-        );
-
-      default:
-        return (
-          scheduledTime: scheduledTime,
-          matchComponents: DateTimeComponents.time,
         );
     }
   }
@@ -192,33 +175,6 @@ class NotificationService {
     }
 
     return scheduledTime.add(Duration(days: daysToAdd));
-  }
-
-  /// Calculate next biweekly occurrence
-  tz.TZDateTime _nextBiweeklyOccurrence(
-    tz.TZDateTime scheduledTime,
-    Day scheduledDay,
-    tz.TZDateTime now,
-    DateTime startDateTime,
-  ) {
-    // First, find the next weekly occurrence
-    tz.TZDateTime nextWeekly = _nextWeeklyOccurrence(
-      scheduledTime,
-      scheduledDay,
-      now,
-    );
-
-    // Calculate weeks since start date
-    final startTz = tz.TZDateTime.from(startDateTime, tz.local);
-    final daysSinceStart = nextWeekly.difference(startTz).inDays;
-    final weeksSinceStart = daysSinceStart ~/ 7;
-
-    // If on an odd week cycle, add one more week
-    if (weeksSinceStart % 2 != 0) {
-      nextWeekly = nextWeekly.add(const Duration(days: 7));
-    }
-
-    return nextWeekly;
   }
 
   /// Calculate next monthly occurrence

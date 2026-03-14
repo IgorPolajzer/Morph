@@ -8,7 +8,6 @@ import '../../components/lists/daily_task_list.dart';
 import '../../components/text/screen_title.dart';
 import '../../model/habit.dart';
 import '../../model/task.dart';
-import '../../services/notification_service.dart';
 import '../../state/user_data.dart';
 import '../../utils/constants.dart';
 
@@ -30,10 +29,10 @@ class _YourDayScreenState extends State<YourDayScreen> {
 
   Future<void> handleNotifications() async {
     var status = await Permission.notification.status;
+
     if (!status.isGranted) {
       status = await Permission.notification.request();
     }
-    await NotificationService().initialize();
   }
 
   @override

@@ -192,16 +192,6 @@ class UserData extends ChangeNotifier {
     return taskTypes;
   }
 
-  List<Task> getDailyTasks() {
-    var tasks = getTasksFromDate(DateTime.now());
-
-    for (var task in tasks) {
-      NotificationService().scheduleTaskNotification(task);
-    }
-
-    return tasks;
-  }
-
   /// Gets all scheduled tasks on provided date from [_tasks].
   List<Task> getTasksFromDate(DateTime currentDateTime) {
     final List<Task> allTasks = [];
@@ -231,13 +221,6 @@ class UserData extends ChangeNotifier {
               break;
             case Frequency.WEEKLY:
               if (isAfterOrToday && isSameWeekday) allTasks.add(task);
-              break;
-            case Frequency.BIWEEKLY:
-              if (isAfterOrToday && isSameWeekday) {
-                if (diff >= 0 && diff % 14 == 0) {
-                  allTasks.add(task);
-                }
-              }
               break;
             case Frequency.MONTHLY:
               if (currentDateTime.day == taskStartDateTime.day &&
