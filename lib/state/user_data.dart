@@ -27,8 +27,14 @@ class UserData extends ChangeNotifier {
   set user(UserModel? userModel) => _user = userModel!;
   String get userId => _userId ?? "";
 
+  /// Indicates if the application state is loading.
   bool _loading = false;
+
+  /// Indicates initialization of the user data.
+  /// True if user is completely initialized.
   bool _isInitialized = false;
+
+  /// Indicates if [executableTasks] have been loaded from the persistance layer.
   bool _executableTasksLoaded = false;
 
   bool get isInitialized => _isInitialized;
@@ -459,11 +465,9 @@ class UserData extends ChangeNotifier {
       _userId = userId;
       var isLoggedIn = userId != null;
 
-      // No logged-in user. Guest mode.
+      // No logged-in user. Init User Model and stop initialization.
       if (!isLoggedIn) {
         _user = UserModel();
-        _isInitialized = true;
-        _loading = false;
         return;
       }
 
@@ -471,14 +475,13 @@ class UserData extends ChangeNotifier {
       final fetchedUser = await userRepository.fetchUser(userId);
 
       if (fetchedUser == null) {
-        // User exists in Auth but not Firestore.
+        // User exists in FireStore but not Auth. Init User Model.
         _user = UserModel();
-        _isInitialized = true;
-        _loading = false;
         return;
-      } else {
-        _user = fetchedUser;
       }
+
+      _user = fetchedUser;
+      _isInitialized = true;
 
       // Fetch habits and tasks.
       final results = await Future.wait([
@@ -490,14 +493,10 @@ class UserData extends ChangeNotifier {
       final tasks = results[1] as List<Task>;
 
       setHabits(habits);
-
-      // Handle notifications. If user not logged in, not handle them.
       setTasks(tasks, isLoggedIn);
 
       // Compute executable tasks.
       await setExecutableTasks(DateTime.now());
-
-      _isInitialized = true;
     } catch (e) {
       debugPrint('UserData initialization failed: $e');
       rethrow;

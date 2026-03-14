@@ -14,6 +14,7 @@ class UserModel {
     completedTasks = [];
     experience = {};
     selectedHabits = {};
+
     for (var habitType in HabitType.values) {
       experience[habitType] = Experience();
       selectedHabits[habitType] = false;

@@ -27,8 +27,10 @@ class EditPlanScreen extends StatefulWidget {
 }
 
 class _EditPlanScreenState extends State<EditPlanScreen> {
-  ValueNotifier<List<Task>> _scheduledTasks = ValueNotifier([]);
-  ValueNotifier<List<ExecutableTask>> _executableTasks = ValueNotifier([]);
+  final ValueNotifier<List<Task>> _scheduledTasks = ValueNotifier([]);
+  final ValueNotifier<List<ExecutableTask>> _executableTasks = ValueNotifier(
+    [],
+  );
 
   @override
   void didChangeDependencies() {
